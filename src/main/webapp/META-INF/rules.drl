@@ -29,3 +29,13 @@ rule "Add sitemap mixin to page"
         Add the type jmix:sitemap
 end
 
+rule "Add sitemap mixin to menu label"
+    salience -10
+    no-loop
+    when
+        A new node is created
+            - it has the type jnt:navMenuText
+            - installed modules contains sitemap
+    then
+        Add the type jmix:sitemap
+end
