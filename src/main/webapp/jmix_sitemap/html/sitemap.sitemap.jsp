@@ -30,7 +30,12 @@
 <c:if test="${level > 1}">
     <li>
 </c:if>
-<a href='<c:url value="${url.base}${currentNode.path}.html"/>'>${currentNode.displayableName}</a>
+<c:if test="${not jcr:isNodeType(currentNode, 'jnt:navMenuText')}">
+    <a href='<c:url value="${url.base}${currentNode.path}.html"/>'>${currentNode.displayableName}</a>
+</c:if>
+<c:if test="${jcr:isNodeType(currentNode, 'jnt:navMenuText')}">
+    <a href='' onclick="return false">${currentNode.displayableName}</a>
+</c:if>
 <c:forEach items="${jcr:getChildrenOfType(currentNode,'jmix:sitemap')}" var="child" varStatus="childStatus">
     <c:if test="${childStatus.first}">
         <ul <c:if test="${level eq 1}"><c:set var="nbSubItems" value="${jcr:getChildrenOfType(currentNode,'jmix:sitemap')}"/> id="primaryNav" class="col${fn:length(nbSubItems)}"</c:if>>
