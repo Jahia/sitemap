@@ -12,12 +12,17 @@
     <query:selector nodeTypeName="jmix:sitemap" selectorName="stmp"/>
     <query:descendantNode path="${currentNode.path}" selectorName="stmp"/>
 </jcr:jqom>
-<c:if test="${pageContext.request.serverPort != 80}">
-    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
-</c:if>
-<c:if test="${pageContext.request.serverPort == 80}">
-    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
-</c:if>
+<c:choose>
+    <c:when test="${(pageContext.request.scheme == 'http') && (pageContext.request.serverPort != 80)}">
+        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+    </c:when>
+    <c:when test="${(pageContext.request.scheme == 'https') && (pageContext.request.serverPort != 443)}">
+        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
+    </c:otherwise>
+</c:choose>    
 
     <jcr:nodeProperty node="${currentNode}" name="jcr:lastModified" var="lastModif"/>
     <url>
