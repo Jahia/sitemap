@@ -13,14 +13,11 @@
     <query:descendantNode path="${currentNode.path}" selectorName="stmp"/>
 </jcr:jqom>
 <c:choose>
-    <c:when test="${(pageContext.request.scheme == 'http') && (pageContext.request.serverPort != 80)}">
-        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
-    </c:when>
-    <c:when test="${(pageContext.request.scheme == 'https') && (pageContext.request.serverPort != 443)}">
-        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+    <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
+        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
     </c:when>
     <c:otherwise>
-        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
+        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
     </c:otherwise>
 </c:choose>    
 
