@@ -31,11 +31,13 @@
 
     <c:forEach items="${sitemaps.nodes}" varStatus="status" var="sitemapEL">
         <jcr:nodeProperty node="${sitemapEL}" name="jcr:lastModified" var="lastModif"/>
-        <url>
-            <loc>${serverUrl}<c:url value="${url.base}${sitemapEL.path}.html"/></loc>
-            <lastmod><fmt:formatDate value="${lastModif.date.time}" pattern="yyyy-MM-dd"/></lastmod>
-            <changefreq>${sitemapEL.properties.changefreq.string}</changefreq>
-            <priority>${sitemapEL.properties.priority.string}</priority>
-        </url>
+        <c:if test="${!jcr:isNodeType(sitemapEL, 'jnt:navMenuText')}">
+            <url>
+                <loc>${serverUrl}<c:url value="${url.base}${sitemapEL.path}.html"/></loc>
+                <lastmod><fmt:formatDate value="${lastModif.date.time}" pattern="yyyy-MM-dd"/></lastmod>
+                <changefreq>${sitemapEL.properties.changefreq.string}</changefreq>
+                <priority>${sitemapEL.properties.priority.string}</priority>
+            </url>
+        </c:if>
     </c:forEach>
 </urlset>
