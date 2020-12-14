@@ -11,6 +11,7 @@
     </c:when>
     <c:otherwise>
         <c:set var="siteMapNode" value="${currentNode}"/>
+        <c:url value="${url.base}${currentNode.path}.html"/>
     </c:otherwise>
 </c:choose>    
 
@@ -19,8 +20,6 @@
     <query:descendantNode path="${siteMapNode.path}" selectorName="stmp"/>
 </jcr:jqom>
 
-<c:url value="${url.base}${currentNode.path}.html"/>
 <c:forEach items="${sitemaps.nodes}" varStatus="status" var="sitemapEL">
     <c:url value="${url.base}${sitemapEL.path}.html"/>
-
 </c:forEach>    
