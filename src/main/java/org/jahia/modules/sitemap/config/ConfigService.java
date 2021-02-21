@@ -32,8 +32,6 @@ import java.util.Map;
  */
 public interface ConfigService {
 
-    void activate(Map<String, ?> props);
-    void deactivate();
     void setProperties(Map<String,String> properties);
     long getJobFrequency();
     List<String> getSearchEngines();

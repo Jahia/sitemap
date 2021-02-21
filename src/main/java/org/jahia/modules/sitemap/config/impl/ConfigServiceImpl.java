@@ -27,6 +27,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.jahia.modules.sitemap.config.ConfigService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +56,13 @@ public class ConfigServiceImpl implements ConfigService {
         properties = new HashedMap<>();
     }
 
-    @Override
     @Activate
     public void activate(Map<String, ?> props) {
         properties = initProperties(props);
         logger.info("Sitemap configuration activated");
     }
 
-    @Override
+    @Deactivate
     public void deactivate() {
         logger.info("Sitemap configuration deactivated");
     }
