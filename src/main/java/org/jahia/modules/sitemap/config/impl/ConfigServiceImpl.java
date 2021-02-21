@@ -48,7 +48,7 @@ import static org.jahia.modules.sitemap.constant.SitemapConstant.*;
 public class ConfigServiceImpl implements ConfigService {
     private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
 
-    public static final long MIN_FREQUENCY = 60L;
+    public static final long MIN_FREQUENCY = 1L;
     private Map<String, String> properties;
 
     public ConfigServiceImpl() {
