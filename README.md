@@ -29,43 +29,31 @@ Here is the rule for automatically assigning the option to a newly created page.
 How do I submit my sitemap to search engines like Google, Yahoo!, Microsoft ?
 -----------------------------------------------------------------------------
 
-The submission of your sitemap can be done automatically by a background job in Jahia Digital Experience Manager. This 
-job is defined inside the sitemap module.
+The submission of your sitemap can be done automatically by a background job in Jahia Digital Experience Manager. There's cfg file 
+located at `${jahia.deploy.targetServerDirectory}/digital-factory-data/karaf/etc` called `org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg`.
+---
+    sitemap.job-frequency=24
+    # Comma separated values
+    sitemap.search-engines=http://www.google.com/webmasters/tools/ping?sitemap=
+    # Comma separated values
+    sitemap.sitemap-urls="https://example.com/sitemap.xml,https://example.com/sitemap2.xml"
 
-    <bean id="sitemapCronTrigger" class="org.quartz.CronTrigger">
-        <property name="name" value="SitemapCronTrigger"/>
-        <!-- Will start the process at 4 a.m -->
-        <property name="cronExpression" value="0 0 4 * * ?" />
-    </bean>
+At the moment, the configuration has 3 keys. 
+* Job Frequency
+* List of Search engines
+* List of sitemap urls
 
-    <bean id="sitemapJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <!-- This job will call searchEnginesUrl+urlEncoded(sitesUrl+/sitemap.xml)-->
-        <!-- As an example here it will call http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Ftata.mondomaine.com%2Fsitemap.xml -->
-        <property name="jobClass" value="org.jahia.modules.sitemap.SitemapJob"/>
-        <property name="jobDataAsMap">
-            <map>
-                <entry key="searchEngines">
-                    <list>
-                        <value>http://www.google.com/webmasters/tools/ping?sitemap=</value>
-                    </list>
-                </entry>
-                <entry key="sites">
-                    <list>
-                        <value>http://example.domain.com</value>
-                    </list>
-                </entry>
-            </map>
-        </property>
-    </bean>
+### Job frequency
+This value determines how often to send the sitemap url to the search engines. The base unit is in hours - thus a value of 24 means the 
+background job will run every 24 hours.
 
-This job is define in two parts first we have the trigger. The trigger is here to define at which time we want to 
-execute the job. Here we use a cron expression to define the time of execution (here 4 AM every day of every year).
+### List of Search engines
+This is a comma-separated value of the list of search engines to use by the background job.
 
-The second part is the job by itself, where you can configure how many search engines you want to reach by specifying 
-the url where to submit the sitemap.
+### Sitemap urls
+This is a comma-separated value of the list of urls to send to the search engine(s).
 
-Then you have to list which domain you want to submit. Here we will submit the domain/sitemap.xml. To know how to bind 
-your `domain/sitemap.xml` to your homepage look at the documentation about Apache HTTP Server in the war module.
+---
 
 For each search engine, you will have to follow their policy. For example on Google, they ask that for the first time 
 you manually register you sitemap using their webmaster tools (to follow what happens and have feedback in your 
