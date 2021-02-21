@@ -61,13 +61,14 @@ public class SitemapBackgroundJob extends BackgroundJob {
     private ConfigService configService;
 
     @Activate public void start() throws Exception {
-        logger.info("**************Starting Sitemap Job *************************");
         final List<String> searchEngines = configService.getSearchEngines();
         final List<String> siteMapUrls = configService.getSitemapUrls();
         final JobDataMap jobDataMap = new JobDataMap();
         jobDetail = BackgroundJob.createJahiaJob("Simple background job made declared with OSGi", SitemapBackgroundJob.class);
         jobDataMap.put(SEARCH_ENGINES, new ArrayList<>(searchEngines));
+        logger.debug("Search engines: {}", searchEngines);
         jobDataMap.put(SITEMAP_URLS, new ArrayList<>(siteMapUrls));
+        logger.debug("Sitemap urls: {}", siteMapUrls);
         if (schedulerService.getAllJobs(jobDetail.getGroup()).isEmpty() && SettingsBean.getInstance().isProcessingServer()) {
             Trigger trigger = new SimpleTrigger("sitemapJob_trigger", jobDetail.getGroup(), SimpleTrigger.REPEAT_INDEFINITELY,
                     configService.getJobFrequency());
@@ -86,6 +87,8 @@ public class SitemapBackgroundJob extends BackgroundJob {
         final JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         final List<String> searchEngines = (List<String>) jobDataMap.get(SEARCH_ENGINES);
         final List<String> siteMaps = (List<String>) jobDataMap.get(SITEMAP_URLS);
+        logger.debug("Search engines: {}", searchEngines);
+        logger.debug("Sitemap urls: {}", siteMaps);
         for (String siteMap : siteMaps) {
             for (String s : searchEngines) {
                 try {
