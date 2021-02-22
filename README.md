@@ -31,7 +31,7 @@ How do I submit my sitemap to search engines like Google, Yahoo!, Microsoft ?
 
 The submission of your sitemap can be done automatically by a background job in Jahia Digital Experience Manager. There's cfg file 
 located at `${jahia.deploy.targetServerDirectory}/digital-factory-data/karaf/etc` called `org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg`.
----
+
     sitemap.job-frequency=24
     # Comma separated values
     sitemap.search-engines=http://www.google.com/webmasters/tools/ping?sitemap=
