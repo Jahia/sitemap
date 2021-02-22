@@ -20,15 +20,7 @@
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <c:choose>
-                <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
-                        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
-                </c:when>
-                <c:otherwise>
-                        <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
-                </c:otherwise>
-        </c:choose>
-
+        <jsp:include page="../../common/serverUrl.jsp"/>
         <c:set var="siteMapPath" value="${fn:replace(currentNode.url, '.html', '')}" />
         <sitemap>
                 <loc>${serverUrl}<c:url value="${siteMapPath}.xml"/></loc>
