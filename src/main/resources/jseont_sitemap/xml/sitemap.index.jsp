@@ -20,21 +20,20 @@
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <jsp:include page="../../common/serverUrl.jsp"/>
         <c:set var="siteMapPath" value="${fn:replace(currentNode.url, '.html', '')}" />
         <sitemap>
-                <loc>${serverUrl}<c:url value="${siteMapPath}.xml"/></loc>
+                <loc>${url.server}<c:url value="${siteMapPath}.xml"/></loc>
         </sitemap>
-        <sitemap>
-                <loc>${serverUrl}<c:url value="${siteMapPath}.custom.xml"/></loc>
-        </sitemap>
-        <sitemap>
-                <loc>${serverUrl}<c:url value="${siteMapPath}.images.xml"/></loc>
-        </sitemap>
+<%--        <sitemap>--%>
+<%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
+<%--        </sitemap>--%>
+<%--        <sitemap>--%>
+<%--                <loc>${url.server}<c:url value="${siteMapPath}.images.xml"/></loc>--%>
+<%--        </sitemap>--%>
         <%-- for pdfs and maybe other resources --%>
-        <sitemap>
-                <loc>${serverUrl}<c:url value="${siteMapPath}.resources.xml"/></loc>
-        </sitemap>
+<%--        <sitemap>--%>
+<%--                <loc>${url.server}<c:url value="${siteMapPath}.resources.xml"/></loc>--%>
+<%--        </sitemap>--%>
 
         <%-- language site maps --%>
         <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
@@ -45,7 +44,7 @@
                         <c:set var="replaced" value="/${currentLanguage}/"/>
                         <c:set var="replacee" value="/${lang}/"/>
                         <sitemap>
-                                <loc>${serverUrl}<c:url value="${fn:replace(siteMapPath, replaced, replacee)}.xml"/></loc>
+                                <loc>${url.server}<c:url value="${fn:replace(siteMapPath, replaced, replacee)}.xml"/></loc>
                         </sitemap>
                 </c:if>
         </c:forEach>
@@ -58,7 +57,7 @@
         </jcr:jqom>
         <c:forEach var="node" items="${additionalMaps.nodes}">
                 <sitemap>
-                        <loc>${serverUrl}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
+                        <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
                 </sitemap>
         </c:forEach>
 </sitemapindex>
