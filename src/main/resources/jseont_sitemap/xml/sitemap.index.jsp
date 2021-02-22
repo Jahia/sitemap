@@ -39,8 +39,8 @@
         <sitemap>
                 <loc>${serverUrl}<c:url value="${siteMapPath}.images.xml"/></loc>
         </sitemap>
+        <%-- for pdfs and maybe other resources --%>
         <sitemap>
-              <%-- for pdfs and maybe other resources --%>
                 <loc>${serverUrl}<c:url value="${siteMapPath}.resources.xml"/></loc>
         </sitemap>
 
