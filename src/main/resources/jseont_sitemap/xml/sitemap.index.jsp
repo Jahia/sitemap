@@ -46,7 +46,7 @@
                                 <c:set var="replacee" value="/${lang}/sites/"/>
                                 <c:url value="${siteMapPath}.xml" var="languageReesource"/>
                                 <sitemap>
-                                        <loc>${url.server}${fn:replace(languageReesource, replaced, replacee)}</loc>
+                                        <loc>${url.server}${fn:replace(languageResource, replaced, replacee)}</loc>
                                 </sitemap>
                         </c:if>
                 </c:forEach>
