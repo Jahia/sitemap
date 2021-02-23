@@ -20,44 +20,47 @@
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <c:set var="siteMapPath" value="${fn:replace(currentNode.url, '.html', '')}" />
-        <sitemap>
-                <loc>${url.server}<c:url value="${siteMapPath}.xml"/></loc>
-        </sitemap>
-<%--        <sitemap>--%>
-<%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
-<%--        </sitemap>--%>
-<%--        <sitemap>--%>
-<%--                <loc>${url.server}<c:url value="${siteMapPath}.images.xml"/></loc>--%>
-<%--        </sitemap>--%>
-        <%-- for pdfs and maybe other resources --%>
-<%--        <sitemap>--%>
-<%--                <loc>${url.server}<c:url value="${siteMapPath}.resources.xml"/></loc>--%>
-<%--        </sitemap>--%>
-
-        <%-- language site maps --%>
-        <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
-        <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLanguages" var="inactiveLanguages"/>
-        <c:set var="currentLanguage" value="${renderContext.site.language}"/>
-        <c:forEach var="lang" items="${languages}">
-                <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
-                        <c:set var="replaced" value="/${currentLanguage}/"/>
-                        <c:set var="replacee" value="/${lang}/"/>
-                        <sitemap>
-                                <loc>${url.server}<c:url value="${fn:replace(siteMapPath, replaced, replacee)}.xml"/></loc>
-                        </sitemap>
-                </c:if>
-        </c:forEach>
-
-        <%--  Separate sitemaps for jseont:sitemapResource node option --%>
-        <%-- TODO: replace jnt:page to jseont:sitemapResource once nodetype is available --%>
-        <jcr:jqom var="additionalMaps">
-                <query:selector nodeTypeName="jnt:page" selectorName="stmp"/>
-                <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
-        </jcr:jqom>
-        <c:forEach var="node" items="${additionalMaps.nodes}">
+        <c:if test="${renderContext.liveMode}">
+                <c:set var="siteMapPath" value="${fn:replace(currentNode.url, '.html', '')}" />
                 <sitemap>
-                        <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
+                        <loc>${url.server}<c:url value="${siteMapPath}.xml"/></loc>
                 </sitemap>
-        </c:forEach>
+                <%--        <sitemap>--%>
+                <%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
+                <%--        </sitemap>--%>
+                <%--        <sitemap>--%>
+                <%--                <loc>${url.server}<c:url value="${siteMapPath}.images.xml"/></loc>--%>
+                <%--        </sitemap>--%>
+                <%-- for pdfs and maybe other resources --%>
+                <%--        <sitemap>--%>
+                <%--                <loc>${url.server}<c:url value="${siteMapPath}.resources.xml"/></loc>--%>
+                <%--        </sitemap>--%>
+
+                <%-- language site maps --%>
+                <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
+                <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLanguages" var="inactiveLanguages"/>
+                <c:set var="currentLanguage" value="${renderContext.site.language}"/>
+                <c:forEach var="lang" items="${languages}">
+                        <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
+                                <c:set var="replaced" value="/sites/"/>
+                                <c:set var="replacee" value="/${lang}/sites/"/>
+                                <c:url value="${siteMapPath}.xml" var="languageReesource"/>
+                                <sitemap>
+                                        <loc>${url.server}${fn:replace(languageReesource, replaced, replacee)}</loc>
+                                </sitemap>
+                        </c:if>
+                </c:forEach>
+
+                <%--  Separate sitemaps for jseont:sitemapResource node option --%>
+                <%-- TODO: replace jnt:page to jseont:sitemapResource once nodetype is available --%>
+                <jcr:jqom var="additionalMaps">
+                        <query:selector nodeTypeName="jnt:page" selectorName="stmp"/>
+                        <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
+                </jcr:jqom>
+                <c:forEach var="node" items="${additionalMaps.nodes}">
+                        <sitemap>
+                                <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
+                        </sitemap>
+                </c:forEach>
+        </c:if>
 </sitemapindex>
