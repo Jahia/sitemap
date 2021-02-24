@@ -16,11 +16,13 @@
 <%--@elvariable id="scriptInfo" type="java.lang.String"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 <%--@elvariable id="workspace" type="java.lang.String"--%>
+
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
+
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <c:if test="${renderContext.liveMode}">
-                <c:set var="siteMapPath" value="${fn:replace(currentNode.path, '.html', '')}" />
+        <c:if test="${renderContext.liveMode and renderContext.site.defaultLanguage eq renderContext.mainResourceLocale.language}">
+                <c:set var="siteMapPath" value="${currentNode.path}" />
                 <sitemap>
                         <loc>${url.server}<c:url value="${siteMapPath}.xml"/></loc>
                 </sitemap>
