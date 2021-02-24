@@ -50,14 +50,16 @@
                         </c:if>
                 </c:forEach>
 
-                <%--  Separate sitemaps for jseont:sitemapResource node option --%>
+                <%--  Separate sitemaps for jseomix:sitemapResource node option --%>
                 <jcr:jqom var="additionalMaps">
-                        <query:selector nodeTypeName="jseont:sitemapResource" selectorName="stmp"/>
+                        <query:selector nodeTypeName="jseomix:sitemapResource" selectorName="stmp"/>
                         <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
+                        <query:propertyExistence propertyName="createSitemap" selectorName="stmp"/>
+                        <query:equalTo propertyName="createSitemap" value="true"/>
                 </jcr:jqom>
                 <c:forEach var="node" items="${additionalMaps.nodes}">
                         <sitemap>
-                                <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '.xml')}"/></loc>
+                                <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
                         </sitemap>
                 </c:forEach>
         </c:if>
