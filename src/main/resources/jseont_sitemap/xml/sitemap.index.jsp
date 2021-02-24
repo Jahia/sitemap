@@ -51,14 +51,13 @@
                 </c:forEach>
 
                 <%--  Separate sitemaps for jseont:sitemapResource node option --%>
-                <%-- TODO: replace jnt:page to jseont:sitemapResource once nodetype is available --%>
                 <jcr:jqom var="additionalMaps">
-                        <query:selector nodeTypeName="jnt:page" selectorName="stmp"/>
+                        <query:selector nodeTypeName="jseont:sitemapResource" selectorName="stmp"/>
                         <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
                 </jcr:jqom>
                 <c:forEach var="node" items="${additionalMaps.nodes}">
                         <sitemap>
-                                <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '/sitemap.xml')}"/></loc>
+                                <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', '.xml')}"/></loc>
                         </sitemap>
                 </c:forEach>
         </c:if>
