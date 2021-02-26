@@ -12,5 +12,7 @@
     "env": {
         "JAHIA_USERNAME": "root",
         "JAHIA_PASSWORD": "root"
-    }
+    },
+    "viewportWidth": 1366,
+    "viewportHeight": 768
 }
