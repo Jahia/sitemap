@@ -13,7 +13,7 @@ echo " == Using MANIFEST: ${MANIFEST}"
 echo " == Using JAHIA_URL= ${JAHIA_URL}"
 
 echo " == Waiting for Jahia to startup"
-./node_modules/jahia-reporter/bin/run utils:alive --jahiaUrl=${JAHIA_URL}
+./node_modules/jahia-cli/bin/run alive --jahiaAdminUrl=${JAHIA_URL}
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo " == Jahia became alive in ${ELAPSED_TIME} seconds"
 
@@ -31,15 +31,8 @@ sed -i -e "s/NEXUS_USERNAME/${NEXUS_USERNAME}/g" /tmp/run-artifacts/${MANIFEST}
 sed -i -e "s/NEXUS_PASSWORD/${NEXUS_PASSWORD}/g" /tmp/run-artifacts/${MANIFEST}
 
 echo " == Warming up the environement =="
-./node_modules/jahia-reporter/bin/run utils:provision --jahiaUrl=${JAHIA_URL} --script=/tmp/run-artifacts/${MANIFEST}
+./node_modules/jahia-cli/bin/run manifest:run --manifest=/tmp/run-artifacts/${MANIFEST} --jahiaAdminUrl=${JAHIA_URL} --nosandbox
 echo " == Environment warmup complete =="
-
-# If we're building the module (and manifest name contains build), then we'll end up pushing that module individually 
-if [[ ${MANIFEST} == *"build"* ]]; then
-  echo " == Submitting Sitemap module from: /tmp/artifacts/sitemap-SNAPSHOT.jar =="
-  ./node_modules/jahia-reporter/bin/run utils:module --jahiaUrl=${JAHIA_URL} --moduleId=sitemap --moduleFile=/tmp/artifacts/sitemap-SNAPSHOT.jar
-  echo " == Module submitted =="
-fi
 
 echo "== Run tests =="
 CYPRESS_baseUrl=${JAHIA_URL} yarn e2e:ci

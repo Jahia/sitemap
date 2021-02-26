@@ -14,7 +14,7 @@ RUN mkdir /tmp/results
 RUN CI=true yarn install
 RUN CI=true /tmp/node_modules/.bin/cypress install
 
-# Jahia reporter is used for a couple of methods prior to running the test
-RUN yarn add jahia-reporter
+# Jahia-cli is used to warmup the environment at startup
+RUN PUPPETEER_SKIP_DOWNLOAD=true yarn add jahia-cli@0.0.48
 
 CMD ["/bin/bash", "-c", "/tmp/env.run.sh"]
