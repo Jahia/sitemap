@@ -110,10 +110,6 @@ jobs:
           command: |
             cd << pipeline.parameters.TESTS_PATH >>
             yarn run lint --max-warnings 1
-      - run:
-          name: Yarn lint module
-          command: |
-            yarn run lint --max-warnings 1
 
   # Run security checks
   # Security checks on the project are used to validate that we don't use any problematic javascript libraries
@@ -837,7 +833,7 @@ workflows:
       - integration_tests:
           matrix:
             parameters:
-              JAHIA_IMAGE: ["jahia/jahia-private:snapshot-dev"]
+              JAHIA_IMAGE: ["jahia/jahia-private:snapshot-dev", "jahia/jahia-dev:8.0"]
               RUN_TESTSIMAGE: ["<< pipeline.parameters.TESTS_IMAGE >>:latest"]
               MANIFEST: ["warmup-manifest-snapshot.yml"]
               TESTRAIL_MILESTONE: ["<< matrix.JAHIA_IMAGE >>"]
