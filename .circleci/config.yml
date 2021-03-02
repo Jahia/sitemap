@@ -28,7 +28,7 @@ parameters:
     default: "jahia/sitemap"
   PRIMARY_RELEASE_BRANCH:
     type: string
-    default: "main" # main or master ? set the branch for the main release
+    default: "master" # main or master ? set the branch for the main release
   RELEASE_ID:
     type: string
     default: ""
