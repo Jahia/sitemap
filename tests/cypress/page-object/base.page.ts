@@ -15,7 +15,7 @@ export class BasePage {
         // and retry until the body element is not empty
         return (
             cy
-                .get('iframe.gwt-Frame.window-iframe')
+                .get('iframe#page-composer-frame')
                 .its('0.contentDocument.body')
                 .should('not.be.empty')
                 // wraps "body" DOM element to allow
