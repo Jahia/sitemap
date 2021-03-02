@@ -152,7 +152,7 @@ jobs:
       - run:
           name: Build package and load all dependencies into local Maven repository
           command: mvn -s .circleci/.circleci.settings.xml clean package de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
-      # Environment provisioning is sometimes dependent upon dependencies build during mvn clean package/install
+      # Environment warmup is sometimes dependent upon dependencies build during mvn clean package/install
       # This step copies those dependencies and make them available for further actions,
       # such as being used to provision a running Jahia with a set of freshly built artifacts
       - run:
@@ -754,7 +754,7 @@ workflows:
           RUN_TESTSIMAGE: << pipeline.parameters.TESTS_IMAGE >>:latest
           TOOLS_USER: root
           TOOLS_PWD: root
-          MANIFEST: provisioning-manifest-build.yml
+          MANIFEST: warmup-manifest-build.yml
           TESTRAIL_MILESTONE: Jahia-Latest
           SKIP_TESTRAIL: "true"
           SKIP_ARTIFACTS: false
@@ -839,7 +839,7 @@ workflows:
             parameters:
               JAHIA_IMAGE: ["jahia/jahia-private:snapshot-dev"]
               RUN_TESTSIMAGE: ["<< pipeline.parameters.TESTS_IMAGE >>:latest"]
-              MANIFEST: ["provisioning-manifest-snapshot.yml"]
+              MANIFEST: ["warmup-manifest-snapshot.yml"]
               TESTRAIL_MILESTONE: ["<< matrix.JAHIA_IMAGE >>"]
               TOOLS_USER: ["root"]
               TOOLS_PWD: ["root"]
@@ -866,7 +866,7 @@ workflows:
   #           parameters:
   #             JAHIA_IMAGE: ["jahia/jahia-dev:8.0.1.0"]
   #             RUN_TESTSIMAGE: ["<< pipeline.parameters.TESTS_IMAGE >>:latest"]
-  #             MANIFEST: ["provisioning-manifest-snapshot.yml"]
+  #             MANIFEST: ["warmup-manifest-snapshot.yml"]
   #             TESTRAIL_MILESTONE: ["<< matrix.JAHIA_IMAGE >>"]
   #             TOOLS_USER: ["root"]
   #             TOOLS_PWD: ["root"]
