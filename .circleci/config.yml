@@ -167,7 +167,6 @@ jobs:
           command: |
             mkdir /tmp/artifacts/
             cp /home/circleci/source/target/*.jar /tmp/artifacts/
-            cp /home/circleci/source/target/*source-release.zip /tmp/artifacts/
             cp /home/circleci/source/target/*SNAPSHOT.jar /home/circleci/source/target/<< pipeline.parameters.MODULE_ID >>-SNAPSHOT.jar
       - store_artifacts:
           path: /tmp/artifacts/
