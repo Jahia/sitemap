@@ -1,0 +1,46 @@
+<%@ page language="java" contentType="text/xml;charset=UTF-8" %>
+<%@ taglib prefix="jcr" uri="http://www.jahia.org/tags/jcr" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
+<%@ taglib prefix="template" uri="http://www.jahia.org/tags/templateLib" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions" %>
+<%@ taglib prefix="sitemap" uri="http://www.jahia.org/sitemap" %>
+<%--@elvariable id="currentNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
+<%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
+<%--@elvariable id="`url" type="org.jahia.services.render.URLGenerator"--%>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="https://www.w3.org/1999/xhtml">
+
+    <c:set var="entryNode" value="${renderContext.site}"/>
+
+    <%-- list of parent nodes to exclude --%>
+    <jcr:sql var="excludeNodes"
+         sql="SELECT * FROM [jseomix:sitemapResource]
+            WHERE ISDESCENDANTNODE(['${entryNode.path}'])
+            and [createSitemap]=true"/>
+
+    <%-- jnt:page under currentNode --%>
+    <c:set var="childUrlNodes" value="${sitemap:getSitemapEntries(renderContext, entryNode.path, 'jnt:page')}"/>
+    <c:forEach items="${childUrlNodes.nodes}" var="childUrlNode">
+        <c:if test="${!sitemap:excludeNode(childUrlNode, excludeNodes.nodes)}">
+            <c:set var="urlNode" value="${childUrlNode}" scope="request"/>
+            <c:set var="renderContext" value="${renderContext}" scope="request"/>
+            <jsp:include page="../../common/sitemap-entry.jsp"/>
+        </c:if>
+    </c:forEach>
+
+    <%-- jmix:mainResource under currentNode --%>
+    <c:set var="childUrlNodes" value="${sitemap:getSitemapEntries(renderContext, entryNode.path, 'jmix:mainResource')}"/>
+    <c:forEach items="${childUrlNodes.nodes}" var="childUrlNode">
+        <c:if test="${!sitemap:excludeNode(childUrlNode, excludeNodes.nodes)}">
+            <c:set var="urlNode" value="${childUrlNode}" scope="request"/>
+            <c:set var="renderContext" value="${renderContext}" scope="request"/>
+            <jsp:include page="../../common/sitemap-entry.jsp"/>
+        </c:if>
+    </c:forEach>
+
+</urlset>

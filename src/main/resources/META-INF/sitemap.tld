@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+
+    <display-name>Sitemap Tag Library</display-name>
+    <tlib-version>1.0</tlib-version>
+    <short-name>sitemap</short-name>
+    <uri>http://www.jahia.org/sitemap</uri>
+
+    <!-- Vanity URL helper functions -->
+    <function>
+        <name>getVanityUrl</name>
+        <function-class>org.jahia.modules.sitemap.utils.VanityUrls</function-class>
+        <function-signature>java.lang.String getActiveUrl(org.jahia.services.content.JCRNodeWrapper)</function-signature>
+    </function>
+    <function>
+        <name>getLocaleVanityUrl</name>
+        <function-class>org.jahia.modules.sitemap.utils.VanityUrls</function-class>
+        <function-signature>java.lang.String getActiveUrl(org.jahia.services.content.JCRNodeWrapper, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <name>hasVanityUrl</name>
+        <function-class>org.jahia.modules.sitemap.utils.VanityUrls</function-class>
+        <function-signature>boolean hasActiveUrl(org.jahia.services.content.JCRNodeWrapper)</function-signature>
+    </function>
+
+    <!-- query helper functions -->
+    <function>
+        <name>getSitemapEntries</name>
+        <function-class>org.jahia.modules.sitemap.utils.QueryHelper</function-class>
+        <function-signature>javax.jcr.query.QueryResult getSitemapEntries(org.jahia.services.render.RenderContext,java.lang.String,java.lang.String)</function-signature>
+    </function>
+    <function>
+        <name>excludeNode</name>
+        <function-class>org.jahia.modules.sitemap.utils.QueryHelper</function-class>
+        <function-signature>boolean excludeNode(org.jahia.services.content.JCRNodeWrapper,javax.jcr.NodeIterator)</function-signature>
+    </function>
+
+</taglib>

@@ -3,6 +3,14 @@
 
 [jseont:sitemap] > jnt:content
 
+[jseont:sitemapResource] > jnt:content
+
 [jseomix:sitemap] mixin
  extends = jnt:virtualsite
  + sitemap (jseont:sitemap) = jseont:sitemap mandatory autocreated
+
+[jseomix:sitemapResource] mixin
+ extends = jnt:page, jmix:mainResource
+ - noIndex (boolean)
+ - createSitemap (boolean)
+ + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory autocreated
