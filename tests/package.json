@@ -44,8 +44,8 @@
   "scripts": {
     "instrument": "nyc instrument --compact=false cypress instrumented",
     "e2e:coverage": "yarn instrument && yarn cypress run --config integrationFolder=./instrumented/integration && yarn nyc report --reporter=html --report-dir=./results/coverage && yarn nyc report",
-    "e2e:ci": "cypress run",
-    "e2e:local": "cypress run --reporter reporter/json.js",
+    "e2e:ci": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=reporter-config.json",
+    "e2e:local": "cypress run --reporter reporter/json.js --reporter-options reportsPath=./results/reports/",
     "e2e:debug": "cypress open",
     "lint": "eslint . -c .eslintrc.json --ext .ts"
   },

@@ -2,7 +2,7 @@ import { BasePage } from './base.page'
 
 class EditPage extends BasePage {
     elements = {
-        sitemap: "[for='jmix:sitemap']",
+        sitemap: "[id='jmix:sitemap']",
         save: "[data-sel-role='submitSave']",
         message: '#message-id',
     }
