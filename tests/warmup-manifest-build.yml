@@ -15,3 +15,7 @@ jobs:
   - type: module
     id: sandbox
     filepath: /tmp/artifacts/sitemap-SNAPSHOT.jar
+  - type: modulesite
+    action: enable
+    moduleId: sitemap
+    siteId: digitall
