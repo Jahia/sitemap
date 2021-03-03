@@ -4,8 +4,12 @@
     "failOnStatusCode": false,
     "defaultCommandTimeout": 30000,
     "videoUploadOnPasses": false,
-    "reporter": "reporter/json.js",
-    "reporterOptions": { "reportsPath": "./results/reports/" },
+    "reporter": "mocha-multi-reporters",
+    "reporterEnabled": "reporter/json.js, mocha-junit-reporter",
+    "reporterOptions": {
+      "mochaFile": "./results/reports/results-[hash].xml",
+      "reportsPath": "./results/reports/"
+    },
     "screenshotsFolder": "./results/screenshots",
     "videosFolder": "./results/videos",
     "ignoreTestFiles": "*.example.ts",

@@ -2,11 +2,7 @@ import { BasePage } from './base.page'
 import { editPage } from './edit.page'
 
 class DigitallHomePage extends BasePage {
-    elements = {
-        newUser: "[onclick*='addUser']",
-        bulkCreateUsers: "[onclick*='bulkAddUser']",
-        removeSelectedUsers: "[onclick*='bulkDeleteUser']",
-    }
+    elements = {}
 
     goTo() {
         cy.goTo('/jahia/page-composer/default/en/sites/digitall/home.html')

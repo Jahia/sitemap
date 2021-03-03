@@ -13,6 +13,7 @@
     "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^6.5.0",
     "cypress-file-upload": "^5.0.2",
+    "cypress-multi-reporters": "^1.4.0",
     "cypress-terminal-report": "^2.4.0",
     "diff": "^4.0.2",
     "eslint": "^7.3.1",
@@ -25,6 +26,8 @@
     "husky": "^4.2.5",
     "istanbul-lib-coverage": "^3.0.0",
     "lint-staged": "^10.2.11",
+    "mocha-junit-reporter": "^2.0.0",
+    "mocha-multi-reporters": "^1.5.1",
     "ms": "^2.1.2",
     "nyc": "^15.1.0",
     "path": "^0.12.7",
@@ -41,6 +44,7 @@
     "instrument": "nyc instrument --compact=false cypress instrumented",
     "e2e:coverage": "yarn instrument && yarn cypress run --config integrationFolder=./instrumented/integration && yarn nyc report --reporter=html --report-dir=./results/coverage && yarn nyc report",
     "e2e:ci": "cypress run",
+    "e2e:local": "cypress run --reporter reporter/json.js",
     "e2e:debug": "cypress open",
     "lint": "eslint . -c .eslintrc.json --ext .ts"
   },
@@ -71,7 +75,5 @@
   "bugs": {
     "url": "https://github.com/Jahia/sitemap/issues"
   },
-  "homepage": "https://github.com/Jahia/sitemap#readme",
-  "dependencies": {
-  }
+  "homepage": "https://github.com/Jahia/sitemap#readme"
 }
