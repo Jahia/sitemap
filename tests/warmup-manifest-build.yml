@@ -13,7 +13,7 @@ jobs:
     id: graphql-dxm-provider
     filepath: /tmp/graphql-dxm-provider-LATEST.jar
   - type: module
-    id: sandbox
+    id: sitemap
     filepath: /tmp/artifacts/sitemap-SNAPSHOT.jar
   - type: modulesite
     action: enable
