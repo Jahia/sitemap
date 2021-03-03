@@ -345,10 +345,10 @@ jobs:
               exit 1
             fi
       - store_test_results:
-          path: << pipeline.parameters.TESTS_PATH >>artifacts/xml_results
+          path: << pipeline.parameters.TESTS_PATH >>artifacts/results/xml_results
       - run:
           name: remove xml results folder
-          command: rm -rf << pipeline.parameters.TESTS_PATH >>artifacts/xml_results
+          command: rm -rf << pipeline.parameters.TESTS_PATH >>artifacts/results/xml_results
       - store_artifacts:
           path: << pipeline.parameters.TESTS_PATH >>artifacts/results
       # Once all is executed, results are submitted to external platforms

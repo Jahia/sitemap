@@ -2,12 +2,13 @@ import { BasePage } from './base.page'
 
 class EditPage extends BasePage {
     elements = {
-        sitemap: "[id='jseomix:sitemap']",
+        sitemap: "[id='jmix:sitemap']",
         save: "[data-sel-role='submitSave']",
         message: '#message-id',
     }
 
     clickOnSitemap() {
+        cy.get('[id="jmix:canBeUseAsTemplateModel"]').click()
         cy.get(this.elements.sitemap).click()
         cy.get(this.elements.save).click()
         return this
