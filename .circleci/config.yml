@@ -348,6 +348,7 @@ jobs:
           path: << pipeline.parameters.TESTS_PATH >>artifacts/results/xml_reports
       - run:
           name: remove xml results folder
+          when: always
           command: rm -rf << pipeline.parameters.TESTS_PATH >>artifacts/results/xml_reports
       - store_artifacts:
           path: << pipeline.parameters.TESTS_PATH >>artifacts/results

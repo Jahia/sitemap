@@ -8,7 +8,6 @@ class EditPage extends BasePage {
     }
 
     clickOnSitemap() {
-        cy.get('[id="jmix:canBeUseAsTemplateModel"]').click()
         cy.get(this.elements.sitemap).click()
         cy.get(this.elements.save).click()
         return this
