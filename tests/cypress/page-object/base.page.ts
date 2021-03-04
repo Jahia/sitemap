@@ -24,4 +24,24 @@ export class BasePage {
                 .then(cy.wrap)
         )
     }
+
+    /**
+     * waits for the body inside the iframe to appear
+     * returns the body of the iframe
+     * @param iframeSrc - src attribute of the iframe
+     */
+    getSiteIframeBody(): Cypress.Chainable {
+        // get the iframe > document > body
+        // and retry until the body element is not empty
+        return (
+            this.getIframeBody()
+                .find('iframe[src*="editframe"]')
+                .its('0.contentDocument.body')
+                .should('not.be.empty')
+                // wraps "body" DOM element to allow
+                // chaining more Cypress commands, like ".find(...)"
+                // https://on.cypress.io/wrap
+                .then(cy.wrap)
+        )
+    }
 }

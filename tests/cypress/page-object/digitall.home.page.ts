@@ -6,6 +6,7 @@ class DigitallHomePage extends BasePage {
 
     goTo() {
         cy.goTo('/jahia/page-composer/default/en/sites/digitall/home.html')
+        this.getSiteIframeBody()
         return this
     }
 
