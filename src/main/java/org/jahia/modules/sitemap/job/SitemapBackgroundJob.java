@@ -47,7 +47,7 @@ import static org.jahia.modules.sitemap.constant.SitemapConstant.SEARCH_ENGINES;
 import static org.jahia.modules.sitemap.constant.SitemapConstant.SITEMAP_URLS;
 
 /**
- * Short description of the class
+ * Simple background job
  *
  * @author nonico
  */
@@ -89,16 +89,24 @@ public class SitemapBackgroundJob extends BackgroundJob {
         final List<String> siteMaps = (List<String>) jobDataMap.get(SITEMAP_URLS);
         logger.debug("Search engines: {}", searchEngines);
         logger.debug("Sitemap urls: {}", siteMaps);
-        for (String siteMap : siteMaps) {
-            for (String s : searchEngines) {
-                try {
-                    URL url = new URL(s + URLEncoder.encode(siteMap, CHAR_ENCODING));
-                    logger.debug("Calling {}", url.toExternalForm());
-                    URLConnection urlConnection = url.openConnection();
-                    Source source = new Source(urlConnection);
-                    logger.debug(source.getTextExtractor().toString());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+        if (siteMaps.isEmpty()) {
+            logger.warn("There are not entries found in the configuration: sitemap.site-urls");
+        }
+        if (searchEngines.isEmpty()) {
+            logger.warn("There are not entries found in the configuration: sitemap.search-engines");
+        }
+        if (!siteMaps.isEmpty() && !searchEngines.isEmpty()) {
+            for (String siteMap : siteMaps) {
+                for (String s : searchEngines) {
+                    try {
+                        URL url = new URL(s + URLEncoder.encode(siteMap, CHAR_ENCODING));
+                        logger.debug("Calling {}", url.toExternalForm());
+                        URLConnection urlConnection = url.openConnection();
+                        Source source = new Source(urlConnection);
+                        logger.debug(source.getTextExtractor().toString());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 }
             }
         }

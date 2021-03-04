@@ -19,6 +19,7 @@
 
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
 
+<c:if test="${renderContext.site.isNodeType('jseomix:sitemap')}">
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <c:if test="${renderContext.liveMode and renderContext.site.defaultLanguage eq renderContext.mainResourceLocale.language}">
@@ -64,3 +65,4 @@
                 </c:forEach>
         </c:if>
 </sitemapindex>
+</c:if>

@@ -37,6 +37,8 @@ located at `${jahia.deploy.targetServerDirectory}/digital-factory-data/karaf/etc
     sitemap.search-engines=http://www.google.com/webmasters/tools/ping?sitemap=
     # Comma separated values
     sitemap.sitemap-urls="https://example.com/sitemap.xml,https://example.com/sitemap2.xml"
+    # comma separated values
+    sitemap.included-content-types=jnt:pages,jnt:mainResource,jmix:sitemap
 
 At the moment, the configuration has 3 keys. 
 * Job Frequency
@@ -53,8 +55,24 @@ This is a comma-separated value of the list of search engines to use by the back
 ### Sitemap urls
 This is a comma-separated value of the list of urls to send to the search engine(s).
 
----
+Note: If the value of `sitemap.search-engines` or `sitemap.sitemap-urls` is empty, the background job will not run.
 
 For each search engine, you will have to follow their policy. For example on Google, they ask that for the first time 
 you manually register you sitemap using their webmaster tools (to follow what happens and have feedback in your 
 Google environment).
+
+Deploying
+-----------------------------------------------------------------------------
+After installing the sitemap module to Jahia, the `cfg` file still needs to be deployed manually. The file can be found in this
+[link.](https://github.com/Jahia/sitemap/blob/master/src/main/resources/META-INF/configuration/org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg)
+It should be copied to `$FACTORY_DATA/karaf/etc`
+
+Reading the configuration data from JSP
+----
+The `sitemap.tld` has been updated functions to get the configurations. To use them, simply use JSP syntax. For example:
+```jsp
+Job Frequency: ${sitemap:getJobFreqency()}
+Sitemap urls: ${sitemap:getSitemapUrls()}
+Search engines: ${sitemap:getSearchEngines()}
+Included Content Types: ${sitemap:getIncludedContentTypes()}
+```

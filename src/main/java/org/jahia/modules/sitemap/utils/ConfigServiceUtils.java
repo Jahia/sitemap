@@ -23,40 +23,40 @@
  */
 package org.jahia.modules.sitemap.utils;
 
-import org.apache.commons.lang.StringUtils;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.seo.VanityUrl;
-import org.jahia.services.seo.jcr.VanityUrlManager;
+import org.jahia.modules.sitemap.config.ConfigService;
+import org.jahia.osgi.FrameworkService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
-import javax.jcr.RepositoryException;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Utility functions for getting information on Vanity URLs
+ * Utility functions for getting information from the configuration
+ *
+ * @author nonico
  */
-public final class VanityUrls {
-
-    static VanityUrlManager vanityUrlManager = new VanityUrlManager();
-
-    private VanityUrls() {}
-
-
-    public static boolean hasActiveUrl(JCRNodeWrapper node) throws RepositoryException {
-        return StringUtils.isNotEmpty(getActiveUrl(node));
+public final class ConfigServiceUtils {
+    public static List<String> getSearchEngines() {
+        return getConfigService().getSearchEngines();
     }
 
-    public static String getActiveUrl(JCRNodeWrapper node) throws RepositoryException {
-        return getActiveUrl(node, node.getSession().getLocale().toString());
+    public static List<String> getIncludedContentTypes() {
+        return getConfigService().getIncludeContentTypes();
     }
 
-    public static String getActiveUrl(JCRNodeWrapper node, String langCode) throws RepositoryException {
-        List<VanityUrl> vanityUrls = vanityUrlManager.getVanityUrls(node, langCode, node.getSession());
-        return getActiveUrl(vanityUrls);
+    public static List<String> getSitemapUrls() {
+        return getConfigService().getSitemapUrls();
     }
 
-    private static String getActiveUrl(List<VanityUrl> urls) {
-        Optional<VanityUrl> url = urls.stream().filter(v -> v.isDefaultMapping() && v.isActive()).findFirst();
-        return (url.isPresent()) ? url.get().getUrl() : null;
+    public static long getJobFrequency() {
+        return getConfigService().getJobFrequency();
+    }
+
+    private static ConfigService getConfigService() {
+        final BundleContext bundleContext = FrameworkUtil.getBundle(ConfigService.class).getBundleContext();
+        final ServiceReference<ConfigService> serviceReference = FrameworkService.getBundleContext()
+                .getServiceReference(ConfigService.class);
+        return bundleContext.getService(serviceReference);
     }
 }

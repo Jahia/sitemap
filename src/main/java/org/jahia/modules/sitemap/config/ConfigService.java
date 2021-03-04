@@ -36,6 +36,7 @@ public interface ConfigService {
     long getJobFrequency();
     List<String> getSearchEngines();
     List<String> getSitemapUrls();
+    List<String> getIncludeContentTypes();
 
 
 }

@@ -106,26 +106,26 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
         <executions>
           <execution>
-            <id>copy-resources</id>
-            <!-- here the phase you need -->
-            <phase>validate</phase>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>attach-artifact</goal>
             </goals>
             <configuration>
-              <outputDirectory>${jahia.deploy.targetServerDirectory}/digital-factory-data/karaf/etc</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/META-INF/configuration</directory>
-                  <includes>
-                    <include>*.cfg</include>
-                  </includes>
-                </resource>
-              </resources>
+              <artifacts>
+                <artifact>
+                  <file>
+                    src/main/resources/META-INF/configurations/org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg
+                  </file>
+                  <type>cfg</type>
+                  <classifier>sitemap-cfg</classifier>
+                </artifact>
+              </artifacts>
             </configuration>
           </execution>
         </executions>

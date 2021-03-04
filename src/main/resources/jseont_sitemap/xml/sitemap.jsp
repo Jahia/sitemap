@@ -11,11 +11,12 @@
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
 <%--@elvariable id="`url" type="org.jahia.services.render.URLGenerator"--%>
 
+<c:set var="entryNode" value="${renderContext.site}"/>
+
+<c:if test="${entryNode.isNodeType('jseomix:sitemap')}">
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="https://www.w3.org/1999/xhtml">
-
-    <c:set var="entryNode" value="${renderContext.site}"/>
 
     <%-- list of parent nodes to exclude --%>
     <jcr:sql var="excludeNodes"
@@ -44,3 +45,4 @@
     </c:forEach>
 
 </urlset>
+</c:if>

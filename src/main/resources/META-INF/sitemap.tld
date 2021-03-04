@@ -26,6 +26,26 @@
         <function-class>org.jahia.modules.sitemap.utils.VanityUrls</function-class>
         <function-signature>boolean hasActiveUrl(org.jahia.services.content.JCRNodeWrapper)</function-signature>
     </function>
+    <function>
+        <name>getSearchEngines</name>
+        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
+        <function-signature>java.util.List getSearchEngines()</function-signature>
+    </function>
+    <function>
+        <name>getIncludedContentTypes</name>
+        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
+        <function-signature>java.util.List getIncludedContentTypes()</function-signature>
+    </function>
+    <function>
+        <name>getSitemapUrls</name>
+        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
+        <function-signature>java.util.List getSitemapUrls()</function-signature>
+    </function>
+    <function>
+        <name>getJobFrequency</name>
+        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
+        <function-signature>long getJobFrequency()</function-signature>
+    </function>
 
     <!-- query helper functions -->
     <function>

@@ -13,7 +13,7 @@
     <c:set var="finalUrl" value="${ (not empty vanityUrl) ? vanityUrl : localeUrl }"/>
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
 
-    <loc>${url.server}<c:url value="${finalUrl}"/></loc>
+    <loc>${url.server}${finalUrl}</loc>
     <lastmod><fmt:formatDate value="${lastModified.date.time}" pattern="yyyy-MM-dd"/></lastmod>
 
     <c:set var="locales" value="${urlNode.getExistingLocales()}"/>
