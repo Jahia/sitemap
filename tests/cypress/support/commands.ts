@@ -10,6 +10,8 @@ declare namespace Cypress {
          * @example cy.goTo('/start')
          */
         goTo(value: string): Chainable<Element>
+
+        clickAttached(): Chainable<Element>
     }
 }
 
@@ -19,5 +21,14 @@ Cypress.Commands.add('goTo', function (url: string) {
             username: Cypress.env('JAHIA_USERNAME'),
             password: Cypress.env('JAHIA_PASSWORD'),
         },
+    })
+})
+
+Cypress.Commands.add('clickAttached', { prevSubject: 'element' }, (subject) => {
+    cy.wrap(subject).should(($el) => {
+        expect(Cypress.dom.isDetached($el)).to.be.false // Ensure the element is attached
+
+        // Using Jquery .click() here so no queuing from cypress side and not chance for the element to detach
+        $el.click()
     })
 })
