@@ -10,7 +10,8 @@ class EditPage extends BasePage {
 
     clickOnSitemap() {
         cy.get(this.elements.sitemap).click()
-        cy.get(this.elements.sitemapspan).should('not.have.css', 'transform', 'translateX(14px)')
+        // Known issue that transformX render to matrix Cypress cannot handle properly (directly use matrix for now)
+        cy.get(this.elements.sitemapspan).should('have.css', 'transform', 'matrix(1, 0, 0, 1, 14, 0)')
         cy.get(this.elements.save).should('not.be.disabled')
         cy.get(this.elements.save).clickAttached()
         return this
