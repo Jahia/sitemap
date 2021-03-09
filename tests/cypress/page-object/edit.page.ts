@@ -3,7 +3,6 @@ import { BasePage } from './base.page'
 class EditPage extends BasePage {
     elements = {
         sitemap: "[id='jseomix:sitemap']",
-        // sitemapspan: "[data-sel-role-dynamic-fieldset='jseomix:sitemap']",
         save: "[data-sel-role='submitSave']",
         message: '#message-id',
     }
