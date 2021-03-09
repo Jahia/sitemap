@@ -24,9 +24,9 @@
       "pre-commit": "yarn lint"
     }
   },
-  "description": "jContent for Jahia",
+  "description": "Sitemap for Jahia",
   "main": "index.js",
-  "repository": "git@github.com:Jahia/jcontent.git",
+  "repository": "git@github.com:Jahia/sitemap.git",
   "author": "Jahia Core Team <core@jahia.com>",
   "license": "MIT",
   "dx-extends": {
