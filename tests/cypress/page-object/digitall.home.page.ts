@@ -11,7 +11,10 @@ class DigitallHomePage extends BasePage {
     }
 
     editPage(page: string) {
-        this.getIframeBody().contains('div', page).rightclick({ force: true })
+        this.getIframeBody()
+            .contains('div[role="row"]', page)
+            .rightclick({ force: true })
+            .should('have.class', 'context-menu-open')
         this.getIframeBody().contains('span', 'Edit').click()
         return editPage
     }
