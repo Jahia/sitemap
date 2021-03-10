@@ -16,7 +16,7 @@ import javax.jcr.RepositoryException;
 import java.util.List;
 
 /**
- * Filter that adds ronots meta tag to head element
+ * Filter that adds robots meta tag to head element
  */
 @Component(service = RenderFilter.class)
 public class RobotsFilter extends AbstractFilter {
