@@ -1,10 +1,12 @@
 import { BasePage } from './base.page'
+import { digitall } from './digitall.home.page'
 
 class EditPage extends BasePage {
     elements = {
         sitemap: "[id='jseomix:sitemap']",
         save: "[data-sel-role='submitSave']",
         message: '#message-id',
+        back: "[data-sel-role='backButton']",
     }
 
     clickOnSitemap() {
@@ -18,6 +20,11 @@ class EditPage extends BasePage {
     validateSucessMessage() {
         cy.get(this.elements.message).should('contain', 'Content successfully saved')
         return this
+    }
+    clickBack() {
+        cy.get(this.elements.back).click()
+        this.getSiteIframeBody()
+        return digitall
     }
 }
 
