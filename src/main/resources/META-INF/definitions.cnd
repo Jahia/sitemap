@@ -12,5 +12,6 @@
 [jseomix:sitemapResource] mixin
  extends = jnt:page, jmix:mainResource
  - noIndex (boolean)
+ - noFollow (boolean)
  - createSitemap (boolean)
  + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory autocreated
