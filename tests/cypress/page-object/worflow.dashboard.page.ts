@@ -8,7 +8,7 @@ class WorkflowDashboardPage extends BasePage {
 
     clickPublishAll() {
         this.getIframeBody().find(this.elements.publishAll).click()
-        return this
+        return digitall
     }
 }
 
