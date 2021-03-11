@@ -1,5 +1,6 @@
 <jseomix = 'http://www.jahia.org/jahia/jseo/mix/1.0'>
 <jseont = 'http://www.jahia.org/jahia/jseo/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
 [jseont:sitemap] > jnt:content
 
@@ -15,3 +16,12 @@
  - noFollow (boolean)
  - createSitemap (boolean)
  + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory autocreated
+
+[jmix:sitemap] mixin jmix:hiddenType
+ extends = jnt:content, jnt:page
+ itemtype = options
+ - changefreq (string,choicelist[resourceBundle]) = 'monthly' autocreated nofulltext < 'always','hourly','daily','monthly','yearly','never'
+ - priority (string,choicelist) = '0.5' autocreated nofulltext < '0.0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'
+
+[jnt:sitemap] > jnt:content, jmix:siteComponent jmix:hiddenType
+ - base (weakreference)
