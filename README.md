@@ -72,3 +72,15 @@ Sitemap urls: ${sitemap:getSitemapUrls()}
 Search engines: ${sitemap:getSearchEngines()}
 Included Content Types: ${sitemap:getIncludedContentTypes()}
 ```
+## Migration
+
+On Jahia >= 8.0.3 migration should happen automatically provided that you have previous version of the module installed.
+
+If you would like to migrate on Jahia version < 8.0.3 then you can use the groovy script provided in `META-INF/patches/groovy` folder. 
+Simply copy and paste the contents of the file into groovy console in the `tools` section. 
+
+Note that migration will remove `jnt:sitemap` nodes and remove `jmix:sitemap` mixins from every site `sitemap` module is deployed on. Migration script will mark all 
+`jnt:page` and `jnt:content` nodes, which were not previously marked with `jmix:sitemap` with `jseomix:sitemapResource` with `noIndex` option set to `true` in 
+order to preserve original functionality as much as possible. 
+
+Also note that manual revision and publication of your site after migration will still be required. 
