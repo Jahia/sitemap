@@ -18,11 +18,11 @@
  - createSitemap (boolean)
  + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory autocreated
 
-[jmix:sitemap] mixin jmix:hiddenType
- extends = jnt:content, jnt:page
- itemtype = options
+// Legacy definition kept for backward compatibility
+
+[jmix:sitemap] mixin
  - changefreq (string,choicelist[resourceBundle]) = 'monthly' autocreated nofulltext < 'always','hourly','daily','monthly','yearly','never'
  - priority (string,choicelist) = '0.5' autocreated nofulltext < '0.0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'
 
-[jnt:sitemap] > jnt:content, jmix:siteComponent jmix:hiddenType
+[jnt:sitemap] > jnt:content, jmix:siteComponent, jmix:hiddenType
  - base (weakreference)
