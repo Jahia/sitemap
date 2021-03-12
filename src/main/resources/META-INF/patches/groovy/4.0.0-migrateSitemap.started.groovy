@@ -30,11 +30,14 @@ abstract class Scroller extends ScrollableQueryCallback<Void> {
     }
 
     protected void reverseMixins(JCRNodeWrapper node) {
-        if (!node.isNodeType("jmix:sitemap")) {
+        if (node.isNodeType("jmix:sitemap")) {
+            node.removeMixin("jmix:sitemap");
+            return;
+        }
+
+        if (node.isNodeType("jnt:page") || node.isNodeType("jmix:mainResource")) {
             node.addMixin("jseomix:sitemapResource");
             node.setProperty("noIndex", true);
-        } else {
-            node.removeMixin("jmix:sitemap");
         }
     }
 }
@@ -95,15 +98,15 @@ class ProcessJntPage extends Scroller {
     }
 }
 
-class ProcessJntMainResource extends Scroller {
+class ProcessJntContent extends Scroller {
 
-    ProcessJntMainResource(JCRSessionWrapper session, String sitePath) {
+    ProcessJntContent(JCRSessionWrapper session, String sitePath) {
         super(session, sitePath)
     }
 
     @Override
     String getQuery() {
-        return "select * from [jmix:mainResource] as sel where isdescendantnode(sel,['" + sitePath + "'])";
+        return "select * from [jnt:content] as sel where isdescendantnode(sel,['" + sitePath + "'])";
     }
 
     @Override
@@ -160,7 +163,7 @@ def addRemoeApplicableMixins(List<JCRSiteNode> sites) {
         Void doInJCR(JCRSessionWrapper session) throws RepositoryException {
             for (JCRSiteNode site : sites) {
                 executeScrolledQuery(new ProcessJntPage(session, site.getPath()));
-                executeScrolledQuery(new ProcessJntMainResource(session, site.getPath()));
+                executeScrolledQuery(new ProcessJntContent(session, site.getPath()));
             }
             return null;
         }
