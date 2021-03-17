@@ -81,6 +81,7 @@ export class BasePage {
     getIframeElement(iframeSelector: string, elementSelector: string, timeout = 60000): Cypress.Chainable {
         return cy
             .get(iframeSelector, { timeout: timeout })
+            .should('exist')
             .should(($iframe) => {
                 expect($iframe.contents().find(elementSelector)).to.exist
             })
@@ -106,6 +107,7 @@ export class BasePage {
     ): Cypress.Chainable {
         return cy
             .get(iframeSelector, { timeout: timeout })
+            .should('exist')
             .should(($iframe) => {
                 expect($iframe.contents().find(`${elementSelector}:contains(${text})`)).to.exist
             })

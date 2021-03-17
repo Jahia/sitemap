@@ -14,7 +14,9 @@ class SiteHomePage extends BasePage {
     goTo(siteHomeUrl: string) {
         cy.goTo(siteHomeUrl)
 
-        this.getIframeElement(this.elements.iframePageComposerFrame, this.elements.iframeNestedSrcEditFrame)
+        this.getSiteIframeBody(this.elements.iframeNestedSrcEditFrame, '0.contentDocument.body')
+            .find('.editmodeArea')
+            .should('be.visible')
         return this
     }
 
