@@ -2,15 +2,15 @@ import { digitall } from '../page-object/digitall.home.page'
 
 describe('Enable sitemap on digitall', () => {
     it('gets success message when sitemap is enabled', function () {
-        // digitall
-        //     .goTo()
-        //     .editPage('Digitall')
-        //     .clickOnSitemap()
-        //     .validateSucessMessage()
-        //     .clickBack()
-        //     .publishSite()
-        //     .clickPublishAll()
-        //     .flushCache()
+        digitall
+            .goTo()
+            .editPage('Digitall')
+            .clickOnSitemap()
+            .validateSucessMessage()
+            .clickBack()
+            .publishSite()
+            .clickPublishAll()
+            .flushCache()
 
         // getch the sitemap content
         cy.request('sites/digitall/sitemap.index.xml').then((response) => {
@@ -25,22 +25,6 @@ describe('Enable sitemap on digitall', () => {
 
             languageUrls.forEach((url) => {
                 cy.request(url).then((response) => {
-                    const responseBody = Cypress.$(response.body)
-                    const pageUrls = responseBody
-                        .find('loc')
-                        .toArray()
-                        .map((el) => el.innerText)
-                    assert.equal(pageUrls.length, 14, 'There should be 14 urls, one for each page')
-                    pageUrls.forEach((pageUrl) => expect(pageUrl).to.contain('html'))
-
-                    const lastMods = responseBody
-                        .find('lastmod')
-                        .toArray()
-                        .map((el) => el.innerText)
-                    assert.equal(lastMods.length, 14, 'There should be 14 modification dates, one for each page')
-                    // Need to continue First approach for xhtml:link
-
-                    // Second approach:
                     // Convert the response to an XML
                     const xml: XMLDocument = Cypress.$.parseXML(response.body)
                     // Get the node group under 'url'
