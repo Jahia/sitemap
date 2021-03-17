@@ -6,8 +6,8 @@ class DigitallHomePage extends BasePage {
     elements = {
         publishSiteinAllLang: "[class*='publishsiteinalllanguages']",
         editSite: "[class*='editcontentroot']",
-        cacheButton: ".edit-menu-cache",
-        flushAll: "[class*='flushall']"
+        cacheButton: '.edit-menu-cache',
+        flushAll: "[class*='flushall']",
     }
 
     goTo() {
@@ -34,8 +34,8 @@ class DigitallHomePage extends BasePage {
         return workflowDashboard
     }
 
-    flushCache(){
-        this.getIframeBody().find(this.elements.cacheButton).click().debug()
+    flushCache() {
+        this.getIframeBody().find(this.elements.cacheButton).click()
         this.getIframeBody().find(this.elements.flushAll).click()
         return this
     }

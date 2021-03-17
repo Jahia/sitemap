@@ -1,7 +1,7 @@
 import { digitall } from '../page-object/digitall.home.page'
 
-describe('Enable sitemap on digitall', () => {
-    it('gets success message when sitemap is enabled', function () {
+describe('Sitemap 4.0.0', () => {
+    it('Create sitemap for a site', function () {
         digitall
             .goTo()
             .editPage('Digitall')
