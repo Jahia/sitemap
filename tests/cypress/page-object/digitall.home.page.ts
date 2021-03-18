@@ -17,10 +17,7 @@ class DigitallHomePage extends BasePage {
     }
 
     editPage(page: string) {
-        this.getIframeBody()
-            .contains('div[role="row"]', page)
-            .rightclick({ force: true })
-            .should('have.class', 'context-menu-open')
+        this.getIframeBody().contains('div[role="row"]', page).rightclick().should('have.class', 'context-menu-open')
         this.getIframeBody().find(this.elements.editSite).click()
         return editPage
     }
@@ -28,7 +25,7 @@ class DigitallHomePage extends BasePage {
     publishSite() {
         this.getIframeBody()
             .contains('div[role="row"]', 'Digitall')
-            .rightclick({ force: true })
+            .rightclick()
             .should('have.class', 'context-menu-open')
         this.getIframeBody().find(this.elements.publishSiteinAllLang).click()
         return workflowDashboard
