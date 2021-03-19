@@ -55,6 +55,8 @@ class SiteHomePage extends BasePage {
     flushCache() {
         this.getIframeBody().find(this.elements.cacheButton).click()
         this.getIframeBody().find(this.elements.flushAll).click()
+        // make sure we get success message before continuing
+        this.containPageComposerIframeElement('.x-info-body', 'All caches have been flushed')
         return this
     }
 }

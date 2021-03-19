@@ -113,4 +113,14 @@ export class BasePage {
                 return cy.wrap($iframe.contents().find(`${elementSelector}:contains(${text})`))
             })
     }
+
+    containPageComposerIframeElement(elementSelector: string, text: string): Cypress.Chainable {
+        return this.getIframeBody()
+            .should(($iframe) => {
+                expect($iframe.contents().find(`${elementSelector}:contains(${text})`)).to.exist
+            })
+            .then(($iframe) => {
+                return cy.wrap($iframe.contents().find(`${elementSelector}:contains(${text})`))
+            })
+    }
 }

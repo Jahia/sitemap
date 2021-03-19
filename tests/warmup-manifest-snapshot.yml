@@ -1,5 +1,8 @@
 version: 1.0
 jobs:
+  - type: webproject
+    source: prepackaged
+    sitekey: digitall 
   - type: asset
     fetch: http
     username: NEXUS_USERNAME
@@ -18,3 +21,7 @@ jobs:
   - type: module
     id: sitemap
     filepath: /tmp/sitemap-LATEST.jar
+  - type: modulesite
+    action: enable
+    moduleId: sitemap
+    siteId: digitall

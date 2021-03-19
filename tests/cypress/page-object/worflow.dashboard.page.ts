@@ -8,6 +8,8 @@ class WorkflowDashboardPage extends BasePage {
 
     clickPublishAll() {
         this.getIframeBody().find(this.elements.publishAll).click()
+        // make sure we get success message before continuing
+        this.containPageComposerIframeElement('.x-info-body', 'Content published')
         return siteHomePage.waitForPageLoad()
     }
 }
