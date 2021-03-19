@@ -14,7 +14,7 @@ class SiteHomePage extends BasePage {
         flushAll: "[class*='flushall']",
     }
 
-    goTo(siteHomeUrl = '/jahia/page-composer/default/en/sites/digitall/home.html') {
+    goTo(siteHomeUrl: string) {
         cy.goTo(siteHomeUrl)
         this.waitForPageLoad()
         return this
