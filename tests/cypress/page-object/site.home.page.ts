@@ -42,7 +42,7 @@ class SiteHomePage extends BasePage {
         return editPage
     }
 
-    publishSite(site = 'Digitall') {
+    publishSite(site) {
         this.getIframeBody()
             .contains('div[role="row"]', site)
             .trigger('mouseover') // Stabilize portion right before the right-click so it hover over the right element
