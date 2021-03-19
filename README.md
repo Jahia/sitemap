@@ -1,30 +1,26 @@
-Sitemap (optional module)
+SEO Sitemap Module
 =========================
 
-In which format is my sitemap available ?
------------------------------------------
-
-The sitemap rendering is done by templates as default we provide three types of sitemap, html, text or xml (following 
-standard from sitemaps.org.
+The sitemap module provides capability to render sitemaps for a given site using XML format standards. This module also provides the capability to submit the generated sitemap to search engines through a scheduled job for a given specified frequency.
 
 How to customize the sitemap ?
 ------------------------------
 
-The sitemap will list all sub elements of the current node having the options . By default, all objects of type 
-`jnt:page` will have this options automatically activated by some rules. You can add your own rules for different types, 
-or you can manually activate the option on a specific content.
+Once sitemap is enabled for a given site, the sitemap module provides a sitemap index located in `<site>/sitemap.index.xml` linking to different sitemap.xml views that the module provides. This includes sitemaps for each available languages as well as dedicated sitemaps for certain resources.
 
-Here is the rule for automatically assigning the option to a newly created page.
+Each of the _sitemap.xml_ views lists all resources of type `jnt:page` and `jmix:mainResource`(which we will call _sitemap resources_) for their given subnodes. Sitemap resources can be excluded by enabling _No index_ option for that resource. In addition, sitemap resources can also have its own dedicated _sitemap.xml_ view that lists all sitemap resources within that subnode. This list will then get added automatically to the main sitemap.index.xml. This is useful for managing the size and organization of available sitemaps.
 
-    rule "Add sitemap mixin to page"
-        salience -10
-        no-loop
-        when
-            A new node is created
-                - it has the type jnt:page
-        then
-            Add the type 
-    end
+Sitemap generation
+------------------------------
+
+For each sitemap resource included in the sitemap.xml:
+
+* Add `<url>` entry with the given URL specified in `<loc>` that is UTF-8 encoded and entity-escaped.
+* Each URL entry will have last modified date `<lastmod>` in W3C format.
+* Default vanity URL will be used for a given sitemap resource if it exists.
+* Alternate language URLs will also be included (including default language) using `<xhtml:link rel="alternate">` tag.
+
+Sitemap includes only resources that have default guest privileges in the list.
 
 How do I submit my sitemap to search engines like Google, Yahoo!, Microsoft ?
 -----------------------------------------------------------------------------
@@ -76,3 +72,15 @@ Sitemap urls: ${sitemap:getSitemapUrls()}
 Search engines: ${sitemap:getSearchEngines()}
 Included Content Types: ${sitemap:getIncludedContentTypes()}
 ```
+## Migration
+
+On Jahia >= 8.0.3 migration should happen automatically provided that you have previous version of the module installed.
+
+If you would like to migrate on Jahia version < 8.0.3 then you can use the groovy script provided in `META-INF/patches/groovy` folder. 
+Simply copy and paste the contents of the file into groovy console in the `tools` section. 
+
+Note that migration will remove `jnt:sitemap` nodes and remove `jmix:sitemap` mixins from every site `sitemap` module is deployed on. Migration script will mark all 
+`jnt:page` and `jnt:content` nodes, which were not previously marked with `jmix:sitemap` with `jseomix:sitemapResource` with `noIndex` option set to `true` in 
+order to preserve original functionality as much as possible. 
+
+Also note that manual revision and publication of your site after migration will still be required. 

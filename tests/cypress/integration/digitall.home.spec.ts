@@ -1,8 +1,8 @@
-import { digitall } from '../page-object/digitall.home.page'
+import { siteHomePage } from '../page-object/site.home.page'
 
 describe('Sitemap 4.0.0', () => {
     it('Create sitemap for a site', function () {
-        digitall
+        siteHomePage
             .goTo()
             .editPage('Digitall')
             .clickOnSitemap()
@@ -12,7 +12,7 @@ describe('Sitemap 4.0.0', () => {
             .clickPublishAll()
             .flushCache()
 
-        // getch the sitemap content
+        // fetch the sitemap content
         cy.request('sites/digitall/sitemap.index.xml').then((response) => {
             // convert sitemap xml body to an array of urls
             const languageUrls = Cypress.$(response.body)

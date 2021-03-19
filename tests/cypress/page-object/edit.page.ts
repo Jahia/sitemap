@@ -1,5 +1,5 @@
 import { BasePage } from './base.page'
-import { digitall } from './digitall.home.page'
+import { siteHomePage } from './site.home.page'
 
 class EditPage extends BasePage {
     elements = {
@@ -23,8 +23,7 @@ class EditPage extends BasePage {
     }
     clickBack() {
         cy.get(this.elements.back).click()
-        this.getSiteIframeBody()
-        return digitall
+        return siteHomePage.waitForPageLoad()
     }
 }
 

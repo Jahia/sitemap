@@ -1,5 +1,5 @@
 import { BasePage } from './base.page'
-import { digitall } from './digitall.home.page'
+import { siteHomePage } from './site.home.page'
 
 class WorkflowDashboardPage extends BasePage {
     elements = {
@@ -8,7 +8,7 @@ class WorkflowDashboardPage extends BasePage {
 
     clickPublishAll() {
         this.getIframeBody().find(this.elements.publishAll).click()
-        return digitall
+        return siteHomePage.waitForPageLoad()
     }
 }
 
