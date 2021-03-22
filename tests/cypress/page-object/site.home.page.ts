@@ -8,7 +8,10 @@ class SiteHomePage extends BasePage {
         iframeNestedSrcEditFrame: 'iframe[src*="editframe"]',
         divRoleRow: 'div[role="row"]',
         imgVirtualSite: 'img[src*="jnt_virtualsite"]',
+
+        publishSite: '[class*="publishsite-sitenode"]',
         publishSiteinAllLang: "[class*='publishsiteinalllanguages']",
+
         editSite: "[class*='editcontentroot']",
         cacheButton: '.edit-menu-cache',
         flushAll: "[class*='flushall']",
@@ -42,13 +45,20 @@ class SiteHomePage extends BasePage {
         return editPage
     }
 
-    publishSite(site) {
+    publishSite(site: string) {
+        return this.clickContextMenuItem(site, this.elements.publishSite)
+    }
+    publishAllSite(site: string) {
+        return this.clickContextMenuItem(site, this.elements.publishSiteinAllLang)
+    }
+
+    clickContextMenuItem(site: string, itemSlector: string) {
         this.getIframeBody()
-            .contains('div[role="row"]', site)
+            .contains(this.elements.divRoleRow, site)
             .trigger('mouseover') // Stabilize portion right before the right-click so it hover over the right element
             .rightclick()
             .should('have.class', 'context-menu-open')
-        this.getIframeBody().find(this.elements.publishSiteinAllLang).click()
+        this.getIframeBody().find(itemSlector).click()
         return workflowDashboard
     }
 

@@ -12,6 +12,8 @@ declare namespace Cypress {
         goTo(value: string): Chainable<Element>
 
         clickAttached(): Chainable<Element>
+        requestFindNodeInnerHTMLByName(url: string, nodeName: string): Chainable
+        requestFindXMLElementByTagName(url: string, tagName: string): Chainable
     }
 }
 
@@ -30,5 +32,25 @@ Cypress.Commands.add('clickAttached', { prevSubject: 'element' }, (subject) => {
 
         // Using Jquery .click() here so no queuing from cypress side and not chance for the element to detach
         $el.click()
+    })
+})
+
+Cypress.Commands.add('requestFindNodeInnerHTMLByName', function (url: string, nodeName: string) {
+    return cy.request(url).then((response) => {
+        const nodes = Cypress.$(response.body)
+            .find(nodeName)
+            .toArray()
+            .map((el) => el.innerText)
+        return nodes
+    })
+})
+
+Cypress.Commands.add('requestFindXMLElementByTagName', function (url: string, tagName: string) {
+    return cy.request(url).then((response) => {
+        // Convert the response to an XML
+        const xml: XMLDocument = Cypress.$.parseXML(response.body)
+        // Get the node group by tagName
+        const nodeGroup = xml.getElementsByTagName(tagName)
+        return nodeGroup
     })
 })

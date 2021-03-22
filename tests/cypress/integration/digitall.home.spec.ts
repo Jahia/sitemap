@@ -8,7 +8,7 @@ describe('Sitemap 4.0.0', () => {
             .clickOnSitemap()
             .validateSucessMessage()
             .clickBack()
-            .publishSite('Digitall')
+            .publishAllSite('Digitall')
             .clickPublishAll()
             .flushCache()
 
