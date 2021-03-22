@@ -76,13 +76,13 @@
     <dependency>
       <groupId>org.jahia.test</groupId>
       <artifactId>module-test-framework</artifactId>
-      <version>8.0.2.0-SNAPSHOT</version>
+      <version>8.0.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jahia.test</groupId>
       <artifactId>jahia-test-module</artifactId>
-      <version>8.0.2.0-SNAPSHOT</version>
+      <version>8.0.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
