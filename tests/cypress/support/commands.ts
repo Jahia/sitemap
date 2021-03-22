@@ -41,6 +41,7 @@ Cypress.Commands.add('requestFindNodeInnerHTMLByName', function (url: string, no
             .find(nodeName)
             .toArray()
             .map((el) => el.innerText)
+        JSON.stringify(nodes)
         return nodes
     })
 })

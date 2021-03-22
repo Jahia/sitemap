@@ -13,7 +13,7 @@ describe('Enable sitemap on MySite', () => {
 
     it('gets success message when sitemap is enabled', function () {
         const siteUrlHome = '/jahia/page-composer/default/en/sites/mySite/home.html'
-        siteHomePage.goTo(siteUrlHome).editPage('My Site').clickOnSitemap().validateSucessMessage()
+        siteHomePage.goTo(siteUrlHome).editPage('My Site').clickOnSitemap().clickOnSave().validateSucessMessage()
     })
 
     it('Create sitemap for a site', function () {
@@ -25,7 +25,13 @@ describe('Enable sitemap on MySite', () => {
         })
 
         // Step #1 the standard enable
-        siteHomePage.goTo(siteUrlHome).editPage('My Site').clickOnSitemap().validateSucessMessage().clickBack()
+        siteHomePage
+            .goTo(siteUrlHome)
+            .editPage('My Site')
+            .clickOnSitemap()
+            .clickOnSave()
+            .validateSucessMessage()
+            .clickBack()
         // Step #2 publishing the site and flush the cache
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache()
 
@@ -33,7 +39,6 @@ describe('Enable sitemap on MySite', () => {
         // according to the sitemap.xml spec,
         // the url value should reside in a <loc /> node
         // https://www.google.com/sitemaps/protocol.html
-        // const urls = await findNodeInnerTextFromResponse('sites/mySite/sitemap.index.xml', 'loc')
         cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
             urls.forEach((url) => {
                 const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String
@@ -51,6 +56,120 @@ describe('Enable sitemap on MySite', () => {
                         const siteUrlArray = getUrlInfoWithHost(pageUrl[0].innerHTML)
                         expect(siteUrlArray.length).to.be.greaterThan(4)
                         expect(this.fixture.mySitePaths).to.include(siteUrlArray[5])
+                        expect(lastMod.length).to.be.equal(1)
+                    })
+                })
+            })
+        })
+    })
+
+    it('Generate sub-sitemap', function () {
+        // Testcase C3218088 "Generate sub-sitemap"
+        const siteUrlHome = '/jahia/page-composer/default/en/sites/mySite/home.html'
+        // Loading the fixtures
+        cy.fixture('C3218088/sitemap.index.urlpath.json').then((json) => {
+            this.fixture = json // Recommended from Cypress as no real good way to get promise variable out (use this variable)
+        })
+
+        // Step #1 the standard enable
+        siteHomePage
+            .goTo(siteUrlHome)
+            .editPage('My Site')
+            .clickOnSitemap()
+            .clickOnSave()
+            .validateSucessMessage()
+            .clickBack()
+        // Step #2 publishing the site and flush the cache
+        siteHomePage.publishSite('My Site').clickPublishAll().flushCache()
+
+        // Need to enable SEO on "Search Result"
+        siteHomePage
+            .editPage('Search Results')
+            .clickOnSEOSitemap()
+            .clickOnDedicatedSitemap()
+            .clickOnSave()
+            .validateSucessMessage()
+            .clickBack()
+        siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
+
+        // Getting the response from sitemap.index.xml
+        // according to the sitemap.xml spec,
+        // the url value should reside in a <loc /> node
+        // https://www.google.com/sitemaps/protocol.html
+        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
+            expect(urls.length).to.be.equal(2)
+            urls.forEach((url) => {
+                const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String
+                if (regexArray != null && regexArray.length > 4) {
+                    const path = regexArray[5]
+                    expect(this.fixture.siteMapPath).to.include(path)
+                }
+
+                cy.requestFindXMLElementByTagName(String(url), 'url').then((urlGroups) => {
+                    expect(urlGroups.length).to.be.equal(1) // Only one sitemap url entry in each
+                    Cypress.$(urlGroups).each(($idx, $list) => {
+                        const pageUrl = $list.getElementsByTagName('loc')
+                        const lastMod = $list.getElementsByTagName('lastmod')
+                        expect(pageUrl.length).to.be.equal(1)
+                        const siteUrlArray = getUrlInfoWithHost(pageUrl[0].innerHTML)
+                        expect(siteUrlArray.length).to.be.greaterThan(4)
+                        expect(lastMod.length).to.be.equal(1)
+                    })
+                })
+            })
+        })
+    })
+
+    it('Exclude pages from sitemap', function () {
+        // Testcase C3218089 "Exclude pages from sitemap"
+        const siteUrlHome = '/jahia/page-composer/default/en/sites/mySite/home.html'
+        // Loading the fixtures
+        cy.fixture('C3218089/sitemap.index.urlpath.json').then((json) => {
+            this.fixture = json // Recommended from Cypress as no real good way to get promise variable out (use this variable)
+        })
+
+        // Step #1 the standard enable
+        siteHomePage
+            .goTo(siteUrlHome)
+            .editPage('My Site')
+            .clickOnSitemap()
+            .clickOnSave()
+            .validateSucessMessage()
+            .clickBack()
+        // Step #2 publishing the site and flush the cache
+        siteHomePage.publishSite('My Site').clickPublishAll().flushCache()
+
+        // Need to enable SEO on "Search Result"
+        siteHomePage
+            .editPage('Search Results')
+            .clickOnSEOSitemap()
+            .clickOnNoIndexSitemap()
+            .clickOnSave()
+            .validateSucessMessage()
+            .clickBack()
+        siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
+
+        // Getting the response from sitemap.index.xml
+        // according to the sitemap.xml spec,
+        // the url value should reside in a <loc /> node
+        // https://www.google.com/sitemaps/protocol.html
+        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
+            expect(urls.length).to.be.equal(1)
+            urls.forEach((url) => {
+                const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String
+                if (regexArray != null && regexArray.length > 4) {
+                    const path = regexArray[5]
+                    expect(path).to.equal(this.fixture.siteMapPath)
+                }
+
+                cy.requestFindXMLElementByTagName(String(url), 'url').then((urlGroups) => {
+                    expect(urlGroups.length).to.be.equal(1) // Only one sitemap url entry as other is excluded
+                    Cypress.$(urlGroups).each(($idx, $list) => {
+                        const pageUrl = $list.getElementsByTagName('loc')
+                        const lastMod = $list.getElementsByTagName('lastmod')
+                        expect(pageUrl.length).to.be.equal(1)
+                        const siteUrlArray = getUrlInfoWithHost(pageUrl[0].innerHTML)
+                        expect(siteUrlArray.length).to.be.greaterThan(4)
                         expect(lastMod.length).to.be.equal(1)
                     })
                 })
