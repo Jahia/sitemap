@@ -52,13 +52,13 @@ class SiteHomePage extends BasePage {
         return this.clickContextMenuItem(site, this.elements.publishSiteinAllLang)
     }
 
-    clickContextMenuItem(site: string, itemSlector: string) {
+    clickContextMenuItem(site: string, itemSelector: string) {
         this.getIframeBody()
             .contains(this.elements.divRoleRow, site)
             .trigger('mouseover') // Stabilize portion right before the right-click so it hover over the right element
             .rightclick()
             .should('have.class', 'context-menu-open')
-        this.getIframeBody().find(itemSlector).click()
+        this.getIframeBody().find(itemSelector).click()
         return workflowDashboard
     }
 
