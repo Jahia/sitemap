@@ -108,7 +108,9 @@ module.exports = (env, argv) => {
                 shared
             }),
             new CleanWebpackPlugin(path.resolve(__dirname, 'src/main/resources/javascript/apps/'), {verbose: false}),
-            new CopyWebpackPlugin([{from: './package.json', to: ''}]),
+            new CopyWebpackPlugin({
+                patterns: [{from: './package.json', to: ''}]
+            }),
             new CaseSensitivePathsPlugin()
         ],
         mode: 'development'
