@@ -1,0 +1,204 @@
+.main {
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 0;
+
+    background-color: var(--color-gray_light);
+}
+
+.header {
+    background: #fff;
+    overflow: overlay;
+}
+
+.headerToolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0 0 8px;
+}
+
+.content {
+    flex: 1 1 0;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding-top: var(--spacing-small);
+
+    background-color: var(--color-light);
+}
+
+.section {
+    min-width: 800px;
+    max-width: 800px;
+    padding: 10px;
+}
+
+.sectionTitle {
+    padding: 16px 0;
+
+    font-size: large;
+
+    text-transform: uppercase;
+}
+
+.subsection {
+    padding-bottom: 30px;
+}
+
+.sitemapIndexFileTitle {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: bold;
+    font-size: 14px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 18px;
+}
+
+.sitemapIndexFileDescription {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: normal;
+    font-size: 12px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 16px;
+}
+
+.sitemapIndexFileCardArea {
+    display: flex;
+    flex-direction: row;
+
+    margin: 20px;
+}
+
+.sitemapIndexFileIconEnabled {
+    transform: scale(1.5);
+}
+
+.sitemapIndexFileIconDisable {
+    color: lightgrey;
+
+    transform: scale(1.5);
+}
+
+.sitemapIndexFileNameEnabled {
+    margin: 4px 25px;
+}
+
+.sitemapIndexFileNameDisabled {
+    margin: 4px 25px;
+
+    color: lightgrey;
+}
+
+.sitemapIndexFileButton {
+    margin-left: auto;
+}
+
+.sitemapIndexURLTitle {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: bold;
+    font-size: 14px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 18px;
+}
+
+.sitemapIndexURLDescription {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: normal;
+    font-size: 12px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 16px;
+}
+
+.sitemapIndexURLInput {
+    max-width: 300px;
+}
+
+.sitemapIndexURLChip {
+    margin-left: 14px;
+}
+
+.updateIntervalTitle {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: bold;
+    font-size: 14px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 18px;
+}
+
+.updateIntervalDescription {
+    display: flex;
+    align-items: center;
+
+    padding-bottom: 10px;
+
+    font-weight: normal;
+    font-size: 12px;
+    font-style: normal;
+
+    color: rgba(19, 28, 33, 0.6);
+
+    line-height: 16px;
+}
+
+.snackbarContainer {
+    .snackbar {
+        bottom: 24px;
+        left: 25%;
+
+        transform: translateX(-50%);
+    }
+}
+
+.snackbarMessageDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.snackbarMessageCheckIcon {
+    margin-top: 1.4px;
+
+    color: lightgreen;
+}
+
+.snackbarMessageTypography {
+    padding-left: 10px;
+}
+
+.snackbarMessageButton {
+    margin-left: auto;
+}

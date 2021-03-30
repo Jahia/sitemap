@@ -11,6 +11,8 @@
 
 [jseomix:sitemap] mixin
  extends = jnt:virtualsite
+ - sitemapIndexURL (string) = '' autocreated
+ - sitemapCacheDuration (string) = '' autocreated
  + sitemap (jseont:sitemap) = jseont:sitemap mandatory autocreated
 
 [jseomix:sitemapResource] mixin
