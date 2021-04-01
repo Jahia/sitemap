@@ -78,7 +78,7 @@ function JSONReporter(runner, options) {
             fs.mkdirSync(reportsPath);
         }
         fs.writeFile(
-            reportsPath + fileName + ".json",
+            reportsPath + fileName + Math.random().toString(36).substring(2,20)+".json",
             JSON.stringify(obj, null, 2),
             "utf8",
             function (err) {

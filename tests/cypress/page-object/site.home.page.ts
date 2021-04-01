@@ -13,6 +13,7 @@ class SiteHomePage extends BasePage {
         publishSiteinAllLang: "[class*='publishsiteinalllanguages']",
 
         editSite: "[class*='editcontentroot']",
+        addPage: "[class*='newpage']",
         cacheButton: '.edit-menu-cache',
         flushAll: "[class*='flushall']",
     }
@@ -42,6 +43,18 @@ class SiteHomePage extends BasePage {
             .should('have.class', 'context-menu-open')
 
         this.getIframeBody().find(this.elements.editSite).click()
+        return editPage
+    }
+
+    addPage(page: string) {
+        this.getIframeElement(this.elements.iframePageComposerFrame, this.elements.imgVirtualSite)
+
+        this.getIframeBody()
+            .contains(this.elements.divRoleRow, page)
+            .trigger('mouseover') // Stabilize portion right before the right-click so it hover over the right element
+            .rightclick()
+
+        this.getIframeBody().debug().find(this.elements.addPage).click()
         return editPage
     }
 

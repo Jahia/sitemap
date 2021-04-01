@@ -5,12 +5,25 @@ class EditPage extends BasePage {
     elements = {
         sitemap: "[id='jseomix:sitemap']",
         save: "[data-sel-role='submitSave']",
+        createPage: "[data-sel-role='createButton']",
         message: '#message-id',
         back: "[data-sel-role='backButton']",
-
         seoSitemap: "[id='jseomix:sitemapResource']",
         dedicatedSitemap: "[id='jseomix:sitemapResource_createSitemap']",
         noIndexSitemap: "[id='jseomix:sitemapResource_noIndex']",
+        title: "[id='jnt:page_jcr:title']",
+        templateName: "[name='jnt:page_j:templateName']",
+        twoColumn: "[data-value='2-column']",
+    }
+
+    fillPageAndSave() {
+        cy.get(this.elements.title).type(Math.random().toString(36).substring(2, 20))
+        cy.get(this.elements.templateName).click()
+        cy.get(this.elements.twoColumn).click().should('not.be.visible')
+        cy.get(this.elements.createPage).should('not.be.disabled')
+        cy.get(this.elements.createPage).clickAttached()
+        cy.get(this.elements.message).should('contain', 'Content successfully created')
+        return this.clickBack()
     }
 
     clickOnSitemap() {
