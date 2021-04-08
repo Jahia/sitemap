@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
-import {Header, Typography, Button, Chip} from '@jahia/moonstone';
-import {Upload, Book, Dropdown, Input, Delete, Save, File, OpenInNew, Check} from '@jahia/moonstone';
+import {Typography, Button, Chip} from '@jahia/moonstone';
+import {Dropdown, Input, File, OpenInNew, Check} from '@jahia/moonstone';
 
 import styles from './SitemapPanel.scss';
 
@@ -16,17 +16,14 @@ import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
 import * as gqlUtilities from '../utils/gqlUtilities';
 
-import {DialogComponent} from './Dialog/Dialog';
 import {SnackbarComponent} from './Snackbar/Snackbar';
+import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
 import {useFormik} from 'formik';
 
 const SitemapPanelApp = ({client, dxContext, t}) => {
     const [sitemapMixinEnabled, setSitemapMixinEnabled] = useState(false);
     const [sitemapIndexURL, setSitemapIndexURL] = useState(null);
     const [sitemapCacheDuration, setSitemapCacheDuration] = useState(null);
-
-    const [dialogIsOpen, setDialogIsOpen] = useState(false);
-    const [dialogInfo, setDialogInfo] = useState(null);
 
     const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
 
@@ -116,26 +113,8 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
         });
     }, [client, dxContext.siteKey]);
 
-    const onAcademyButtonClick = () => {
-        window.open('https://academy.jahia.com/documentation/enduser/jahia/8/advanced-authoring/seo/sitemap', '_blank');
-    };
-
     const onOpenSitemapXMLButtonClick = url => {
         window.open(url, '_blank');
-    };
-
-    const handleDialogOpen = (title, text, submitText) => {
-        setDialogInfo({
-            title: title,
-            text: text,
-            submitText: submitText
-        });
-        setDialogIsOpen(true);
-    };
-
-    const handleDialogClose = () => {
-        setDialogInfo(null);
-        setDialogIsOpen(false);
     };
 
     const handleSnackBarClose = () => {
@@ -145,46 +124,11 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
     return (
         <form onSubmit={formik.handleSubmit}>
             <main className={classnames(styles.main, 'flexCol')}>
-                <Header
-                    className={styles.header}
-                    title={t('labels.header.title', {siteName: dxContext.siteKey})}
-                    mainActions={[
-                        <Button key="submitButton"
-                                color="accent"
-                                icon={<Save/>}
-                                label={(sitemapMixinEnabled) ? t('labels.header.save') : t('labels.header.activate')}
-                                size="big"
-                                disabled={!formik.values.sitemapIndexURL || !formik.dirty}
-                                type="submit"
-                                onClick={() => {}}
-                        />
-                    ]}
-                    toolbarLeft={[
-                        <Button key="flushCacheButton"
-                                variant="ghost"
-                                label={t('labels.header.flushCacheButtonLabel')}
-                                icon={<Delete/>}
-                                disabled={!formik.values.sitemapIndexURL || !sitemapMixinEnabled}
-                                onClick={() => handleDialogOpen(t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
-                        <Button key="submitToGoogleButton"
-                                variant="ghost"
-                                label={t('labels.header.submitToGoogleButtonLabel')}
-                                icon={<Upload/>}
-                                disabled={!formik.values.sitemapIndexURL || !sitemapMixinEnabled}
-                                onClick={() => handleDialogOpen(t('labels.dialog.submitToGoogle.title'), t('labels.dialog.submitToGoogle.description'), t('labels.dialog.submitToGoogle.buttonSubmitText'))}/>
-                    ]}
-                    toolbarRight={[<Button key="academyLinkIcon" variant="ghost" label={t('labels.header.academy')} icon={<Book/>} onClick={onAcademyButtonClick}/>]}
+                <SitemapPanelHeaderComponent
+                    formik={formik}
+                    isSitemapMixinEnabled={sitemapMixinEnabled}
+                    siteKey={dxContext.siteKey}
                 />
-                {dialogInfo !== null &&
-                    <DialogComponent
-                        isOpen={dialogIsOpen}
-                        handleClose={handleDialogClose}
-                        handleSubmit={handleDialogClose} // TODO add the action per each dialog
-                        title={dialogInfo.title}
-                        subtitle={dialogInfo.text}
-                        submitButtonText={dialogInfo.submitText}
-                    />}
-
                 <div className={classnames(styles.content, 'flexCol')}>
                     <div className={styles.section}>
                         <section>

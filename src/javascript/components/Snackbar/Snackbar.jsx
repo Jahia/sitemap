@@ -12,22 +12,24 @@ export const SnackbarComponent = ({
     handleClose
 }) => {
     return (
-        <div className={styles.snackbarContainer}>
-            <Snackbar
-                classes={{
-                    anchorOriginBottomCenter: styles.snackbar
-                }}
-                open={open}
-                autoHideDuration={autoHideDuration}
-                message={message}
-                action={
-                    <React.Fragment>
-                        <Button className={styles.snackbarMessageButton} variant="ghost" icon={<Close size="big"/>} onClick={handleClose}/>
-                    </React.Fragment>
-                }
-                onClose={handleClose}
-            />
-        </div>
+        <>
+            <div className={styles.snackbarContainer}>
+                <Snackbar
+                    classes={{
+                        anchorOriginBottomCenter: styles.snackbar
+                    }}
+                    open={open}
+                    autoHideDuration={autoHideDuration}
+                    message={message}
+                    action={
+                        <React.Fragment>
+                            <Button className={styles.snackbarMessageButton} variant="ghost" icon={<Close size="big"/>} onClick={handleClose}/>
+                        </React.Fragment>
+                    }
+                    onClose={handleClose}
+                />
+            </div>
+        </>
     );
 };
 

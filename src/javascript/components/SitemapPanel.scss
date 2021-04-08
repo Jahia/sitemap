@@ -6,19 +6,6 @@
     background-color: var(--color-gray_light);
 }
 
-.header {
-    background: #fff;
-    overflow: overlay;
-}
-
-.headerToolbar {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    width: 100%;
-    padding: 0 0 8px;
-}
-
 .content {
     flex: 1 1 0;
     flex-flow: column nowrap;
