@@ -2,11 +2,11 @@ import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
 import {Header, Typography, Button, Chip} from '@jahia/moonstone';
-import {Upload, Book, Dropdown, Input, Delete, Save, File, OpenInNew, Check, Close} from '@jahia/moonstone';
+import {Upload, Book, Dropdown, Input, Delete, Save, File, OpenInNew, Check} from '@jahia/moonstone';
 
 import styles from './SitemapPanel.scss';
 
-import {Card, Snackbar} from '@material-ui/core';
+import {Card} from '@material-ui/core';
 
 import * as compose from 'lodash.flowright';
 import {withApollo} from 'react-apollo';
@@ -16,7 +16,8 @@ import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
 import * as gqlUtilities from '../utils/gqlUtilities';
 
-import {DialogComponent} from './Dialog';
+import {DialogComponent} from './Dialog/Dialog';
+import {SnackbarComponent} from './Snackbar/Snackbar';
 import {useFormik} from 'formik';
 
 const SitemapPanelApp = ({client, dxContext, t}) => {
@@ -237,29 +238,19 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
                         </section>
                     </div>
                 </div>
-                <div className={styles.snackbarContainer}>
-                    <Snackbar
-                        classes={{
-                            anchorOriginBottomCenter: styles.snackbar
-                        }}
-                        open={snackbarIsOpen}
-                        autoHideDuration={2000}
-                        message={
-                            <div className={styles.snackbarMessageDiv}>
-                                <Check className={styles.snackbarMessageCheckIcon}/>
-                                <Typography className={styles.snackbarMessageTypography} component="p">
-                                    {t('labels.snackbar.successActivation')}
-                                </Typography>
-                            </div>
-                        }
-                        action={
-                            <React.Fragment>
-                                <Button className={styles.snackbarMessageButton} variant="ghost" icon={<Close size="big"/>} onClick={handleSnackBarClose}/>
-                            </React.Fragment>
-                        }
-                        onClose={handleSnackBarClose}
-                    />
-                </div>
+                <SnackbarComponent
+                    open={snackbarIsOpen}
+                    autoHideDuration={2000}
+                    message={
+                        <div className={styles.snackbarMessageDiv}>
+                            <Check className={styles.snackbarMessageCheckIcon}/>
+                            <Typography className={styles.snackbarMessageTypography} component="p">
+                                {t('labels.snackbar.successActivation')}
+                            </Typography>
+                        </div>
+                    }
+                    handleClose={handleSnackBarClose}
+                />
             </main>
         </form>
     );

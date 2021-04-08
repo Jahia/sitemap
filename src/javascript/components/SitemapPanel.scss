@@ -175,15 +175,6 @@
     line-height: 16px;
 }
 
-.snackbarContainer {
-    .snackbar {
-        bottom: 24px;
-        left: 25%;
-
-        transform: translateX(-50%);
-    }
-}
-
 .snackbarMessageDiv {
     display: flex;
     flex-direction: row;
@@ -197,8 +188,4 @@
 
 .snackbarMessageTypography {
     padding-left: 10px;
-}
-
-.snackbarMessageButton {
-    margin-left: auto;
 }
