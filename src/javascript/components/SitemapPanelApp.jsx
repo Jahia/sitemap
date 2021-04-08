@@ -8,7 +8,7 @@ import styles from './SitemapPanel.scss';
 
 import {Card, Snackbar} from '@material-ui/core';
 
-import {compose} from '~/utils';
+import * as compose from 'lodash.flowright';
 import {withApollo} from 'react-apollo';
 import {withTranslation} from 'react-i18next';
 
