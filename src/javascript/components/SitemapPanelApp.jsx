@@ -11,6 +11,7 @@ import {Card} from '@material-ui/core';
 import * as compose from 'lodash.flowright';
 import {withApollo} from 'react-apollo';
 import {withTranslation} from 'react-i18next';
+import {useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
@@ -25,7 +26,39 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
     const [sitemapIndexURL, setSitemapIndexURL] = useState(null);
     const [sitemapCacheDuration, setSitemapCacheDuration] = useState(null);
 
+    const {data, error, loading} = useQuery(gqlQueries.GetNodeSitemapInfo, {
+        variables: {
+            pathOrId: `/sites/${dxContext.siteKey}`,
+            mixinsFilter: {
+                filters: [
+                    {fieldName: 'name', value: 'jseomix:sitemap'}
+                ]
+            },
+            propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration']
+        },
+        fetchPolicy: 'network-only'
+    });
+
     const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
+
+    useEffect(() => {
+        if (data) {
+            if (data?.jcr?.nodeByPath?.mixinTypes?.length > 0) {
+                setSitemapMixinEnabled(true);
+            }
+
+            const properties = data?.jcr?.nodeByPath?.properties;
+            if (properties.length > 0) {
+                properties.forEach(property => {
+                    if (property.name === 'sitemapIndexURL') {
+                        setSitemapIndexURL(property.value);
+                    } else if (property.name === 'sitemapCacheDuration') {
+                        setSitemapCacheDuration(property.value);
+                    }
+                });
+            }
+        }
+    }, [data]);
 
     const dropdownData = [{
         label: '4 hours',
@@ -84,35 +117,6 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
         }
     });
 
-    useEffect(() => {
-        gqlUtilities.gqlQuery(client, gqlQueries.GetNodeMixin, {pathOrId: `/sites/${dxContext.siteKey}`,
-            mixinsFilter: {
-                filters: [
-                    {fieldName: 'name', value: 'jseomix:sitemap'}
-                ]
-            }
-        }).then(data => {
-            if (data?.data?.jcr?.nodeByPath?.mixinTypes?.length > 0) {
-                setSitemapMixinEnabled(true);
-            }
-        });
-
-        gqlUtilities.gqlQuery(client, gqlQueries.GetProperties, {pathOrId: `/sites/${dxContext.siteKey}`,
-            propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration']
-        }).then(data => {
-            const properties = data?.data?.jcr?.nodeByPath?.properties;
-            if (properties.length > 0) {
-                properties.forEach(property => {
-                    if (property.name === 'sitemapIndexURL') {
-                        setSitemapIndexURL(property.value);
-                    } else if (property.name === 'sitemapCacheDuration') {
-                        setSitemapCacheDuration(property.value);
-                    }
-                });
-            }
-        });
-    }, [client, dxContext.siteKey]);
-
     const onOpenSitemapXMLButtonClick = url => {
         window.open(url, '_blank');
     };
@@ -120,6 +124,14 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
     const handleSnackBarClose = () => {
         setSnackbarIsOpen(false);
     };
+
+    if (loading) {
+        return 'Loading ...';
+    }
+
+    if (error) {
+        return 'There was an error reading sitemap configuration(s)/properties';
+    }
 
     return (
         <form onSubmit={formik.handleSubmit}>

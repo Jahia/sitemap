@@ -27,4 +27,21 @@ const GetProperties = gql`
     }
 `;
 
-export {GetNodeMixin, GetProperties};
+const GetNodeSitemapInfo = gql`
+    query findNodeSitemapInfo($pathOrId: String!, $mixinsFilter: InputFieldFiltersInput, $propertyNames: [String!]!) {
+        jcr {
+            nodeByPath(path: $pathOrId) {
+                id: uuid
+                mixinTypes(fieldFilter: $mixinsFilter) {
+                    name
+                }
+                properties(names: $propertyNames) {
+                    name
+                    value
+                }
+            }
+        }
+    }
+`;
+
+export {GetNodeMixin, GetProperties, GetNodeSitemapInfo};
