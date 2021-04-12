@@ -43,7 +43,7 @@ export const SitemapPanelHeaderComponent = ({
                             icon={<Save/>}
                             label={(isSitemapMixinEnabled) ? t('labels.header.save') : t('labels.header.activate')}
                             size="big"
-                            disabled={!formik.values.sitemapIndexURL || !formik.dirty}
+                            disabled={formik.values.sitemapIndexURL === '' || !formik.dirty}
                             type="submit"
                             onClick={() => {}}
                     />
@@ -53,13 +53,13 @@ export const SitemapPanelHeaderComponent = ({
                             variant="ghost"
                             label={t('labels.header.flushCacheButtonLabel')}
                             icon={<Delete/>}
-                            disabled={!formik.values.sitemapIndexURL || !isSitemapMixinEnabled}
+                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
                             onClick={() => handleDialogOpen(t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
                     <Button key="submitToGoogleButton"
                             variant="ghost"
                             label={t('labels.header.submitToGoogleButtonLabel')}
                             icon={<Upload/>}
-                            disabled={!formik.values.sitemapIndexURL || !isSitemapMixinEnabled}
+                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
                             onClick={() => handleDialogOpen(t('labels.dialog.submitToGoogle.title'), t('labels.dialog.submitToGoogle.description'), t('labels.dialog.submitToGoogle.buttonSubmitText'))}/>
                 ]}
                 toolbarRight={[<Button key="academyLinkIcon" variant="ghost" label={t('labels.header.academy')} icon={<Book/>} onClick={onAcademyButtonClick}/>]}

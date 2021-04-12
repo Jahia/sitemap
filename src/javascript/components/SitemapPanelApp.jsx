@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
 import {Typography, Button, Chip} from '@jahia/moonstone';
@@ -21,14 +22,15 @@ import {SnackbarComponent} from './Snackbar/Snackbar';
 import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
 import {useFormik} from 'formik';
 
-const SitemapPanelApp = ({client, dxContext, t}) => {
+const SitemapPanelApp = ({client, t}) => {
     const [sitemapMixinEnabled, setSitemapMixinEnabled] = useState(false);
     const [sitemapIndexURL, setSitemapIndexURL] = useState(null);
     const [sitemapCacheDuration, setSitemapCacheDuration] = useState(null);
+    const currentState = useSelector(state => ({site: state.site, language: state.language}));
 
     const {data, error, loading} = useQuery(gqlQueries.GetNodeSitemapInfo, {
         variables: {
-            pathOrId: `/sites/${dxContext.siteKey}`,
+            pathOrId: `/sites/${currentState.site}`,
             mixinsFilter: {
                 filters: [
                     {fieldName: 'name', value: 'jseomix:sitemap'}
@@ -45,6 +47,8 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
         if (data) {
             if (data?.jcr?.nodeByPath?.mixinTypes?.length > 0) {
                 setSitemapMixinEnabled(true);
+            } else {
+                setSitemapMixinEnabled(false);
             }
 
             const properties = data?.jcr?.nodeByPath?.properties;
@@ -56,9 +60,12 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
                         setSitemapCacheDuration(property.value);
                     }
                 });
+            } else {
+                setSitemapIndexURL(null);
+                setSitemapCacheDuration(null);
             }
         }
-    }, [data, dxContext.siteKey]);
+    }, [data, currentState.site]);
 
     const dropdownData = [{
         label: `4 ${t('labels.settingSection.updateIntervalSection.hours')}`,
@@ -89,7 +96,7 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
 
     const formik = useFormik({
         initialValues: {
-            sitemapIndexURL: sitemapIndexURL,
+            sitemapIndexURL: ((sitemapIndexURL) ? sitemapIndexURL : ''),
             sitemapCacheDuration: ((sitemapCacheDuration) ? sitemapCacheDuration : dropdownData[0].value)
         },
         enableReinitialize: true,
@@ -97,7 +104,7 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
         onSubmit: values => {
             if (!sitemapMixinEnabled) {
                 gqlUtilities.gqlMutate(client, gqlMutations.AddMixin, {
-                    pathOrId: `/sites/${dxContext.siteKey}`,
+                    pathOrId: `/sites/${currentState.site}`,
                     mixins: ['jseomix:sitemap']
                 });
                 setSitemapMixinEnabled(prevState => !prevState);
@@ -105,12 +112,12 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
             }
 
             gqlUtilities.gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: `/sites/${dxContext.siteKey}`,
+                pathOrId: `/sites/${currentState.site}`,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: formik.values.sitemapIndexURL
             });
             gqlUtilities.gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: `/sites/${dxContext.siteKey}`,
+                pathOrId: `/sites/${currentState.site}`,
                 propertyName: 'sitemapCacheDuration',
                 propertyValue: formik.values.sitemapCacheDuration
             });
@@ -139,7 +146,7 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
                 <SitemapPanelHeaderComponent
                     formik={formik}
                     isSitemapMixinEnabled={sitemapMixinEnabled}
-                    siteKey={dxContext.siteKey}
+                    siteKey={currentState.site}
                 />
                 <div className={classnames(styles.content, 'flexCol')}>
                     <div className={styles.section}>
@@ -151,9 +158,9 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
                                 <Typography className={styles.sitemapIndexFileDescription} component="p">{t('labels.settingSection.sitemapIndexFileSection.description')}</Typography>
                                 <Card>
                                     <div className={styles.sitemapIndexFileCardArea}>
-                                        <File className={(!formik.values.sitemapIndexURL || !sitemapMixinEnabled) ? styles.sitemapIndexFileIconDisable : styles.sitemapIndexFileIconEnabled} size="big"/>
-                                        <Typography className={(!formik.values.sitemapIndexURL || !sitemapMixinEnabled) ? styles.sitemapIndexFileNameDisabled : styles.sitemapIndexFileNameEnabled} component="p">{t('labels.settingSection.sitemapIndexFileSection.sitemapIndexXML')}</Typography>
-                                        <Button className={styles.sitemapIndexFileButton} variant="ghost" icon={<OpenInNew size="big"/>} disabled={!formik.values.sitemapIndexURL || !sitemapMixinEnabled} onClick={() => onOpenSitemapXMLButtonClick(formik.values.sitemapIndexURL)}/>
+                                        <File className={(formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled) ? styles.sitemapIndexFileIconDisable : styles.sitemapIndexFileIconEnabled} size="big"/>
+                                        <Typography className={(formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled) ? styles.sitemapIndexFileNameDisabled : styles.sitemapIndexFileNameEnabled} component="p">{t('labels.settingSection.sitemapIndexFileSection.sitemapIndexXML')}</Typography>
+                                        <Button className={styles.sitemapIndexFileButton} variant="ghost" icon={<OpenInNew size="big"/>} disabled={formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled} onClick={() => onOpenSitemapXMLButtonClick(formik.values.sitemapIndexURL)}/>
                                     </div>
                                 </Card>
                             </div>
@@ -214,7 +221,6 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
 
 SitemapPanelApp.propTypes = {
     client: PropTypes.object.isRequired,
-    dxContext: PropTypes.object.isRequired,
     t: PropTypes.func.isRequired
 };
 

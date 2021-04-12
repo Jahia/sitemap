@@ -15,11 +15,7 @@ export default function () {
                 isSelectable: true,
                 // RequiredPermission: 'siteAdminUrlmapping',
                 requireModuleInstalledOnSite: 'sitemap',
-                render: () => React.createElement(SitemapPanelApp, {
-                    dxContext: {
-                        ...window.contextJsParameters
-                    }
-                })
+                render: () => React.createElement(SitemapPanelApp)
             });
 
             console.log('%c Sitemap registered routes', 'color: #3c8cba');
