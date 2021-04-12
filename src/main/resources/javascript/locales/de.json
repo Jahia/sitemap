@@ -1,0 +1,47 @@
+{
+  "labels": {
+    "seo": "SEO",
+    "sitemap": "Sitemap",
+    "header": {
+      "title": "Sitemap - {{siteName}}",
+      "academy": "Academy",
+      "flushCacheButtonLabel": "Cache leeren",
+      "submitToGoogleButtonLabel": "An Google übermitteln",
+      "save": "Speichern",
+      "activate": "Aktivieren"
+    },
+    "settingSection": {
+      "sitemapIndexFileSection": {
+        "title": "Sitemap Index Datei",
+        "description": "Die Sitemap Index Datei referenziert alle anderen Sitemap Dateien: sprachabhängige Sitemaps und gesonderte Sitemaps.",
+        "sitemapIndexXML": "sitemap-index.xml"
+      },
+      "sitemapIndexURLSection": {
+        "title": "Sitemap Index URL",
+        "description": "Fügen Sie die öffentliche URL Ihrer Sitemap Index Datei hinzu. Das ist notwendig, da möglicherweise Proxy-Server verwendet werden und die URL Ihrer Site verändern.",
+        "chipLabel": "Verpflichtend"
+      },
+      "updateIntervalSection": {
+        "title": "Update Intervall",
+        "hours": "Stunden",
+        "description": "Sitemap Dateien werden von Jahia gecacht. Definieren Sie die Frequenz der Cache-Entleerung, damit Google auf die neuesten Informationen über Ihre Seiten zugreifen kann."
+      }
+    },
+    "dialog": {
+      "buttonCancel": "Abbrechen",
+      "flushCache": {
+        "title": "Sitemap Cache leeren",
+        "description": "Wenn Sie kürzlich eine größere Veröffentlichung auf Ihrer Site durchgeführt haben, sollten Sie Ihren Sitemap Cache manuell leeren.",
+        "buttonFlushCacheText": "Cache leeren"
+      },
+      "submitToGoogle": {
+        "title": "An Google übermitteln",
+        "description": "Senden Sie Ihre Sitemap Index Datei an Google. Sie sollten diese Option nur verwenden, wenn Sie eine neue Sprache zu Ihrer Site hinzugefügt haben oder eine neue gesonderte Sitemap hinzugefügt wurde.",
+        "buttonSubmitText": "Senden"
+      }
+    },
+    "snackbar": {
+      "successActivation": "Sitemap aktiviert"
+    }
+  }
+}

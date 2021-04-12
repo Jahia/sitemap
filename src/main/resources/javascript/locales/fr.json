@@ -1,0 +1,47 @@
+{
+  "labels": {
+    "seo": "SEO",
+    "sitemap": "Sitemap",
+    "header": {
+      "title": "Sitemap - {{siteName}}",
+      "academy": "Academy",
+      "flushCacheButtonLabel": "Vider le cache",
+      "submitToGoogleButtonLabel": "Envoyer à Google",
+      "save": "Enregistrer",
+      "activate": "Activer"
+    },
+    "settingSection": {
+      "sitemapIndexFileSection": {
+        "title": "Fichier Sitemap-index",
+        "description": "Le fichier Sitemap-index référence tous les autres fichiers sitemap: sitemap par langue et sitemap dédié.",
+        "sitemapIndexXML": "sitemap-index.xml"
+      },
+      "sitemapIndexURLSection": {
+        "title": "URL de l'index sitemap",
+        "description": "Ajouter l'URL publique de votre fichier sitemap-index",
+        "chipLabel": "Obligatoire"
+      },
+      "updateIntervalSection": {
+        "title": "Intervalle de mise à jour",
+        "hours": "heures",
+        "description": "Les fichiers sitemap sont ajoutés au cache de Jahia. Définissez la fréquence à laquelle ce cache sera vidé pour que Google accède aux versions les plus récentes de vos pages."
+      }
+    },
+    "dialog": {
+      "buttonCancel": "Annuler",
+      "flushCache": {
+        "title": "Vider le cache du sitemap",
+        "description": "Si vous avez récemment publié beaucoup de changements sur votre site, vous voudrez probablement vider le cache du sitemap manuellement.",
+        "buttonFlushCacheText": "Vider le cache"
+      },
+      "submitToGoogle": {
+        "title": "Envoyer à Google",
+        "description": "Envoyer le fichier sitemap-index à Google. A n'utiliser que si vous avez ajouté une nouvelle langue à votre site ou un nouveau sitemap dédié.",
+        "buttonSubmitText": "Envoyer"
+      }
+    },
+    "snackbar": {
+      "successActivation": "Sitemap activé"
+    }
+  }
+}

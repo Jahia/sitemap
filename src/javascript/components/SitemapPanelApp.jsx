@@ -36,7 +36,7 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
             },
             propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration']
         },
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache'
     });
 
     const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
@@ -58,19 +58,19 @@ const SitemapPanelApp = ({client, dxContext, t}) => {
                 });
             }
         }
-    }, [data]);
+    }, [data, dxContext.siteKey]);
 
     const dropdownData = [{
-        label: '4 hours',
+        label: `4 ${t('labels.settingSection.updateIntervalSection.hours')}`,
         value: '4h'
     }, {
-        label: '8 hours',
+        label: `8 ${t('labels.settingSection.updateIntervalSection.hours')}`,
         value: '8h'
     }, {
-        label: '24 hours',
+        label: `24 ${t('labels.settingSection.updateIntervalSection.hours')}`,
         value: '24h'
     }, {
-        label: '48 hours',
+        label: `48 ${t('labels.settingSection.updateIntervalSection.hours')}`,
         value: '48h'
     }];
 

@@ -17,12 +17,13 @@
             "sitemapIndexXML": "sitemap-index.xml"
         },
         "sitemapIndexURLSection": {
-            "title": "Sitemap index URL",
+            "title": "Sitemap Index URL",
             "description": "Add the public URL of your sitemap-index file. It is needed because you may rely on proxies that are changing the URLs of your site.",
             "chipLabel": "Required"
         },
         "updateIntervalSection": {
             "title": "Update interval",
+            "hours": "hours",
             "description": "Sitemap files are cached by Jahia. Define the frequency at which the cache will be flushed so that Google access the latest information about your pages."
         }
     },
