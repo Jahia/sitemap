@@ -24,7 +24,7 @@
         "updateIntervalSection": {
             "title": "Update interval",
             "hours": "hours",
-            "description": "Sitemap files are cached by Jahia. Define the frequency at which the cache will be flushed so that Google access the latest information about your pages."
+            "description": "Sitemap files are cached by Jahia. Define the frequency at which the cache will be flushed so that Google can access the latest information about your pages."
         }
     },
     "dialog": {
@@ -36,7 +36,7 @@
         },
         "submitToGoogle": {
           "title": "Submit to Google",
-          "description": "Submit your sitemap-index to Google. You should only use it when adding a new language to your site or when a new dedicated sitemap have been added.",
+          "description": "Submit your sitemap-index to Google. You should only use it when adding a new language to your site or when a new dedicated sitemap has been added.",
           "buttonSubmitText": "submit"
         }
     },
