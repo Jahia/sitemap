@@ -3,10 +3,10 @@
 <jnt = 'http://www.jahia.org/jahia/nt/1.0'>
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
-[jseont:sitemap] > jnt:content
+[jseont:sitemap] > nt:base
  + * (jnt:file)
 
-[jseont:sitemapResource] > jnt:content
+[jseont:sitemapResource] > nt:base
  + * (jnt:file)
 
 [jseomix:sitemap] mixin
