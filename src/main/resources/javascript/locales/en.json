@@ -5,7 +5,7 @@
     "header": {
       "title": "Sitemap - {{siteName}}",
       "academy": "Academy",
-      "flushCacheButtonLabel": "Flush cache",
+      "flushCacheButtonLabel": "Flush cache test",
       "submitToGoogleButtonLabel": "Submit to Google",
       "save": "SAVE",
       "activate": "ACTIVATE"
