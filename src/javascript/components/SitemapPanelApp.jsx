@@ -28,7 +28,7 @@ const SitemapPanelApp = ({client, t}) => {
     const [sitemapCacheDuration, setSitemapCacheDuration] = useState(null);
     const currentState = useSelector(state => ({site: state.site, language: state.language}));
 
-    const {data, error, loading} = useQuery(gqlQueries.GetNodeSitemapInfo, {
+    const {data, error, loading, refetch} = useQuery(gqlQueries.GetNodeSitemapInfo, {
         variables: {
             pathOrId: `/sites/${currentState.site}`,
             mixinsFilter: {
@@ -121,6 +121,7 @@ const SitemapPanelApp = ({client, t}) => {
                 propertyName: 'sitemapCacheDuration',
                 propertyValue: formik.values.sitemapCacheDuration
             });
+            refetch();
         }
     });
 
