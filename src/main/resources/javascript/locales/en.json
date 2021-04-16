@@ -12,7 +12,7 @@
     },
     "settingSection": {
         "sitemapIndexFileSection": {
-            "title": "Sitemap-index file",
+            "title": "Sitemap-index file test",
             "description": "Sitemap-index file references all other sitemap files: language sitemaps and dedicated sitemaps.",
             "sitemapIndexXML": "sitemap-index.xml"
         },
