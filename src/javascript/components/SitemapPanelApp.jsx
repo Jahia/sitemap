@@ -42,6 +42,7 @@ const SitemapPanelApp = ({client, t}) => {
     });
 
     const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
+    const [snackbarInfo, setSnackbarInfo] = useState(null);
 
     useEffect(() => {
         if (data) {
@@ -108,6 +109,7 @@ const SitemapPanelApp = ({client, t}) => {
                     mixins: ['jseomix:sitemap']
                 });
                 setSitemapMixinEnabled(prevState => !prevState);
+                setSnackbarInfo(t('labels.snackbar.successActivation'));
                 setSnackbarIsOpen(true);
             }
 
@@ -148,6 +150,8 @@ const SitemapPanelApp = ({client, t}) => {
                     formik={formik}
                     isSitemapMixinEnabled={sitemapMixinEnabled}
                     siteKey={currentState.site}
+                    openSnackBar={setSnackbarIsOpen}
+                    snackBarInfo={setSnackbarInfo}
                 />
                 <div className={classnames(styles.content, 'flexCol')}>
                     <div className={styles.section}>
@@ -209,7 +213,7 @@ const SitemapPanelApp = ({client, t}) => {
                         <div className={styles.snackbarMessageDiv}>
                             <Check className={styles.snackbarMessageCheckIcon}/>
                             <Typography className={styles.snackbarMessageTypography} component="p">
-                                {t('labels.snackbar.successActivation')}
+                                {snackbarInfo}
                             </Typography>
                         </div>
                     }

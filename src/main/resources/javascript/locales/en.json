@@ -41,7 +41,9 @@
         }
     },
     "snackbar": {
-      "successActivation": "Sitemap activated"
+      "successActivation": "Sitemap activated",
+      "successSubmitToGoogle": "Sitemap-index submitted",
+      "successFlushCache": "Sitemap cache flushed."
     }
   }
 }

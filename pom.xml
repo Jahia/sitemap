@@ -93,6 +93,19 @@
       <version>RELEASE</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.jahia.modules</groupId>
+      <artifactId>graphql-dxm-provider</artifactId>
+      <version>2.4.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.graphql-java</groupId>
+      <artifactId>graphql-java-annotations</artifactId>
+      <version>6.1</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -172,6 +185,9 @@
 
   <repositories>
     <repository>
+      <id>jahia-public</id>
+      <name>Jahia Public Repository</name>
+      <url>https://devtools.jahia.com/nexus/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
@@ -179,9 +195,6 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <id>jahia-public</id>
-      <name>Jahia Public Repository</name>
-      <url>https://devtools.jahia.com/nexus/content/groups/public</url>
     </repository>
   </repositories>
 </project>

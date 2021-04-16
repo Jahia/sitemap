@@ -4,21 +4,70 @@ import {Book, Button, Delete, Header, Save, Upload} from '@jahia/moonstone';
 import styles from './SitemapPanelHeader.scss';
 import {DialogComponent} from '../Dialog/Dialog';
 import {useTranslation} from 'react-i18next';
+import {useMutation} from '@apollo/react-hooks';
+
+import * as gqlMutations from './gqlMutations';
 
 export const SitemapPanelHeaderComponent = ({
     formik,
     isSitemapMixinEnabled,
-    siteKey
+    siteKey,
+    snackBarInfo,
+    openSnackBar
 }) => {
     const {t} = useTranslation('sitemap');
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const [dialogInfo, setDialogInfo] = useState(null);
 
-    const handleDialogOpen = (title, text, submitText) => {
+    const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
+        variables: {
+            sitemapURL: formik.values.sitemapIndexURL
+        },
+        // eslint-disable-next-line no-unused-vars
+        onCompleted: data => {
+            snackBarInfo(t('labels.snackbar.successSubmitToGoogle'));
+            openSnackBar(true);
+            handleDialogClose();
+        },
+        // eslint-disable-next-line no-unused-vars
+        onError: error => {
+            handleDialogClose();
+        }
+    });
+
+    const [deleteSitemapCacheMutation] = useMutation(gqlMutations.deleteSitemapCache, {
+        variables: {
+            expirationTimeDifference: formik.values.sitemapCacheDuration
+        },
+        // eslint-disable-next-line no-unused-vars
+        onCompleted: data => {
+            snackBarInfo(t('labels.snackbar.successFlushCache'));
+            openSnackBar(true);
+            handleDialogClose();
+        },
+        // eslint-disable-next-line no-unused-vars
+        onError: error => {
+            handleDialogClose();
+        }
+    });
+
+    const handleDialogOpen = (id, title, text, submitText) => {
+        let submitFunc = null;
+        if (id === 'flushCache') {
+            submitFunc = () => {
+                deleteSitemapCacheMutation();
+            };
+        } else if (id === 'submitToGoogle') {
+            submitFunc = () => {
+                submitToGoogleMutation();
+            };
+        }
+
         setDialogInfo({
             title: title,
             text: text,
-            submitText: submitText
+            submitText: submitText,
+            submitFunc: submitFunc
         });
         setDialogIsOpen(true);
     };
@@ -54,13 +103,13 @@ export const SitemapPanelHeaderComponent = ({
                             label={t('labels.header.flushCacheButtonLabel')}
                             icon={<Delete/>}
                             disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
-                            onClick={() => handleDialogOpen(t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
+                            onClick={() => handleDialogOpen('flushCache', t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
                     <Button key="submitToGoogleButton"
                             variant="ghost"
                             label={t('labels.header.submitToGoogleButtonLabel')}
                             icon={<Upload/>}
                             disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
-                            onClick={() => handleDialogOpen(t('labels.dialog.submitToGoogle.title'), t('labels.dialog.submitToGoogle.description'), t('labels.dialog.submitToGoogle.buttonSubmitText'))}/>
+                            onClick={() => handleDialogOpen('submitToGoogle', t('labels.dialog.submitToGoogle.title'), t('labels.dialog.submitToGoogle.description'), t('labels.dialog.submitToGoogle.buttonSubmitText'))}/>
                 ]}
                 toolbarRight={[<Button key="academyLinkIcon" variant="ghost" label={t('labels.header.academy')} icon={<Book/>} onClick={onAcademyButtonClick}/>]}
             />
@@ -68,7 +117,7 @@ export const SitemapPanelHeaderComponent = ({
             <DialogComponent
                 isOpen={dialogIsOpen}
                 handleClose={handleDialogClose}
-                handleSubmit={handleDialogClose} // TODO add the action per each dialog
+                handleSubmit={dialogInfo.submitFunc}
                 title={dialogInfo.title}
                 subtitle={dialogInfo.text}
                 submitButtonText={dialogInfo.submitText}
@@ -80,5 +129,7 @@ export const SitemapPanelHeaderComponent = ({
 SitemapPanelHeaderComponent.propTypes = {
     formik: PropTypes.object.isRequired,
     isSitemapMixinEnabled: PropTypes.bool.isRequired,
-    siteKey: PropTypes.string.isRequired
+    siteKey: PropTypes.string.isRequired,
+    snackBarInfo: PropTypes.func.isRequired,
+    openSnackBar: PropTypes.func.isRequired
 };
