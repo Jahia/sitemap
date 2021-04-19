@@ -36,16 +36,6 @@
         <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
         <function-signature>java.util.List getIncludedContentTypes()</function-signature>
     </function>
-    <function>
-        <name>getSitemapUrls</name>
-        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
-        <function-signature>java.util.List getSitemapUrls()</function-signature>
-    </function>
-    <function>
-        <name>getJobFrequency</name>
-        <function-class>org.jahia.modules.sitemap.utils.ConfigServiceUtils</function-class>
-        <function-signature>long getJobFrequency()</function-signature>
-    </function>
 
     <!-- query helper functions -->
     <function>

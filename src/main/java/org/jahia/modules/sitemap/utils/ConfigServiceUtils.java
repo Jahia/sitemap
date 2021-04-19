@@ -45,14 +45,6 @@ public final class ConfigServiceUtils {
         return getConfigService().getIncludeContentTypes();
     }
 
-    public static List<String> getSitemapUrls() {
-        return getConfigService().getSitemapUrls();
-    }
-
-    public static long getJobFrequency() {
-        return getConfigService().getJobFrequency();
-    }
-
     private static ConfigService getConfigService() {
         final BundleContext bundleContext = FrameworkUtil.getBundle(ConfigService.class).getBundleContext();
         final ServiceReference<ConfigService> serviceReference = FrameworkService.getBundleContext()
