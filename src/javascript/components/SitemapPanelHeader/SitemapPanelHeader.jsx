@@ -37,7 +37,7 @@ export const SitemapPanelHeaderComponent = ({
 
     const [deleteSitemapCacheMutation] = useMutation(gqlMutations.deleteSitemapCache, {
         variables: {
-            expirationTimeDifference: formik.values.sitemapCacheDuration
+            expirationTimeDifference: (formik.values.sitemapCacheDuration) ? formik.values.sitemapCacheDuration.slice(0, -1) : formik.values.sitemapCacheDuration
         },
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
