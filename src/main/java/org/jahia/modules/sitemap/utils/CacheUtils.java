@@ -50,14 +50,18 @@ public class CacheUtils {
     /**
      * Delete all sitemap cache nodes that are older than expiration (in ms)
      * @param expiration
+     * @param siteKey
      * @throws RepositoryException
      */
-    public static void refreshSitemapCache(long expiration) throws RepositoryException {
+    public static void refreshSitemapCache(long expiration, String siteKey) throws RepositoryException {
+
+        String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
         JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
                 Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
             @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                QueryResult result = QueryHelper.getQuery(session, "SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE('/sites')");
+                QueryResult result = QueryHelper.getQuery(session, String.format("SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE"
+                        + "('/sites%s')", subSite));
                 if (result == null) return null;
 
                 for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {

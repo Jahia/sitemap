@@ -62,10 +62,11 @@ public class GqlSitemapMutation {
     @GraphQLField
     @GraphQLDescription("Delete existing sitemap cache if exists before expiration time difference")
     public Boolean deleteSitemapCache(
-            @GraphQLName("expirationTimeDifference") @GraphQLDescription("The expiration time difference in (ms)") @GraphQLNonNull Long expirationTimeDifference
+            @GraphQLName("expirationTimeDifference") @GraphQLDescription("The expiration time difference in (ms)") @GraphQLNonNull Long expirationTimeDifference,
+            @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
         try {
-            CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, 0L));
+            CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, 0L), siteKey);
             return true;
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);

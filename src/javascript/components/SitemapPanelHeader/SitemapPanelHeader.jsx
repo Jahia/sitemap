@@ -37,7 +37,8 @@ export const SitemapPanelHeaderComponent = ({
 
     const [deleteSitemapCacheMutation] = useMutation(gqlMutations.deleteSitemapCache, {
         variables: {
-            expirationTimeDifference: (formik.values.sitemapCacheDuration) ? formik.values.sitemapCacheDuration.slice(0, -1) : formik.values.sitemapCacheDuration
+            expirationTimeDifference: (formik.values.sitemapCacheDuration) ? formik.values.sitemapCacheDuration.slice(0, -1) : formik.values.sitemapCacheDuration,
+            siteKey: siteKey
         },
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
@@ -52,15 +53,11 @@ export const SitemapPanelHeaderComponent = ({
     });
 
     const handleDialogOpen = (id, title, text, submitText) => {
-        let submitFunc = null;
+        let submitFunc = () => {};
         if (id === 'flushCache') {
-            submitFunc = () => {
-                deleteSitemapCacheMutation();
-            };
+            submitFunc = deleteSitemapCacheMutation;
         } else if (id === 'submitToGoogle') {
-            submitFunc = () => {
-                submitToGoogleMutation();
-            };
+            submitFunc = submitToGoogleMutation;
         }
 
         setDialogInfo({
