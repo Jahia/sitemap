@@ -42,7 +42,7 @@
     },
     "snackbar": {
       "successActivation": "Sitemap aktiviert",
-      "successSubmitToGoogle": "Sitemap-Index eingereicht",
+      "successSubmitToGoogle": "Sitemap-Index übermittelt",
       "successFlushCache": "Sitemap-Cache geleert."
     }
   }
