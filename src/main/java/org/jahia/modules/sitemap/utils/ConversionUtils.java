@@ -23,12 +23,65 @@
  */
 package org.jahia.modules.sitemap.utils;
 
+import org.jahia.services.content.JCRPropertyWrapper;
+import org.jahia.services.content.JCRValueWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * Utility class for simple conversions
  */
 public class ConversionUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConversionUtils.class);
+
     public static long longVal(Long l, long defaultValue) {
         return l == null ? defaultValue : l.longValue();
+    }
+
+    /**
+     * Getting the value from JCR property if cannot find return null
+     * @param propertyWrapper
+     * @return
+     */
+    public static String getValueFromJCRProperty(JCRPropertyWrapper propertyWrapper) {
+        try {
+            if (propertyWrapper != null) {
+                JCRValueWrapper valueWrapper = propertyWrapper.getValue();
+                if (valueWrapper != null) {
+                    return valueWrapper.getString();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to get value from JCR property wrapper");
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * Converting time to milliseconds
+     * If the time is null, empty, or length <= 1 will just return default value
+     * @param time          [String] Format in "[time][unit]" ex: 4h
+     * @param defaultValue
+     * @return
+     */
+    public static long toMilliSecondsLong(String time, long defaultValue) {
+        if (time == null || time.isEmpty() || time.length() <= 1) return defaultValue;
+        String timeValue = time.substring(0, time.length() - 1);
+        String unit = time.substring(time.length() - 1);
+
+        try {
+            switch (unit) {
+                case "h":
+                    return Long.parseLong(timeValue) * 60 * 60 * 1000;
+                default:
+                    return defaultValue;
+            }
+        } catch (Exception e) {
+            logger.error("Unable to convert timeValue will default to default value.");
+            return defaultValue;
+        }
     }
 }

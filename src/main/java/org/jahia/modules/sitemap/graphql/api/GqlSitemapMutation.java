@@ -66,7 +66,7 @@ public class GqlSitemapMutation {
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
         try {
-            CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, 0L), siteKey);
+            CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, 4 * 60 * 60 * 1000L), siteKey);
             return true;
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);

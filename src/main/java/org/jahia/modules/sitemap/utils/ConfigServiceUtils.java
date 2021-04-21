@@ -51,8 +51,4 @@ public final class ConfigServiceUtils {
                 .getServiceReference(ConfigService.class);
         return bundleContext.getService(serviceReference);
     }
-
-    public static long getCacheDuration() {
-        return getConfigService().getCacheDuration();
-    }
 }
