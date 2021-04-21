@@ -28,6 +28,7 @@ import org.jahia.services.content.JCRValueWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
 
 /**
  * Utility class for simple conversions
@@ -75,7 +76,7 @@ public class ConversionUtils {
         try {
             switch (unit) {
                 case "h":
-                    return Long.parseLong(timeValue) * 60 * 60 * 1000;
+                    return convertFromHour(Long.parseLong(timeValue));
                 default:
                     return defaultValue;
             }
@@ -83,5 +84,9 @@ public class ConversionUtils {
             logger.error("Unable to convert timeValue will default to default value.");
             return defaultValue;
         }
+    }
+
+    public static long convertFromHour(long hours) {
+        return TimeUnit.HOURS.toMillis(hours);
     }
 }

@@ -42,6 +42,7 @@ public class CacheUtils {
 
 
     public static boolean isExpired(JCRNodeWrapper cacheNode, long expiration) {
+        if (expiration < 0) return true; // If expiration is negative then is expired
         Date lastModified = cacheNode.getContentLastModifiedAsDate();
         long expirationInMs = lastModified.getTime() + expiration;
         return System.currentTimeMillis() > expirationInMs;
@@ -54,7 +55,6 @@ public class CacheUtils {
      * @throws RepositoryException
      */
     public static void refreshSitemapCache(long expiration, String siteKey) throws RepositoryException {
-
         String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
         JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,

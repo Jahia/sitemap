@@ -73,19 +73,6 @@ public class ConfigServiceImpl implements ConfigService {
         this.properties = properties;
     }
 
-    /**
-     * Returns an integer. This is the job frequency specified in the cfg file
-     *
-     * @return int
-     */
-    @Override
-    public long getJobFrequency() {
-        final long jobFrequencyHour = Long.parseLong(properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT,
-                JOB_FREQUENCY),String.valueOf(MIN_FREQUENCY)));
-        final long jobFrequency = convertFromHour(jobFrequencyHour);
-        return Math.max(MIN_FREQUENCY, jobFrequency);
-    }
-
     @Override
     public List<String> getSearchEngines() {
         final String searchEnginesStr = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, SEARCH_ENGINES),
@@ -93,30 +80,10 @@ public class ConfigServiceImpl implements ConfigService {
         return new ArrayList<>(Arrays.asList(searchEnginesStr.split(",")));
     }
 
-    @Override
-    public List<String> getSitemapUrls() {
-        final String siteMapUrlsStr = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, SITEMAP_URLS),
-                EMPTY_STRING);
-        return new ArrayList<>(Arrays.asList(siteMapUrlsStr.split(",")));
-    }
-
     @Override public List<String> getIncludeContentTypes() {
         final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
                 EMPTY_STRING);
         return new ArrayList<>(Arrays.asList(includedContentTypes.split(",")));
-    }
-
-    /** @return sitemap file cache duration in ms
-     * @see org.jahia.modules.sitemap.filter.SitemapCacheFilter */
-    @Override public long getCacheDuration() {
-        String configKey = String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, CACHE_DURATION);
-        final String cacheDurationStr = properties.getOrDefault(configKey,"4"); // default 4 hour cache duration
-        long cacheDuration = Long.parseLong(cacheDurationStr);
-        return convertFromHour(Math.max(0, cacheDuration));
-    }
-
-    private long convertFromHour(long jobFrequency) {
-        return TimeUnit.HOURS.toMillis(jobFrequency);
     }
 
     private Map<String, String> initProperties(Map<String,?> props) {

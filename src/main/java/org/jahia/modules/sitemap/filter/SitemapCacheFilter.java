@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.jahia.modules.sitemap.utils.ConversionUtils;
+import org.jahia.modules.sitemap.constant.SitemapConstant;
 
 /**
  * Filter that creates sitemap file nodes for caching.
@@ -58,8 +59,6 @@ import org.jahia.modules.sitemap.utils.ConversionUtils;
 public class SitemapCacheFilter extends AbstractFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapCacheFilter.class);
-    private static final String SITEMAP = "sitemap";
-    private static final String SITEMAP_CACHE_DURATION = "sitemapCacheDuration";
 
     @Activate
     public void activate() {
@@ -154,7 +153,7 @@ public class SitemapCacheFilter extends AbstractFilter {
         try {
             JCRNodeWrapper siteNode = cacheNode.getResolveSite();
             if (siteNode != null) {
-                JCRPropertyWrapper cacheDurationProperty = siteNode.getProperty(SITEMAP_CACHE_DURATION);
+                JCRPropertyWrapper cacheDurationProperty = siteNode.getProperty(SitemapConstant.SITEMAP_CACHE_DURATION);
                 String propertyValue = ConversionUtils.getValueFromJCRProperty(cacheDurationProperty);
                 expiration = ConversionUtils.toMilliSecondsLong(propertyValue, expiration);
             }

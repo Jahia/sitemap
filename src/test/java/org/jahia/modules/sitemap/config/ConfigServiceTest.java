@@ -47,12 +47,4 @@ class ConfigServiceTest {
         configService = new ConfigServiceImpl();
         configService.setProperties(mockProperties);
     }
-
-
-    @Test
-    void testGetMinimumJobFrequency() {
-        Mockito.when(mockProperties.getOrDefault(Mockito.anyString(),Mockito.anyString())).thenReturn("0");
-        Assertions.assertEquals(ConfigServiceImpl.MIN_FREQUENCY, configService.getJobFrequency(),
-                String.format("Should return %d", ConfigServiceImpl.MIN_FREQUENCY));
-    }
 }

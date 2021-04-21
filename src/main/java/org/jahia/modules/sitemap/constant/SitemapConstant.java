@@ -31,9 +31,7 @@ package org.jahia.modules.sitemap.constant;
 public final class SitemapConstant {
     public static final String SITEMAP_PARENT_PROPERTY="sitemap";
     public static final String DOT=".";
-    public static final String JOB_FREQUENCY="job-frequency";
-    public static final String CACHE_DURATION="cache-duration";
     public static final String SEARCH_ENGINES="search-engines";
-    public static final String SITEMAP_URLS = "sitemap-urls";
     public static final String INCLUDED_CONTENT_TYPES = "included-content-types";
+    public static final String SITEMAP_CACHE_DURATION = "sitemapCacheDuration";
 }
