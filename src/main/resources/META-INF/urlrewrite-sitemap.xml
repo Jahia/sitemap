@@ -10,4 +10,15 @@
         <to last="true">/cms/render/live/%{attribute:siteDefaultLanguage}/sites/%{attribute:jahiaSiteKeyForCurrentServerName}/home.sitemap.xml</to>
     </rule>
 
+    <!-- Rule for mapping sitemap-index.xml to sitemap.index.xml -->
+    <rule>
+        <from>^/(.*)/sitemap-index.xml$</from>
+        <to>/$1/sitemap.index.xml</to>
+    </rule>
+
+    <!-- Rule for mapping sitemap-<lang>.xml to sitemap.xml (Still have the prefix in URL path on lang) -->
+    <rule>
+        <from>^/(.*)/sitemap-([A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))).xml$</from>
+        <to>/$1/sitemap.xml</to>
+    </rule>
 </urlrewrite>
