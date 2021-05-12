@@ -20,12 +20,13 @@
     <c:if test="${locales.size() > 1}"><%-- no need for alt if there's only one locale --%>
         <c:forEach var="locale" items="${locales}">
             <c:set var="lang" value="${locale.toString()}"/>
+            <c:set var="langDashFormat" value="${locale.toLanguageTag()}"/>
 
             <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, lang)}"/>
             <c:url var="localeUrl" value="${url.getBase(lang)}${urlNode.path}.html"/>
             <c:set var="localeAltUrl" value="${ (not empty vanityUrl) ? vanityUrl : localeUrl }"/>
 
-            <xhtml:link rel="alternate" hreflang="${lang}" href="${url.server}${localeAltUrl}"/>
+            <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${url.server}${localeAltUrl}"/>
         </c:forEach>
     </c:if>
 </url>
