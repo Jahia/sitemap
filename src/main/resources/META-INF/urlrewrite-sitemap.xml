@@ -10,4 +10,9 @@
         <to last="true">/cms/render/live/%{attribute:siteDefaultLanguage}/sites/%{attribute:jahiaSiteKeyForCurrentServerName}/home.sitemap.xml</to>
     </rule>
 
+    <rule>
+        <from>^/(.*)/sitemap-([A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?).xml$</from>
+        <to>/$1/sitemap.lang.xml</to>
+    </rule>
+
 </urlrewrite>

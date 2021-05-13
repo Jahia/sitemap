@@ -30,13 +30,13 @@
     "dialog": {
       "buttonCancel": "Abbrechen",
       "flushCache": {
-        "title": "Sitemap Cache leeren",
-        "description": "Wenn Sie kürzlich eine größere Veröffentlichung auf Ihrer Site durchgeführt haben, sollten Sie Ihren Sitemap Cache manuell leeren.",
+        "title": "Haupt-Sitemap",
+        "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps.",
         "buttonFlushCacheText": "Cache leeren"
       },
       "submitToGoogle": {
         "title": "An Google übermitteln",
-        "description": "Senden Sie Ihre Sitemap Index Datei an Google. Sie sollten diese Option nur verwenden, wenn Sie eine neue Sprache zu Ihrer Site hinzugefügt haben oder eine neue gesonderte Sitemap hinzugefügt wurde.",
+        "description": "Fügen Sie die öffentliche URL Ihrer Haupt-Sitemap hinzu. Dies ist notwendig, da möglicherweise Proxie-Server aktiv sind und die URLs Ihrer Site ändern.",
         "buttonSubmitText": "Senden"
       }
     },

@@ -12,13 +12,13 @@
     },
     "settingSection": {
         "sitemapIndexFileSection": {
-            "title": "Sitemap-index file",
-            "description": "Sitemap-index file references all other sitemap files: language sitemaps and dedicated sitemaps.",
+            "title": "Main sitemap file",
+            "description": "Main sitemap file references all other sitemap files: language sitemaps and dedicated sitemaps.",
             "sitemapIndexXML": "sitemap-index.xml"
         },
         "sitemapIndexURLSection": {
             "title": "Sitemap Index URL",
-            "description": "Add the public URL of your sitemap-index file. It is needed because you may rely on proxies that are changing the URLs of your site.",
+            "description": "Add the public URL of your main sitemap file. It is needed because you may rely on proxies that are changing the URLs of your site.",
             "chipLabel": "Required"
         },
         "updateIntervalSection": {

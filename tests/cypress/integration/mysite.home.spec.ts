@@ -39,7 +39,7 @@ describe('Enable sitemap on MySite', () => {
         // according to the sitemap.xml spec,
         // the url value should reside in a <loc /> node
         // https://www.google.com/sitemaps/protocol.html
-        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
+        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.xml', 'loc').then((urls) => {
             urls.forEach((url) => {
                 const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String
                 if (regexArray != null && regexArray.length > 4) {
@@ -95,7 +95,7 @@ describe('Enable sitemap on MySite', () => {
         // according to the sitemap.xml spec,
         // the url value should reside in a <loc /> node
         // https://www.google.com/sitemaps/protocol.html
-        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
+        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.xml', 'loc').then((urls) => {
             expect(urls.length).to.be.equal(2)
             urls.forEach((url) => {
                 const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String
@@ -151,7 +151,7 @@ describe('Enable sitemap on MySite', () => {
         // according to the sitemap.xml spec,
         // the url value should reside in a <loc /> node
         // https://www.google.com/sitemaps/protocol.html
-        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.index.xml', 'loc').then((urls) => {
+        cy.requestFindNodeInnerHTMLByName('sites/mySite/sitemap.xml', 'loc').then((urls) => {
             expect(urls.length).to.be.equal(1)
             urls.forEach((url) => {
                 const regexArray = getUrlInfoWithHost(String(url)) // Typescript issue that need to explicitly convert to String

@@ -1,5 +1,5 @@
 {
-  "siteMapPath": ["/sites/mySite/sitemap.xml", "/sites/mySite/home/search-results/sitemap.xml"],
+  "siteMapPath": ["/sites/mySite/sitemap-en.xml", "/sites/mySite/home/search-results/sitemap-en.xml"],
   "mySitePath": "/sites/mySite/home.html",
   "searchResultsPath": "/sites/mySite/home/search-results.html"
 }

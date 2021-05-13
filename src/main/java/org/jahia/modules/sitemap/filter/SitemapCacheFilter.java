@@ -144,7 +144,7 @@ public class SitemapCacheFilter extends AbstractFilter {
     /** Apply file caching only for default template */
     public boolean needsCaching(Resource resource) {
         String templateName = resource.getTemplate();
-        return "default".equalsIgnoreCase(templateName);
+        return "lang".equalsIgnoreCase(templateName);
     }
 
     public boolean isValidCache(JCRNodeWrapper cacheNode) {
