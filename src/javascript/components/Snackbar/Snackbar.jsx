@@ -34,7 +34,7 @@ export const SnackbarComponent = ({
 };
 
 SnackbarComponent.propTypes = {
-    open: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
     message: PropTypes.node.isRequired,
     autoHideDuration: PropTypes.number.isRequired,
     handleClose: PropTypes.func.isRequired

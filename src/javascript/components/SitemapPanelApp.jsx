@@ -16,7 +16,7 @@ import {useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
-import * as gqlUtilities from '../utils/gqlUtilities';
+import {sitemapIndexUrlBuilder, gqlMutate} from '../utils';
 
 import {SnackbarComponent} from './Snackbar/Snackbar';
 import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
@@ -104,7 +104,7 @@ const SitemapPanelApp = ({client, t}) => {
         // eslint-disable-next-line no-unused-vars
         onSubmit: values => {
             if (!sitemapMixinEnabled) {
-                gqlUtilities.gqlMutate(client, gqlMutations.AddMixin, {
+                gqlMutate(client, gqlMutations.AddMixin, {
                     pathOrId: `/sites/${currentState.site}`,
                     mixins: ['jseomix:sitemap']
                 });
@@ -113,12 +113,12 @@ const SitemapPanelApp = ({client, t}) => {
                 setSnackbarIsOpen(true);
             }
 
-            gqlUtilities.gqlMutate(client, gqlMutations.mutateProperty, {
+            gqlMutate(client, gqlMutations.mutateProperty, {
                 pathOrId: `/sites/${currentState.site}`,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: formik.values.sitemapIndexURL
             });
-            gqlUtilities.gqlMutate(client, gqlMutations.mutateProperty, {
+            gqlMutate(client, gqlMutations.mutateProperty, {
                 pathOrId: `/sites/${currentState.site}`,
                 propertyName: 'sitemapCacheDuration',
                 propertyValue: formik.values.sitemapCacheDuration
@@ -157,19 +157,6 @@ const SitemapPanelApp = ({client, t}) => {
                     <div className={styles.section}>
                         <section>
                             <div className={styles.subsection}>
-                                <Typography className={styles.sitemapIndexFileTitle} component="h3">
-                                    {t('labels.settingSection.sitemapIndexFileSection.title')}
-                                </Typography>
-                                <Typography className={styles.sitemapIndexFileDescription} component="p">{t('labels.settingSection.sitemapIndexFileSection.description')}</Typography>
-                                <Card>
-                                    <div className={styles.sitemapIndexFileCardArea}>
-                                        <File className={(formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled) ? styles.sitemapIndexFileIconDisable : styles.sitemapIndexFileIconEnabled} size="big"/>
-                                        <Typography className={(formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled) ? styles.sitemapIndexFileNameDisabled : styles.sitemapIndexFileNameEnabled} component="p">{t('labels.settingSection.sitemapIndexFileSection.sitemapIndexXML')}</Typography>
-                                        <Button className={styles.sitemapIndexFileButton} variant="ghost" icon={<OpenInNew size="big"/>} disabled={formik.values.sitemapIndexURL === '' || !sitemapMixinEnabled} onClick={() => onOpenSitemapXMLButtonClick(formik.values.sitemapIndexURL)}/>
-                                    </div>
-                                </Card>
-                            </div>
-                            <div className={styles.subsection}>
                                 <Typography className={styles.sitemapIndexURLTitle} component="h3">
                                     {t('labels.settingSection.sitemapIndexURLSection.title')}
                                     <Chip color="accent" className={styles.sitemapIndexURLChip} label={t('labels.settingSection.sitemapIndexURLSection.chipLabel')}/>
@@ -179,11 +166,30 @@ const SitemapPanelApp = ({client, t}) => {
                                     required
                                     id="sitemapIndexURL"
                                     name="sitemapIndexURL"
-                                    placeholder="http://path/of/my/sitemap-index"
+                                    placeholder="http://your-site-root"
                                     value={formik.values.sitemapIndexURL}
                                     className={styles.sitemapIndexURLInput}
                                     onChange={formik.handleChange}
                                 />
+                            </div>
+                            <div className={styles.subsection}>
+                                <Typography className={styles.sitemapIndexFileTitle} component="h3">
+                                    {t('labels.settingSection.sitemapIndexFileSection.title')}
+                                </Typography>
+                                <Typography className={styles.sitemapIndexFileDescription} component="p">{t('labels.settingSection.sitemapIndexFileSection.description')}</Typography>
+                                <Card>
+                                    <div className={styles.sitemapIndexFileCardArea}>
+                                        {formik.values.sitemapIndexURL === '' && <Typography className={styles.sitemapIndexFileNameDisabled} component="p">{t('labels.settingSection.sitemapIndexFileSection.missing')}</Typography>}
+                                        {
+                                            formik.values.sitemapIndexURL !== '' &&
+                                            <>
+                                                <File className={styles.sitemapIndexFileIconEnabled} size="big"/>
+                                                <Typography className={styles.sitemapIndexFileNameEnabled} component="p">{sitemapIndexUrlBuilder(formik.values.sitemapIndexURL)}</Typography>
+                                                <Button className={styles.sitemapIndexFileButton} variant="ghost" icon={<OpenInNew size="big"/>} onClick={() => onOpenSitemapXMLButtonClick(sitemapIndexUrlBuilder(formik.values.sitemapIndexURL))}/>
+                                            </>
+                                        }
+                                    </div>
+                                </Card>
                             </div>
                             <div className={styles.subsection}>
                                 <Typography className={styles.updateIntervalTitle} component="h3">{t('labels.settingSection.updateIntervalSection.title')}</Typography>

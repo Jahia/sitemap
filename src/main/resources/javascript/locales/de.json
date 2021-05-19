@@ -12,9 +12,8 @@
     },
     "settingSection": {
       "sitemapIndexFileSection": {
-        "title": "Sitemap Index Datei",
-        "description": "Die Sitemap Index Datei referenziert alle anderen Sitemap Dateien: sprachabhängige Sitemaps und gesonderte Sitemaps.",
-        "sitemapIndexXML": "sitemap-index.xml"
+        "title": "Haupt-Sitemap",
+        "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps"
       },
       "sitemapIndexURLSection": {
         "title": "Sitemap Index URL",

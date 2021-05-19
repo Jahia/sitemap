@@ -4,16 +4,7 @@ const gqlMutate = (client, mutationName, variables) => {
         variables: variables
     }).then(data => {
         return data;
-    });
+    }).catch(error => console.error(error));
 };
 
-const gqlQuery = (client, queryName, variables) => {
-    return client.query({
-        query: queryName,
-        variables: variables
-    }).then(data => {
-        return data;
-    });
-};
-
-export {gqlMutate, gqlQuery};
+export {gqlMutate};

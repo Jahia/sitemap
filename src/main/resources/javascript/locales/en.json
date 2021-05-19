@@ -14,11 +14,11 @@
         "sitemapIndexFileSection": {
             "title": "Main sitemap file",
             "description": "Main sitemap file references all other sitemap files: language sitemaps and dedicated sitemaps.",
-            "sitemapIndexXML": "sitemap-index.xml"
+            "missing": "No sitemap file generated yet"
         },
         "sitemapIndexURLSection": {
-            "title": "Sitemap Index URL",
-            "description": "Add the public URL of your main sitemap file. It is needed because you may rely on proxies that are changing the URLs of your site.",
+            "title": "Sitemap root URL",
+            "description": "Add public root URL of your site. Make sure that your server name is something other than 'localhost'.",
             "chipLabel": "Required"
         },
         "updateIntervalSection": {
