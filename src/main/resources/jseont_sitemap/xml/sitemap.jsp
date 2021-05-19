@@ -26,7 +26,7 @@
             <c:set var="siteMapPath" value="${currentNode.path}" />
             <c:set var="currentLanguage" value="${renderContext.site.language}"/>
             <sitemap>
-                <loc>${url.server}<c:url value="${siteMapPath}-${currentLanguage}.xml"/></loc>
+                <loc>${url.server}<c:url value="${siteMapPath}-lang.xml"/></loc>
             </sitemap>
             <%--        <sitemap>--%>
             <%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
@@ -44,7 +44,7 @@
             <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLanguages" var="inactiveLanguages"/>
             <c:forEach var="lang" items="${languages}">
                 <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
-                    <c:url value="${url.getBase(lang.toString())}${siteMapPath}-${lang.toString()}.xml" var="languageResource"/>
+                    <c:url value="${url.getBase(lang.toString())}${siteMapPath}-lang.xml" var="languageResource"/>
                     <sitemap>
                         <loc>${url.server}${languageResource}</loc>
                     </sitemap>
@@ -56,7 +56,7 @@
                 <query:selector nodeTypeName="jseomix:sitemapResource" selectorName="stmp"/>
                 <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
             </jcr:jqom>
-            <c:set var="sitemapName" value="/sitemap-${currentLanguage}.xml"/>
+            <c:set var="sitemapName" value="/sitemap-lang.xml"/>
             <c:forEach var="node" items="${additionalMaps.nodes}">
                 <sitemap>
                     <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', sitemapName)}"/></loc>
