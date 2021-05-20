@@ -6,14 +6,19 @@ The sitemap module provides capability to render sitemaps for a given site using
 How to customize the sitemap ?
 ------------------------------
 
-Once sitemap is enabled for a given site, the sitemap module provides a sitemap index located in `<site>/sitemap.index.xml` linking to different sitemap.xml views that the module provides. This includes sitemaps for each available languages as well as dedicated sitemaps for certain resources.
+Once sitemap is enabled for a given site, the sitemap module provides a sitemap index located in `<site>/sitemap.xml` linking to 
+different sitemap-lang.xml views that the module provides. This includes sitemaps for each available languages as well as dedicated 
+sitemaps for certain resources.
 
-Each of the _sitemap.xml_ views lists all resources of type `jnt:page` and `jmix:mainResource`(which we will call _sitemap resources_) for their given subnodes. Sitemap resources can be excluded by enabling _No index_ option for that resource. In addition, sitemap resources can also have its own dedicated _sitemap.xml_ view that lists all sitemap resources within that subnode. This list will then get added automatically to the main sitemap.index.xml. This is useful for managing the size and organization of available sitemaps.
+Each of the _sitemap-lang.xml_ views lists all resources of type `jnt:page` and `jmix:mainResource`(which we will call _sitemap resources_) 
+for their given subnodes. Sitemap resources can be excluded by enabling _No index_ option for that resource. In addition, sitemap 
+resources can also have its own dedicated _sitemap-lang.xml_ view that lists all sitemap resources within that subnode. This list will then 
+get added automatically to the main sitemap.xml. This is useful for managing the size and organization of available sitemaps.
 
 Sitemap generation
 ------------------------------
 
-For each sitemap resource included in the sitemap.xml:
+For each sitemap resource included in the sitemap-lang.xml:
 
 * Add `<url>` entry with the given URL specified in `<loc>` that is UTF-8 encoded and entity-escaped.
 * Each URL entry will have last modified date `<lastmod>` in W3C format.
@@ -43,7 +48,7 @@ This is a comma-separated value of the list of search engines to use by the site
 ## UI Parameters
 
 ### Cache duration
-This value determines how often to remove and refresh the file cache for sitemap.xml contents specified in hours. Cache expiration
+This value determines how often to remove and refresh the file cache for sitemap-lang.xml contents specified in hours. Cache expiration
 defaults to null if not activated on the UI. 
 
 On UI, the user will specify the cache duration and "Flush Cache".
