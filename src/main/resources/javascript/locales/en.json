@@ -18,7 +18,7 @@
         },
         "sitemapIndexURLSection": {
             "title": "Sitemap root URL",
-            "description": "Add public root URL of your site. Make sure that your server name is something other than 'localhost'.",
+            "description": "Add public root URL of your site, for instance: https://www.jahia.com. Please note that the sitemap files won't be available when your server name is set to localhost.",
             "chipLabel": "Required"
         },
         "updateIntervalSection": {
