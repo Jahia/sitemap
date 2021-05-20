@@ -13,7 +13,8 @@
     "settingSection": {
       "sitemapIndexFileSection": {
         "title": "Haupt-Sitemap",
-        "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps"
+        "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps",
+        "missing": "Es wurde noch keine Sitemap generiert"
       },
       "sitemapIndexURLSection": {
         "title": "Sitemap Index URL",

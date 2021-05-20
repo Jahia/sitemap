@@ -14,7 +14,7 @@
       "sitemapIndexFileSection": {
         "title": "Fichier sitemap principal",
         "description": "Le fichier sitemap principal référence tous les autres fichiers sitemap: sitemap par langue et sitemap dédié",
-        "missing": "Le fichier sitemap n'a pas encore été généré."
+        "missing": "Aucun fichier sitemap n'a été généré"
       },
       "sitemapIndexURLSection": {
         "title": "URL de l'index sitemap",
