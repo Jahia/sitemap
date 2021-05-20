@@ -18,7 +18,6 @@
       },
       "sitemapIndexURLSection": {
         "title": "Sitemap Index URL",
-        "description": "Fügen Sie die öffentliche URL Ihrer Sitemap Index Datei hinzu. Das ist notwendig, da möglicherweise Proxy-Server verwendet werden und die URL Ihrer Site verändern.",
         "chipLabel": "Verpflichtend"
       },
       "updateIntervalSection": {

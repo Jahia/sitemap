@@ -18,7 +18,6 @@
       },
       "sitemapIndexURLSection": {
         "title": "URL de l'index sitemap",
-        "description": "Ajouter l'URL publique de votre fichier sitemap-index",
         "chipLabel": "Obligatoire"
       },
       "updateIntervalSection": {
