@@ -158,6 +158,9 @@ workflows:
             - jahia-modules-orb/update-signature
       - jahia-modules-orb/sonar-analysis:
           context: QA_ENVIRONMENT
+          primary_release_branch: << pipeline.parameters.PRIMARY_RELEASE_BRANCH >>
+          module_id: << pipeline.parameters.MODULE_ID >>
+          github_slug: << pipeline.parameters.GITHUB_SLUG >>
           requires:
             - jahia-modules-orb/build
       - jahia-modules-orb/publish:
@@ -184,6 +187,12 @@ workflows:
           SKIP_TESTRAIL: "true"
           SKIP_ARTIFACTS: false
           BUILD_TESTSIMAGE: true
+          # Not sure what about below
+          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
+          tests_manifest: provisioning-manifest-build.yml
+          module_id: << pipeline.parameters.MODULE_ID >>
+          testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
+          testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
       - docker-publish:
           context: QA_ENVIRONMENT
           requires:
@@ -213,12 +222,30 @@ workflows:
             - jahia-modules-orb/initialize
       - jahia-modules-orb/release:
           context: QA_ENVIRONMENT
+          module_id: << pipeline.parameters.MODULE_ID >>
+          github_slug: << pipeline.parameters.GITHUB_SLUG >>
+          release_id: << pipeline.parameters.RELEASE_ID >>
+          release_version: << pipeline.parameters.RELEASE_VERSION >>
+          primary_release_branch: << pipeline.parameters.PRIMARY_RELEASE_BRANCH >>
+          ssh_key_fingerprints:  << pipeline.parameters.SSH_KEY_FINGERPRINT >>
           requires:
             - jahia-modules-orb/generate-changelog
       - jahia-modules-orb/update-signature:
           context: QA_ENVIRONMENT
+          ssh_key_fingerprints: << pipeline.parameters.SSH_KEY_FINGERPRINT >>
           requires:
             - jahia-modules-orb/release
+      - wait-for-approval:
+          type: approval
+          context: QA_ENVIRONMENT
+          requires:
+            - jahia-modules-orb/release
+      - jahia-modules-orb/release-publication:
+          context: QA_ENVIRONMENT
+          requires:
+            - wait-for-approval
+          module_id: << pipeline.parameters.MODULE_ID >>
+          release_version: << pipeline.parameters.RELEASE_VERSION >>
 
   # The on-signature-update workflow was created to handle the signage of modules in case it needs to be done manually.
   # https://github.com/Jahia/sitemap#manually-updating-signature-via-command-line
@@ -236,6 +263,44 @@ workflows:
             - jahia-modules-orb/update-signature-prestep
           ssh_key_fingerprints:  << pipeline.parameters.SSH_KEY_FINGERPRINT >>
           context: QA_ENVIRONMENT
+  # The manual-run workflow was created to allow the triggering of an integration testing run using CircleCI pipeline API
+  manual-run:
+    when: << pipeline.parameters.IS_MANUAL_TESTRUN >>
+    jobs:
+      - jahia-modules-orb/initialize
+      - jahia-modules-orb/integration-tests:
+          context: QA_ENVIRONMENT
+          requires:
+            - jahia-modules-orb/initialize
+          jahia_image: << pipeline.parameters.JAHIA_IMAGE >>
+          tests_manifest: << pipeline.parameters.TESTS_MANIFEST >>
+          module_id: << pipeline.parameters.MODULE_ID >>
+          testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
+          testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
+          should_skip_artifacts: << pipeline.parameters.SHOULD_SKIP_ARTIFACTS >>
+          should_skip_testrail: << pipeline.parameters.SHOULD_SKIP_TESTRAIL >>
+          should_skip_notifications: << pipeline.parameters.SHOULD_SKIP_NOTIFICATIONS >>
+          should_skip_zencrepes: << pipeline.parameters.SHOULD_SKIP_ZENCREPES >>
+  # The on-rollback workflow was created to handle release rollback when a release has been deleted from Github
+  # The rollback pipeline/job performs the following action:
+  # - restore rollback artifact cache created from the release job
+  # - Run mvn:rollback
+  # - Delete github tag associated with the release
+  on-rollback:
+    when: << pipeline.parameters.IS_ROLLBACK >>
+    jobs:
+      - jahia-modules-orb/release-rollback:
+          context: QA_ENVIRONMENT
+          ssh_key_fingerprints: << pipeline.parameters.SSH_KEY_FINGERPRINT >>
+          release_id: << pipeline.parameters.RELEASE_ID >>
+          release_version: << pipeline.parameters.RELEASE_VERSION >>
+      - jahia-modules-orb/release-cancellation:
+          context: QA_ENVIRONMENT
+          requires:
+            - jahia-modules-orb/release-rollback
+          module_id: << pipeline.parameters.MODULE_ID >>
+          pipeline_id: << pipeline.id >>
+          release_version: << pipeline.parameters.RELEASE_VERSION >>
 
   # The objective of nightly runs is to ensure the codebase still passes tests:
   # - With the latest releases version of Jahia
