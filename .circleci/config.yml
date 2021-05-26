@@ -121,8 +121,8 @@ workflows:
           requires:
             - jahia-modules-orb/build
           context: QA_ENVIRONMENT
-          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
-          tests_manifest: provisioning-manifest-build.yml
+          jahia_image: jahia/jahia-private:snapshot-dev
+          tests_manifest: warmup-manifest-build.yml
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
@@ -251,8 +251,8 @@ workflows:
             - jahia-modules-orb/initialize
           matrix:
             parameters:
-              jahia_image: ["jahia/jahia-ee:8", "jahia/jahia-ee-dev:8-SNAPSHOT"]
-              tests_manifest: ["provisioning-manifest-snapshot.yml"]
+              jahia_image: ["jahia/jahia-private:snapshot-dev"]
+              tests_manifest: ["warmup-manifest-snapshot.yml"]
               module_id: ["<< pipeline.parameters.MODULE_ID >>"]
               testrail_project: ["<< pipeline.parameters.TESTRAIL_PROJECTNAME >>"]
               testrail_milestone: ["<< matrix.jahia_image >>"]
