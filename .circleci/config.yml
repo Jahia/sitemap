@@ -79,7 +79,11 @@ workflows:
           context: QA_ENVIRONMENT
           requires:
             - jahia-modules-orb/initialize
-      - jahia-modules-orb/lint:
+      - lint:
+          pre-steps:
+            - run:
+                name: "Running lint"
+                command: jahia-modules-orb/lint
           requires:
             - jahia-modules-orb/initialize
       - jahia-modules-orb/security:
