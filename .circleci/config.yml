@@ -74,72 +74,6 @@ parameters:
     type: boolean
     default: false
 
-references:
-  workdir: &workdir
-    working_directory: ~/source
-
-  persist-workspace: &persist-workspace
-    persist_to_workspace:
-      root: ~/source
-      paths:
-        - .
-
-  attach-workspace: &attach-workspace
-    attach_workspace:
-      at: .
-
-
-jobs:
-  # Lint the project or any other static code analysis
-  # This action should run in parrallel, failed linting should trigger an error but should not stop execution of the tests
-  # Ideally this should lint both the module codebase and the test codebase, we want to fail on warning (it is up the the
-  # team to either fix the warning, ignore the warning, or modify the ruleset so that this warnning doesn't happen again)
-  lint:
-    <<: *workdir
-    docker:
-      - image: cimg/node:14.15
-    steps:
-      - *attach-workspace
-      - run:
-          name: Yarn lint tests
-          command: |
-            jahia-modules-orb/lint
-  security:
-    <<: *workdir
-    docker:
-      - image: cimg/node:14.15
-    steps:
-      - *attach-workspace
-      - run:
-          name: Run security command
-          command: jahia-modules-orb/security
-  # We also want the test image to be versioned and published to Docker Hub whenever a new tag is created
-  # This would allow us to re-use a test image whenever we want to test with an earlier version of the module
-  docker-publish:
-    <<: *workdir
-    docker:
-      - image: circleci/openjdk:8-jdk-stretch-browsers
-    steps:
-      - *attach-workspace
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Push << pipeline.parameters.TESTS_IMAGE >> image to docker hub
-          command: |
-            cd << pipeline.parameters.TESTS_PATH >>
-            docker load -i tests_image.tar
-            if [ "$CIRCLE_BRANCH" = "<< pipeline.parameters.PRIMARY_RELEASE_BRANCH >>" ]; then
-                IMAGE_TAG=latest
-            else
-                IMAGE_TAG=${CIRCLE_TAG/''}
-            fi
-            echo "Image tag is: $IMAGE_TAG"
-            docker tag << pipeline.parameters.TESTS_IMAGE >>:latest << pipeline.parameters.TESTS_IMAGE >>:$IMAGE_TAG
-            docker login -u $DOCKERHUB_LOGIN -p $DOCKERHUB_PASSWORD
-            echo "Tagged the image"
-            docker push << pipeline.parameters.TESTS_IMAGE >>:$IMAGE_TAG
-            echo "Pushed tag"
-
 workflows:
   # On code change is executed each time new code is pushed to a branch
   # Current project configuration in circleci only builds on PR + main, so effectively this is only being executed
@@ -157,12 +91,10 @@ workflows:
           context: QA_ENVIRONMENT
           requires:
             - jahia-modules-orb/initialize
-      - lint:
+      - jahia-modules-orb/static-analysis:
           requires:
             - jahia-modules-orb/initialize
-      - security:
-          requires:
-            - jahia-modules-orb/initialize
+          auditci_level: high
       - jahia-modules-orb/build:
           context: QA_ENVIRONMENT
           requires:
@@ -194,16 +126,11 @@ workflows:
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
-      - docker-publish:
+      - docker-test-publish:
           context: QA_ENVIRONMENT
           requires:
             - Int. Tests - Jahia Latest - Built modules
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              only:
-                - << pipeline.parameters.PRIMARY_RELEASE_BRANCH >>
+          test_image_name: << pipeline.parameters.TESTS_IMAGE >>
 
   # The on-release workflow was created to handle the full release lifecycle after creating a release using GitHub
   # https://github.com/Jahia/sitemap/releases
