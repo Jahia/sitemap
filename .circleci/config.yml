@@ -130,7 +130,7 @@ workflows:
           context: QA_ENVIRONMENT
           requires:
             - Int. Tests - Jahia Latest - Built modules
-          test_image_name: << pipeline.parameters.TESTS_IMAGE >>
+          tests_image_name: << pipeline.parameters.TESTS_IMAGE >>
 
   # The on-release workflow was created to handle the full release lifecycle after creating a release using GitHub
   # https://github.com/Jahia/sitemap/releases
