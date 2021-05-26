@@ -126,7 +126,7 @@ workflows:
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
-      - docker-test-publish:
+      - jahia-modules-orb/docker-test-publish:
           context: QA_ENVIRONMENT
           requires:
             - Int. Tests - Jahia Latest - Built modules
