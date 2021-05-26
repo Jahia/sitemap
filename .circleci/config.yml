@@ -189,17 +189,6 @@ workflows:
           requires:
             - jahia-modules-orb/build
           context: QA_ENVIRONMENT
-          #Using Aliases here (8 is the latest of the 8 tree, 8.1 is the latest of the tree, ...)
-          JAHIA_IMAGE: jahia/jahia-private:snapshot-dev
-          RUN_TESTSIMAGE: << pipeline.parameters.TESTS_IMAGE >>:latest
-          TOOLS_USER: root
-          TOOLS_PWD: root
-          MANIFEST: warmup-manifest-build.yml
-          TESTRAIL_MILESTONE: Jahia-Latest
-          SKIP_TESTRAIL: "true"
-          SKIP_ARTIFACTS: false
-          BUILD_TESTSIMAGE: true
-          # Not sure what about below
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           tests_manifest: provisioning-manifest-build.yml
           module_id: << pipeline.parameters.MODULE_ID >>
