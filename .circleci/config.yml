@@ -62,6 +62,21 @@ parameters:
     type: boolean
     default: false
 
+references:
+  workdir: &workdir
+    working_directory: ~/source
+
+  persist-workspace: &persist-workspace
+    persist_to_workspace:
+      root: ~/source
+      paths:
+        - .
+
+  attach-workspace: &attach-workspace
+    attach_workspace:
+      at: .
+
+
 jobs:
   # Lint the project or any other static code analysis
   # This action should run in parrallel, failed linting should trigger an error but should not stop execution of the tests
