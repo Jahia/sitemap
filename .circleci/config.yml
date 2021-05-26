@@ -3,8 +3,7 @@ version: 2.1
 orbs:
   docker: circleci/docker@0.5.20
   jq: circleci/jq@2.2.0
-  # TODO IMPORTANT: When creating a module, use a fix version of the orb, not dev:alpha
-  jahia-modules-orb: jahia/jahia-modules-orb@dev:alpha
+  jahia-modules-orb: jahia/jahia-modules-orb@0.1.6
 
 # Parameters are available across the entire config file and can be used with this syntax: << pipeline.parameters.THE_PARAMETER >>
 # Avoid using project-specific variables in the jobs or steps.
@@ -32,6 +31,9 @@ parameters:
   PRIMARY_RELEASE_BRANCH:
     type: string
     default: "master" # main or master ? set the branch for the main release
+  JAHIA_IMAGE:
+    type: string
+    default: "jahia/jahia-ee-dev:8-SNAPSHOT"
   RELEASE_ID:
     type: string
     default: ""
@@ -47,9 +49,20 @@ parameters:
   SSH_KEY_FINGERPRINT:
     type: string
     default: "29:01:4c:71:59:29:c4:65:45:1d:95:1b:59:31:fd:b4"
+  SHOULD_SKIP_ARTIFACTS:
+    type: boolean
+    default: true
+  SHOULD_SKIP_TESTRAIL:
+    type: boolean
+    default: true
+  SHOULD_SKIP_NOTIFICATIONS:
+    type: boolean
+    default: true
+  SHOULD_SKIP_ZENCREPES:
+    type: boolean
+    default: false
 
 workflows:
-  version: 2
   # On code change is executed each time new code is pushed to a branch
   # Current project configuration in circleci only builds on PR + main, so effectively this is only being executed
   on-code-change:
@@ -154,17 +167,8 @@ workflows:
     jobs:
       - jahia-modules-orb/update-signature:
           pre-steps:
-            - jahia-modules-orb/checkout
-            - run:
-                name: Verifying if signature needs to be updated
-                command: |
-                  commit_message=$(git log -1 HEAD --pretty=format:%s)
-                  if [[ $commit_message != *"[ci sign]"* \
-                     && $commit_message != *"[sign ci]"* \
-                     && $commit_message != *"[jahia update signature]"* ]]; then
-                    echo "Signature update has not been requested. Proceeding without updating the signature"
-                    circleci-agent step halt
-                  fi
+            - jahia-modules-orb/update-signature-prestep
+          ssh_key_fingerprints:  << pipeline.parameters.SSH_KEY_FINGERPRINT >>
           context: QA_ENVIRONMENT
 
   # The objective of nightly runs is to ensure the codebase still passes tests:
