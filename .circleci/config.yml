@@ -92,6 +92,41 @@ jobs:
           name: Yarn lint tests
           command: |
             jahia-modules-orb/lint
+  security:
+    <<: *workdir
+    docker:
+      - image: cimg/node:14.15
+    steps:
+      - *attach-workspace
+      - run:
+          name: Run security command
+          command: jahia-modules-orb/security
+  # We also want the test image to be versioned and published to Docker Hub whenever a new tag is created
+  # This would allow us to re-use a test image whenever we want to test with an earlier version of the module
+  docker-publish:
+    <<: *workdir
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch-browsers
+    steps:
+      - *attach-workspace
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Push << pipeline.parameters.TESTS_IMAGE >> image to docker hub
+          command: |
+            cd << pipeline.parameters.TESTS_PATH >>
+            docker load -i tests_image.tar
+            if [ "$CIRCLE_BRANCH" = "<< pipeline.parameters.PRIMARY_RELEASE_BRANCH >>" ]; then
+                IMAGE_TAG=latest
+            else
+                IMAGE_TAG=${CIRCLE_TAG/''}
+            fi
+            echo "Image tag is: $IMAGE_TAG"
+            docker tag << pipeline.parameters.TESTS_IMAGE >>:latest << pipeline.parameters.TESTS_IMAGE >>:$IMAGE_TAG
+            docker login -u $DOCKERHUB_LOGIN -p $DOCKERHUB_PASSWORD
+            echo "Tagged the image"
+            docker push << pipeline.parameters.TESTS_IMAGE >>:$IMAGE_TAG
+            echo "Pushed tag"
 
 workflows:
   # On code change is executed each time new code is pushed to a branch
@@ -113,7 +148,7 @@ workflows:
       - lint:
           requires:
             - jahia-modules-orb/initialize
-      - jahia-modules-orb/security:
+      - security:
           requires:
             - jahia-modules-orb/initialize
       - jahia-modules-orb/build:
@@ -121,7 +156,7 @@ workflows:
           requires:
             - jahia-modules-orb/initialize
             - jahia-modules-orb/update-signature
-      - jahia-modules-orb/sonar:
+      - jahia-modules-orb/sonar-analysis:
           context: QA_ENVIRONMENT
           requires:
             - jahia-modules-orb/build
@@ -149,7 +184,7 @@ workflows:
           SKIP_TESTRAIL: "true"
           SKIP_ARTIFACTS: false
           BUILD_TESTSIMAGE: true
-      - jahia-modules-orb/docker-publish:
+      - docker-publish:
           context: QA_ENVIRONMENT
           requires:
             - Int. Tests - Jahia Latest - Built modules
