@@ -19,6 +19,9 @@ parameters:
   TESTS_IMAGE:
     type: string
     default: "jahia/sitemap"
+  TESTRAIL_MILESTONE:
+    type: string
+    default: "Default"
   MODULE_ID:
     type: string
     default: "sitemap"
@@ -59,6 +62,15 @@ parameters:
     type: boolean
     default: true
   SHOULD_SKIP_ZENCREPES:
+    type: boolean
+    default: false
+  TESTS_MANIFEST: # Manifest to be executed by the test container when triggered from an API call
+    type: string
+    default: ""
+  IS_ROLLBACK:
+    type: boolean
+    default: false
+  IS_MANUAL_TESTRUN: # Was the workflow triggered by an API call ?
     type: boolean
     default: false
 
