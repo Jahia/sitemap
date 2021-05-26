@@ -317,19 +317,22 @@ workflows:
                 - << pipeline.parameters.PRIMARY_RELEASE_BRANCH >>
     jobs:
       - jahia-modules-orb/initialize
-      - jahia-modules-orb/integration_tests:
-          matrix:
-            parameters:
-              JAHIA_IMAGE: ["jahia/jahia-private:snapshot-dev"]
-              RUN_TESTSIMAGE: ["<< pipeline.parameters.TESTS_IMAGE >>:latest"]
-              MANIFEST: ["warmup-manifest-snapshot.yml"]
-              TESTRAIL_MILESTONE: ["<< matrix.JAHIA_IMAGE >>"]
-              TOOLS_USER: ["root"]
-              TOOLS_PWD: ["root"]
-          name: Nightly-<< matrix.JAHIA_IMAGE >>
+      - jahia-modules-orb/integration-tests:
+          name: Nightly-<< matrix.jahia_image >>
           context: QA_ENVIRONMENT
           requires:
             - jahia-modules-orb/initialize
+          matrix:
+            parameters:
+              jahia_image: ["jahia/jahia-ee:8", "jahia/jahia-ee-dev:8-SNAPSHOT"]
+              tests_manifest: ["provisioning-manifest-snapshot.yml"]
+              module_id: ["<< pipeline.parameters.MODULE_ID >>"]
+              testrail_project: ["<< pipeline.parameters.TESTRAIL_PROJECTNAME >>"]
+              testrail_milestone: ["<< matrix.jahia_image >>"]
+              should_skip_artifacts: [true]
+              should_skip_testrail: [false]
+              should_skip_notifications: [false]
+              should_skip_zencrepes: [false]
 
   # Monthly, we run the integration testing suite with older (but still supported) versions of Jahia and set versions of the module:
   # This provides a reference point (when was the latest time this was tested)
