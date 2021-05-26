@@ -62,6 +62,22 @@ parameters:
     type: boolean
     default: false
 
+jobs:
+  # Lint the project or any other static code analysis
+  # This action should run in parrallel, failed linting should trigger an error but should not stop execution of the tests
+  # Ideally this should lint both the module codebase and the test codebase, we want to fail on warning (it is up the the
+  # team to either fix the warning, ignore the warning, or modify the ruleset so that this warnning doesn't happen again)
+  lint:
+    <<: *workdir
+    docker:
+      - image: cimg/node:14.15
+    steps:
+      - *attach-workspace
+      - run:
+          name: Yarn lint tests
+          command: |
+            jahia-modules-orb/lint
+
 workflows:
   # On code change is executed each time new code is pushed to a branch
   # Current project configuration in circleci only builds on PR + main, so effectively this is only being executed
@@ -80,10 +96,6 @@ workflows:
           requires:
             - jahia-modules-orb/initialize
       - lint:
-          pre-steps:
-            - run:
-                name: "Running lint"
-                command: jahia-modules-orb/lint
           requires:
             - jahia-modules-orb/initialize
       - jahia-modules-orb/security:
