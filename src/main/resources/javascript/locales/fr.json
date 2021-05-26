@@ -17,7 +17,8 @@
         "missing": "Aucun fichier sitemap n'a été généré"
       },
       "sitemapIndexURLSection": {
-        "title": "URL de l'index sitemap",
+        "title": "URL racine du sitemap",
+        "description": "Ajoutez l'URL racine publique de votre site, par exemple https://www.jahia.com. Notez que les fichiers sitemap ne seront pas accessibles si le nom du serveur est localhost.",
         "chipLabel": "Obligatoire"
       },
       "updateIntervalSection": {

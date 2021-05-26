@@ -17,7 +17,8 @@
         "missing": "Es wurde noch keine Sitemap generiert"
       },
       "sitemapIndexURLSection": {
-        "title": "Sitemap Index URL",
+        "title": "Sitemap Basis-URL",
+        "description": "Fügen Sie die öffentliche Basis-URL Ihrer Seite hinzu, zB. https://www.jahia.com. Bitte um Beachtung: Sitemaps sind nicht verfügbar, wenn “localhost” als Servername gesetzt wurde.",
         "chipLabel": "Verpflichtend"
       },
       "updateIntervalSection": {
