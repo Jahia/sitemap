@@ -11,10 +11,10 @@ jobs:
     filepath: /tmp/graphql-dxm-provider-LATEST.jar
   - type: module
     id: sitemap
-    filepath: /tmp/artifacts/sitemap-SNAPSHOT.jar
+    filepath: /tmp/artifacts/sitemap-4.0.0-SNAPSHOT.jar
   - type: webproject
     source: prepackaged
-    sitekey: digitall    
+    sitekey: digitall
   - type: modulesite
     action: enable
     moduleId: sitemap
