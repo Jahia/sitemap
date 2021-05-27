@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.6'
 services:
     jahia:
         image: '${JAHIA_IMAGE}'
@@ -26,10 +26,6 @@ services:
             - JAHIA_PORT=${JAHIA_PORT}
             - NEXUS_USERNAME=${NEXUS_USERNAME}
             - NEXUS_PASSWORD=${NEXUS_PASSWORD}
-        volumes:
-            - type: bind
-              source: ./results
-              target: /tmp/results
         networks:
             - stack
 networks:
