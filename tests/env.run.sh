@@ -41,6 +41,7 @@ curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisionin
 echo "$(date +'%d %B %Y - %k:%M') == Environment warmup complete =="
 
 # If we're building the module (and manifest name contains build), then we'll end up pushing that module individually
+pwd
 cd ./artifacts
 for file in *-SNAPSHOT.jar
 do
