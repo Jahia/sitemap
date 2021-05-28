@@ -1,21 +1,5 @@
-version: 1.0
-jobs:
-  - type: asset
-    fetch: http
-    username: NEXUS_USERNAME
-    password: NEXUS_PASSWORD
-    source: https://devtools.jahia.com/nexus/service/local/artifact/maven/redirect?r=jahia-snapshots&g=org.jahia.modules&a=graphql-dxm-provider&v=LATEST
-    filepath: /tmp/graphql-dxm-provider-LATEST.jar
-  - type: module
-    id: graphql-dxm-provider
-    filepath: /tmp/graphql-dxm-provider-LATEST.jar
-  - type: module
-    id: sitemap
-    filepath: /tmp/artifacts/sitemap-4.0.0-SNAPSHOT.jar
-  - type: webproject
-    source: prepackaged
-    sitekey: digitall
-  - type: modulesite
-    action: enable
-    moduleId: sitemap
-    siteId: digitall
+- installBundle:
+  - 'mvn:org.jahia.modules/graphql-dxm-provider/2.4.0'
+  - 'file:/tmp/artifacts/sitemap-4.0.0-SNAPSHOT.jar'
+  autoStart: true
+  uninstallPreviousVersion: true
