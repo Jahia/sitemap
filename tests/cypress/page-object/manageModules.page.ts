@@ -22,7 +22,7 @@ class ManageModules extends BasePage {
             .find(this.elements.searchInput)
             .clear()
             .type(moduleName)
-        this.getIframeBodySelector(this.elements.iframeManageModules).contains(this.htmlElements.span, moduleName).click()
+        this.getIframeBodySelector(this.elements.iframeManageModules).contains(this.htmlElements.td, moduleName).click()
 
         this.containIframeElement(this.elements.iframeManageModules, this.htmlElements.h2, moduleName).should(
             'be.visible',
