@@ -8,7 +8,7 @@ USER jahians
 WORKDIR /home/jahians
 
 COPY --chown=jahians:jahians package.json yarn.lock /home/jahians/
-COPY --chown=jahians:jahians tests/artifacts /home/jahians/
+COPY --chown=jahians:jahians artifacts /home/jahians/
 
 RUN mkdir -p /home/jahians/run-artifacts /home/jahians/results /home/jahians/cypress/plugins
 
