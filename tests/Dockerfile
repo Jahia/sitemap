@@ -11,11 +11,10 @@ COPY --chown=jahians:jahians package.json yarn.lock /home/jahians/
 
 RUN mkdir -p /home/jahians/run-artifacts /home/jahians/results /home/jahians/cypress/plugins
 
-#CI=true reduces the verbosity of the installation logs
-RUN CI=true yarn install
+RUN yarn install
 
 COPY --chown=jahians:jahians . /home/jahians
 
-RUN CI=true /home/jahians/node_modules/.bin/cypress install
+RUN /home/jahians/node_modules/.bin/cypress install
 
 CMD ["/bin/bash", "-c", "/home/jahians/env.run.sh"]
