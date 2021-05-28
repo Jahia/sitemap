@@ -45,7 +45,7 @@ pwd
 cd ./artifacts
 for file in *-SNAPSHOT.jar
 do
-  echo "$(date +'%d %B %Y - %k:%M') == Submitting module from: $file =="
+  echo "$(date +'%d %B %Y - %k:%M') == Submitting module: $file =="
   curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisioning --form script='[{"installAndStartBundle":"'"$file"'"}]' --form file=@$file
   echo "$(date +'%d %B %Y - %k:%M') == Module submitted =="
 done

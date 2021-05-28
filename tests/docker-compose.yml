@@ -14,7 +14,7 @@ services:
         image: '${TESTS_IMAGE}'
         # https://github.com/cypress-io/cypress/issues/350
         ipc: host
-        container_name: e2e-tests
+        container_name: cypress
         depends_on:
             - jahia
         environment:
