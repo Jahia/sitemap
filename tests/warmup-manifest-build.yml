@@ -2,3 +2,5 @@
   - 'mvn:org.jahia.modules/graphql-dxm-provider/2.4.0'
   autoStart: true
   uninstallPreviousVersion: true
+
+- installAndStartBundle: 'file:/tmp/artifacts/sitemap-4.0.0-SNAPSHOT.jar'
