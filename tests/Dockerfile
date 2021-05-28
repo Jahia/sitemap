@@ -1,20 +1,21 @@
 FROM cypress/base:13.8.0
 
-ADD . /tmp
-WORKDIR /tmp
+RUN apt-get update && apt-get install -y jq
 
 RUN adduser --disabled-password jahians
-RUN chown -R jahians:jahians /tmp
-USER jahians
 
-RUN mkdir /tmp/run-artifacts
-RUN mkdir /tmp/results
+USER jahians
+WORKDIR /home/jahians
+
+COPY --chown=jahians:jahians package.json yarn.lock /home/jahians/
+
+RUN mkdir -p /home/jahians/run-artifacts /home/jahians/results /home/jahians/cypress/plugins
 
 #CI=true reduces the verbosity of the installation logs
 RUN CI=true yarn install
-RUN CI=true /tmp/node_modules/.bin/cypress install
 
-# Jahia-cli is used to warmup the environment at startup
-RUN PUPPETEER_SKIP_DOWNLOAD=true yarn add jahia-cli@0.0.48
+COPY --chown=jahians:jahians . /home/jahians
 
-CMD ["/bin/bash", "-c", "/tmp/env.run.sh"]
+RUN CI=true /home/jahians/node_modules/.bin/cypress install
+
+CMD ["/bin/bash", "-c", "/home/jahians/env.run.sh"]
