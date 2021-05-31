@@ -12,7 +12,7 @@ orbs:
 parameters:
   AUDITCI_LEVEL:
     type: string
-    default: "high"
+    default: "moderate"
   TESTS_PATH:
     type: string
     default: "tests/"
@@ -94,7 +94,7 @@ workflows:
       - jahia-modules-orb/static-analysis:
           requires:
             - jahia-modules-orb/initialize
-          auditci_level: high
+          auditci_level: moderate
       - jahia-modules-orb/build:
           context: QA_ENVIRONMENT
           requires:
@@ -121,7 +121,7 @@ workflows:
           requires:
             - jahia-modules-orb/build
           context: QA_ENVIRONMENT
-          jahia_image: jahia/jahia-private:snapshot-dev
+          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           tests_manifest: warmup-manifest-build.yml
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>

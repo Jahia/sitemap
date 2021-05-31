@@ -40,10 +40,9 @@ echo "$(date +'%d %B %Y - %k:%M') == Warming up the environement =="
 curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisioning --form script="@./run-artifacts/${MANIFEST};type=text/yaml"
 echo "$(date +'%d %B %Y - %k:%M') == Environment warmup complete =="
 
-curl -u root:root1234 -X POST ${JAHIA_URL}/modules/api/provisioning --form script='[{"karafCommand":"bundle:list"}]'
-
 # If we're building the module (and manifest name contains build), then we'll end up pushing that module individually
 cd ./artifacts
+ls
 for file in *-SNAPSHOT.jar
 do
   echo "$(date +'%d %B %Y - %k:%M') == Submitting module: $file =="

@@ -18,7 +18,7 @@ if [ ! -d ./artifacts ]; then
 fi
 
 if [[ -e ../target ]]; then
-  cp -R ../target/*-SNAPSHOT.jar ./artifacts/
+  cp ../target/*-SNAPSHOT.jar ./artifacts/sitemap-SNAPSHOT.jar
 fi
 
 docker build -t ${TESTS_IMAGE} .
