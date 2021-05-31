@@ -2,6 +2,7 @@ import { siteHomePage } from '../page-object/site.home.page'
 import { webProjectSettings } from '../page-object/webProjectSettings.page'
 import { manageModules } from '../page-object/manageModules.page'
 import { getUrlInfoWithHost } from '../support/utilites'
+import '../support/testTiming';
 
 describe('Enable sitemap on MySite', () => {
     beforeEach(() => {

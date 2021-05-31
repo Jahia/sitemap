@@ -2,7 +2,6 @@
     "baseUrl": "http://jahia:8080",
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
-    "nodeVersion": "system",
     "defaultCommandTimeout": 30000,
     "videoUploadOnPasses": false,
     "screenshotsFolder": "./results/screenshots",
