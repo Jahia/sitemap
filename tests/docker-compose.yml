@@ -4,7 +4,7 @@ services:
         image: '${JAHIA_IMAGE}'
         container_name: jahia
         ports:
-            - '${JAHIA_PORT}:8080'
+            - '8080:8080'
         extra_hosts:
             - jahia:127.0.0.1
         networks:
