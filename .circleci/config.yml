@@ -63,7 +63,7 @@ parameters:
     default: true
   SHOULD_SKIP_ZENCREPES:
     type: boolean
-    default: false
+    default: true
   TESTS_MANIFEST: # Manifest to be executed by the test container when triggered from an API call
     type: string
     default: ""
