@@ -12,7 +12,7 @@ orbs:
 parameters:
   AUDITCI_LEVEL:
     type: string
-    default: "moderate"
+    default: "high"
   TESTS_PATH:
     type: string
     default: "tests/"
@@ -94,7 +94,7 @@ workflows:
       - jahia-modules-orb/static-analysis:
           requires:
             - jahia-modules-orb/initialize
-          auditci_level: moderate
+          auditci_level: high
       - jahia-modules-orb/build:
           context: QA_ENVIRONMENT
           requires:
