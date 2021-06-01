@@ -209,7 +209,7 @@ workflows:
           should_skip_artifacts: << pipeline.parameters.SHOULD_SKIP_ARTIFACTS >>
           should_skip_testrail: << pipeline.parameters.SHOULD_SKIP_TESTRAIL >>
           should_skip_notifications: << pipeline.parameters.SHOULD_SKIP_NOTIFICATIONS >>
-          should_skip_zencrepes: << pipeline.parameters.SHOULD_SKIP_ZENCREPES >>
+          should_skip_zencrepes: true
   # The on-rollback workflow was created to handle release rollback when a release has been deleted from Github
   # The rollback pipeline/job performs the following action:
   # - restore rollback artifact cache created from the release job
