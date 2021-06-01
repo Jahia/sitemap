@@ -8,7 +8,6 @@ source .env
 
 #!/usr/bin/env bash
 START_TIME=$SECONDS
-
 echo " == Using MANIFEST: ${MANIFEST}"
 echo " == Using JAHIA_URL= ${JAHIA_URL}"
 
@@ -40,7 +39,7 @@ echo "$(date +'%d %B %Y - %k:%M') == Warming up the environement =="
 curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisioning --form script="@./run-artifacts/${MANIFEST};type=text/yaml"
 echo "$(date +'%d %B %Y - %k:%M') == Environment warmup complete =="
 
-# If we're building the module (and manifest name contains build), then we'll end up pushing that module individually
+# This will provision artifacts, in this case sitemap snapshot
 cd ./artifacts
 ls
 for file in *-SNAPSHOT.jar

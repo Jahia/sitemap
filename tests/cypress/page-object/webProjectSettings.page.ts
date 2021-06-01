@@ -38,10 +38,8 @@ class WebProjectSettings extends BasePage {
 
         this.getIframeBodySelector(this.elements.iframeWebProjectSettings).find(this.elements.createSiteAnchor).click()
 
-        cy.wait(5000);
-
-        this.getIframeElement(this.elements.iframeWebProjectSettings, this.elements.titleInput).should('be.visible')
-        this.getIframeElement(this.elements.iframeWebProjectSettings, this.elements.siteKeyInput).should('be.visible')
+        this.getIframeElement(this.elements.iframeWebProjectSettings, this.elements.titleInput)
+        this.getIframeElement(this.elements.iframeWebProjectSettings, this.elements.siteKeyInput)
         this.getIframeElement(this.elements.iframeWebProjectSettings, this.elements.serverNameInput).should(
             'be.visible',
         )

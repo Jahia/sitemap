@@ -251,7 +251,7 @@ workflows:
             - jahia-modules-orb/initialize
           matrix:
             parameters:
-              jahia_image: ["jahia/jahia-private:snapshot-dev"]
+              jahia_image: ["jahia/jahia-ee-dev:8-SNAPSHOT"]
               tests_manifest: ["warmup-manifest-snapshot.yml"]
               module_id: ["<< pipeline.parameters.MODULE_ID >>"]
               testrail_project: ["<< pipeline.parameters.TESTRAIL_PROJECTNAME >>"]
