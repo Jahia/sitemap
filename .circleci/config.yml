@@ -130,7 +130,7 @@ workflows:
       - jahia-modules-orb/docker-tests-build:
           context: QA_ENVIRONMENT
           requires:
-            - jahia-modules-orb/integration-tests
+            - Int. Tests - Jahia Latest - Built modules
           tests_image_name: << pipeline.parameters.TESTS_IMAGE >>
       - jahia-modules-orb/docker-tests-publish:
           context: QA_ENVIRONMENT
