@@ -50,6 +50,22 @@ do
 done
 cd ..
 
+echo "$(date +'%d %B %Y - %k:%M') == Fetching the list of installed modules =="
+./node_modules/jahia-reporter/bin/run utils:modules \
+  --moduleId="${MODULE_ID}" \
+  --jahiaUrl="${JAHIA_URL}" \
+  --jahiaPassword="${SUPER_USER_PASSWORD}" \
+  --filepath="results/installed-jahia-modules.json"
+echo "$(date +'%d %B %Y - %k:%M') == Modules fetched =="
+INSTALLED_MODULE_VERSION=$(cat results/installed-jahia-modules.json | jq '.module.version')
+if [[ $INSTALLED_MODULE_VERSION == "UNKNOWN" ]]; then
+  echo "$(date +'%d %B %Y - %k:%M') ERROR: Unable to detect module: ${MODULE_ID} on the remote system "
+  echo "$(date +'%d %B %Y - %k:%M') ERROR: The Script will exit"
+  echo "$(date +'%d %B %Y - %k:%M') ERROR: Tests will NOT run"
+  echo "failure" > ./results/test_failure
+  exit 1
+fi
+
 echo "$(date +'%d %B %Y - %k:%M')== Sleeping for an additional 120 seconds =="
 sleep 120
 echo "$(date +'%d %B %Y - %k:%M')== DONE - Sleeping for an additional 120 seconds =="
