@@ -127,10 +127,15 @@ workflows:
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
           should_skip_zencrepes: << pipeline.parameters.SHOULD_SKIP_ZENCREPES >>
+      - jahia-modules-orb/docker-tests-build:
+          context: QA_ENVIRONMENT
+          requires:
+            - jahia-modules-orb/integration-tests
+          tests_image_name: << pipeline.parameters.TESTS_IMAGE >>
       - jahia-modules-orb/docker-tests-publish:
           context: QA_ENVIRONMENT
           requires:
-            - Int. Tests - Jahia Latest - Built modules
+            - jahia-modules-orb/docker-tests-build
           tests_image_name: << pipeline.parameters.TESTS_IMAGE >>
 
   # The on-release workflow was created to handle the full release lifecycle after creating a release using GitHub
