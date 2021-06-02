@@ -8,7 +8,6 @@ USER jahians
 WORKDIR /home/jahians
 
 COPY --chown=jahians:jahians package.json yarn.lock /home/jahians/
-COPY --chown=jahians:jahians artifacts /home/jahians/
 
 RUN mkdir -p /home/jahians/run-artifacts
 RUN mkdir -p /home/jahians/results
