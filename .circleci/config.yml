@@ -126,6 +126,7 @@ workflows:
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
+          should_skip_zencrepes: << pipeline.parameters.SHOULD_SKIP_ZENCREPES >>
       - jahia-modules-orb/docker-tests-publish:
           context: QA_ENVIRONMENT
           requires:
@@ -209,7 +210,7 @@ workflows:
           should_skip_artifacts: << pipeline.parameters.SHOULD_SKIP_ARTIFACTS >>
           should_skip_testrail: << pipeline.parameters.SHOULD_SKIP_TESTRAIL >>
           should_skip_notifications: << pipeline.parameters.SHOULD_SKIP_NOTIFICATIONS >>
-          should_skip_zencrepes: true
+          should_skip_zencrepes: << pipeline.parameters.SHOULD_SKIP_ZENCREPES >>
   # The on-rollback workflow was created to handle release rollback when a release has been deleted from Github
   # The rollback pipeline/job performs the following action:
   # - restore rollback artifact cache created from the release job
