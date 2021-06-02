@@ -1,5 +1,5 @@
 {
-    "baseUrl": "http://localhost:8080",
+    "baseUrl": "http://jahia:8080",
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
     "defaultCommandTimeout": 30000,
@@ -9,7 +9,7 @@
     "ignoreTestFiles": "*.example.ts",
     "env": {
         "JAHIA_USERNAME": "root",
-        "JAHIA_PASSWORD": "root"
+        "JAHIA_PASSWORD": "root1234"
     },
     "viewportWidth": 1366,
     "viewportHeight": 768
