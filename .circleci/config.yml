@@ -121,7 +121,7 @@ workflows:
             - jahia-modules-orb/build
           context: QA_ENVIRONMENT
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
-          tests_manifest: warmup-manifest-build.yml
+          tests_manifest: provisioning-manifest-build.yml
           module_id: << pipeline.parameters.MODULE_ID >>
           testrail_project: << pipeline.parameters.TESTRAIL_PROJECTNAME >>
           testrail_milestone: << pipeline.parameters.TESTRAIL_MILESTONE >>
