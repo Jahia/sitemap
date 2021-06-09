@@ -11,9 +11,13 @@
     <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, renderContext.site.language)}"/>
     <c:url var="localeUrl" value="${url.getBase(renderContext.site.language)}${urlNode.path}.html"/>
     <c:set var="finalUrl" value="${ (not empty vanityUrl) ? vanityUrl : localeUrl }"/>
+    <%-- The URL host server name based on the input from sitemap UI panel--%>
+    <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
+    <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
+
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
 
-    <loc>${url.server}${finalUrl}</loc>
+    <loc>${serverName}${finalUrl}</loc>
     <lastmod><fmt:formatDate value="${lastModified.date.time}" pattern="yyyy-MM-dd"/></lastmod>
 
     <c:set var="locales" value="${urlNode.getExistingLocales()}"/>

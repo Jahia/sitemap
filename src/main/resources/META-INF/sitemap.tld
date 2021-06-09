@@ -49,9 +49,14 @@
         <function-signature>boolean excludeNode(org.jahia.services.content.JCRNodeWrapper,javax.jcr.NodeIterator)</function-signature>
     </function>
     <function>
-    <name>getGuestNodes</name>
-    <function-class>org.jahia.modules.sitemap.utils.QueryHelper</function-class>
-    <function-signature>java.util.Set getGuestNodes(java.lang.String,java.lang.String)</function-signature>
-</function>
+        <name>getGuestNodes</name>
+        <function-class>org.jahia.modules.sitemap.utils.QueryHelper</function-class>
+        <function-signature>java.util.Set getGuestNodes(java.lang.String,java.lang.String)</function-signature>
+    </function>
+    <function>
+        <name>getServerName</name>
+        <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
+        <function-signature>java.lang.String getServerName(java.lang.String)</function-signature>
+    </function>
 
 </taglib>

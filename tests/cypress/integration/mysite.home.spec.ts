@@ -1,6 +1,7 @@
 import { siteHomePage } from '../page-object/site.home.page'
 import { webProjectSettings } from '../page-object/webProjectSettings.page'
 import { manageModules } from '../page-object/manageModules.page'
+import { sitemapPage } from '../page-object/sitemap.page'
 import { getUrlInfoWithHost } from '../support/utilites'
 
 describe('Enable sitemap on MySite', () => {
@@ -34,6 +35,11 @@ describe('Enable sitemap on MySite', () => {
             .clickBack()
         // Step #2 publishing the site and flush the cache
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache()
+
+        // Save the root URL
+        sitemapPage.goTo().inputSitemapRootURL('http://jahia:8080').clickOnSave().clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
 
         // Getting the response from sitemap.index.xml
         // according to the sitemap.xml spec,
@@ -91,6 +97,11 @@ describe('Enable sitemap on MySite', () => {
             .clickBack()
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
 
+        // Save the root URL
+        sitemapPage.goTo().inputSitemapRootURL('http://jahia:8080').clickOnSave().clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
+
         // Getting the response from sitemap.index.xml
         // according to the sitemap.xml spec,
         // the url value should reside in a <loc /> node
@@ -146,6 +157,11 @@ describe('Enable sitemap on MySite', () => {
             .validateSucessMessage()
             .clickBack()
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
+
+        // Save the root URL
+        sitemapPage.goTo().inputSitemapRootURL('http://jahia:8080').clickOnSave().clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
 
         // Getting the response from sitemap.index.xml
         // according to the sitemap.xml spec,

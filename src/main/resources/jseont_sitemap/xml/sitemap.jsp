@@ -6,6 +6,7 @@
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="query" uri="http://www.jahia.org/tags/queryLib" %>
+<%@ taglib prefix="sitemap" uri="http://www.jahia.org/sitemap" %>
 
 <%--@elvariable id="currentNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
@@ -25,8 +26,11 @@
         <c:if test="${renderContext.liveMode and renderContext.site.defaultLanguage eq renderContext.mainResourceLocale.language}">
             <c:set var="siteMapPath" value="${currentNode.path}" />
             <c:set var="currentLanguage" value="${renderContext.site.language}"/>
+            <%-- The URL host server name based on the input from sitemap UI panel--%>
+            <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
+            <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
             <sitemap>
-                <loc>${url.server}<c:url value="${siteMapPath}-lang.xml"/></loc>
+                <loc>${serverName}<c:url value="${siteMapPath}-lang.xml"/></loc>
             </sitemap>
             <%--        <sitemap>--%>
             <%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
@@ -46,7 +50,7 @@
                 <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
                     <c:url value="${url.getBase(lang.toString())}${siteMapPath}-lang.xml" var="languageResource"/>
                     <sitemap>
-                        <loc>${url.server}${languageResource}</loc>
+                        <loc>${serverName}${languageResource}</loc>
                     </sitemap>
                 </c:if>
             </c:forEach>
@@ -59,7 +63,7 @@
             <c:set var="sitemapName" value="/sitemap-lang.xml"/>
             <c:forEach var="node" items="${additionalMaps.nodes}">
                 <sitemap>
-                    <loc>${url.server}<c:url value="${fn:replace(node.url, '.html', sitemapName)}"/></loc>
+                    <loc>${serverName}<c:url value="${fn:replace(node.url, '.html', sitemapName)}"/></loc>
                 </sitemap>
             </c:forEach>
         </c:if>
