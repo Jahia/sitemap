@@ -26,7 +26,7 @@ package org.jahia.modules.sitemap.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
+import java.net.URI;
 
 /**
  * General utility class
@@ -44,8 +44,8 @@ public class Utils {
      */
     public static String getServerName(String urlString) {
         try {
-            URL url = new URL(urlString);
-            String protocol = url.getProtocol();
+            URI url = new URI(urlString);
+            String protocol = url.getScheme();
             String host = url.getHost();
             int port = url.getPort();
             if (protocol == null && host.startsWith("www.")) { // for edge cases where starts with www. remove first 4 characters
