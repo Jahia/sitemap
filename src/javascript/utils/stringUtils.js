@@ -1,3 +1,3 @@
-const sitemapIndexUrlBuilder = hostPortContext => `${hostPortContext}/sitemap.xml`;
+const sitemapIndexUrlBuilder = hostPortContext => `${hostPortContext}${window.contextJsParameters.contextPath}/sitemap.xml`;
 
 export {sitemapIndexUrlBuilder};
