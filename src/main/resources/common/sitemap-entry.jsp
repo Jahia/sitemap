@@ -30,7 +30,7 @@
             <c:url var="localeUrl" value="${url.getBase(lang)}${urlNode.path}.html"/>
             <c:set var="localeAltUrl" value="${ (not empty vanityUrl) ? vanityUrl : localeUrl }"/>
 
-            <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${url.server}${localeAltUrl}"/>
+            <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${serverName}${localeAltUrl}"/>
         </c:forEach>
     </c:if>
 </url>
