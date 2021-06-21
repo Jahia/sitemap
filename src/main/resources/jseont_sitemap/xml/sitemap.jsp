@@ -24,33 +24,27 @@
     <?xml version="1.0" encoding="UTF-8"?>
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <c:if test="${renderContext.liveMode and renderContext.site.defaultLanguage eq renderContext.mainResourceLocale.language}">
-            <c:set var="siteMapPath" value="${currentNode.path}" />
+            <c:set var="nodeUrl" value="${currentNode.url}" />
             <c:set var="currentLanguage" value="${renderContext.site.language}"/>
+            <c:set var="languageToReplacePart" value="/${renderContext.site.language}/"/>
             <%-- The URL host server name based on the input from sitemap UI panel--%>
             <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
             <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
+            <c:set var="langXmlChunk" value="-lang.xml"/>
             <sitemap>
-                <loc>${serverName}<c:url value="${siteMapPath}-lang.xml"/></loc>
+                <c:url value="${nodeUrl}" var="reesolvedUrl"/>
+                <loc>${serverName}${fn:replace(reesolvedUrl, '.html', langXmlChunk)}</loc>
             </sitemap>
-            <%--        <sitemap>--%>
-            <%--                <loc>${url.server}<c:url value="${siteMapPath}.custom.xml"/></loc>--%>
-            <%--        </sitemap>--%>
-            <%--        <sitemap>--%>
-            <%--                <loc>${url.server}<c:url value="${siteMapPath}.images.xml"/></loc>--%>
-            <%--        </sitemap>--%>
-            <%-- for pdfs and maybe other resources --%>
-            <%--        <sitemap>--%>
-            <%--                <loc>${url.server}<c:url value="${siteMapPath}.resources.xml"/></loc>--%>
-            <%--        </sitemap>--%>
-
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
             <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLanguages" var="inactiveLanguages"/>
             <c:forEach var="lang" items="${languages}">
                 <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
-                    <c:url value="${url.getBase(lang.toString())}${siteMapPath}-lang.xml" var="languageResource"/>
+                    <c:set value="/${lang.toString()}/" var="anotherLanguagePart"/>
+                    <c:set var="langNodeUrl" value="${fn:replace(nodeUrl, languageToReplacePart, anotherLanguagePart)}"/>
                     <sitemap>
-                        <loc>${serverName}${languageResource}</loc>
+                        <c:url value="${langNodeUrl}" var="resolvedLangUrl"/>
+                        <loc>${serverName}${fn:replace(resolvedLangUrl, '.html', langXmlChunk)}</loc>
                     </sitemap>
                 </c:if>
             </c:forEach>
