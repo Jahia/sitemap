@@ -32,8 +32,8 @@
             <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
             <c:set var="langXmlChunk" value="-lang.xml"/>
             <sitemap>
-                <c:url value="${nodeUrl}" var="reesolvedUrl"/>
-                <loc>${serverName}${fn:replace(reesolvedUrl, '.html', langXmlChunk)}</loc>
+                <c:url value="${nodeUrl}" var="resolvedUrl"/>
+                <loc>${serverName}${fn:replace(resolvedUrl, '.html', langXmlChunk)}</loc>
             </sitemap>
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
