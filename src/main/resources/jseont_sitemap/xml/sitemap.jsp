@@ -31,7 +31,7 @@
             <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
             <c:set var="langXmlChunk" value="-lang.xml"/>
             <sitemap>
-                <c:url value="${fn:replace(nodeUrl, '.html', langXmlChunk)}" var="resolvedUrl"/>
+                <c:url value="${fn:replace(nodeUrl, '.html', langXmlChunk)}" var="resolvedUrl" context="/"/>
                 <loc>${serverName}${resolvedUrl}</loc>
             </sitemap>
             <%-- language site maps --%>
@@ -42,7 +42,7 @@
                     <c:set value="/${lang.toString()}/" var="anotherLanguagePart"/>
                     <c:set var="langNodeUrl" value="${fn:replace(nodeUrl, languageToReplacePart, anotherLanguagePart)}"/>
                     <sitemap>
-                        <c:url value="${fn:replace(langNodeUrl, '.html', langXmlChunk)}" var="resolvedLangUrl"/>
+                        <c:url value="${fn:replace(langNodeUrl, '.html', langXmlChunk)}" var="resolvedLangUrl" context="/"/>
                         <loc>${serverName}${resolvedLangUrl}</loc>
                     </sitemap>
                 </c:if>
@@ -56,7 +56,7 @@
             <c:set var="sitemapName" value="/sitemap-lang.xml"/>
             <c:forEach var="node" items="${additionalMaps.nodes}">
                 <sitemap>
-                    <loc>${serverName}<c:url value="${fn:replace(node.url, '.html', sitemapName)}"/></loc>
+                    <loc>${serverName}<c:url value="${fn:replace(node.url, '.html', sitemapName)}" context="/"/></loc>
                 </sitemap>
             </c:forEach>
         </c:if>
