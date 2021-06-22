@@ -40,6 +40,7 @@ import org.jahia.modules.sitemap.services.SitemapService;
 
 import org.jahia.modules.sitemap.utils.CacheUtils;
 import org.jahia.modules.sitemap.utils.ConversionUtils;
+import org.jahia.services.cache.CacheHelper;
 
 public class GqlSitemapMutation {
 
@@ -68,6 +69,7 @@ public class GqlSitemapMutation {
         try {
             CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference,
                     ConversionUtils.convertFromHour(4L)), siteKey);
+            CacheUtils.flushJntPages(siteKey); // Flushing specific jnt pages
             return true;
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);

@@ -24,6 +24,7 @@
 package org.jahia.modules.sitemap.utils;
 
 import org.jahia.api.Constants;
+import org.jahia.services.cache.CacheHelper;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -66,6 +67,8 @@ public class CacheUtils {
 
                 for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
                     JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
+                    // Flush the sitemap node per the path
+                    CacheHelper.flushOutputCachesForPath(sitemapNode.getPath(), false);
                     refreshExpiredCache(sitemapNode, expiration);
 
                     // get all caches for sitemap resource
@@ -76,6 +79,8 @@ public class CacheUtils {
 
                     for (NodeIterator iter2 = subResult.getNodes(); iter2.hasNext(); ) {
                         JCRNodeWrapper sitemapResourceNode = (JCRNodeWrapper) iter2.nextNode();
+                        // Flush the sitemap resource node per the path
+                        CacheHelper.flushOutputCachesForPath(sitemapResourceNode.getPath(), false);
                         refreshExpiredCache(sitemapResourceNode, expiration);
                     }
                 }
@@ -84,6 +89,32 @@ public class CacheUtils {
                 return null;
             }
         });
+    }
+
+    /**
+     * Helper utiity to flushJntPages under the subsite
+     * @param siteKey   [String] site key
+     * @throws RepositoryException
+     */
+    public static void flushJntPages(String siteKey) throws RepositoryException {
+        String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
+
+        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
+                Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
+                    @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                        QueryResult result = QueryHelper.getQuery(session, String.format("SELECT * from [jnt:page] WHERE ISDESCENDANTNODE"
+                                + "('/sites%s')", subSite));
+                        if (result == null) return null;
+
+                        for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
+                            JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
+                            CacheHelper.flushOutputCachesForPath(sitemapNode.getPath(), false);
+                        }
+
+                        session.save();
+                        return null;
+                    }
+                });
     }
 
     /** Delete all expired sitemap cache nodes for a given sitemap node */
