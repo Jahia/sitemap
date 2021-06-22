@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.seo.VanityUrl;
 import org.jahia.services.seo.jcr.VanityUrlManager;
+import org.jahia.settings.SettingsBean;
 
 import javax.jcr.RepositoryException;
 import java.util.List;
@@ -53,6 +54,10 @@ public final class VanityUrls {
     public static String getActiveUrl(JCRNodeWrapper node, String langCode) throws RepositoryException {
         List<VanityUrl> vanityUrls = vanityUrlManager.getVanityUrls(node, langCode, node.getSession());
         return getActiveUrl(vanityUrls);
+    }
+
+    public static boolean canUseVanity() {
+        return Boolean.parseBoolean(SettingsBean.getInstance().getString("urlRewriteSeoRulesEnabled", "false"));
     }
 
     private static String getActiveUrl(List<VanityUrl> urls) {

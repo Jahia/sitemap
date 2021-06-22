@@ -19,7 +19,6 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
-
 <c:if test="${renderContext.site.isNodeType('jseomix:sitemap')}">
     <?xml version="1.0" encoding="UTF-8"?>
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -32,8 +31,8 @@
             <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
             <c:set var="langXmlChunk" value="-lang.xml"/>
             <sitemap>
-                <c:url value="${nodeUrl}" var="resolvedUrl"/>
-                <loc>${serverName}${fn:replace(resolvedUrl, '.html', langXmlChunk)}</loc>
+                <c:url value="${fn:replace(nodeUrl, '.html', langXmlChunk)}" var="resolvedUrl"/>
+                <loc>${serverName}${resolvedUrl}</loc>
             </sitemap>
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
@@ -43,8 +42,8 @@
                     <c:set value="/${lang.toString()}/" var="anotherLanguagePart"/>
                     <c:set var="langNodeUrl" value="${fn:replace(nodeUrl, languageToReplacePart, anotherLanguagePart)}"/>
                     <sitemap>
-                        <c:url value="${langNodeUrl}" var="resolvedLangUrl"/>
-                        <loc>${serverName}${fn:replace(resolvedLangUrl, '.html', langXmlChunk)}</loc>
+                        <c:url value="${fn:replace(langNodeUrl, '.html', langXmlChunk)}" var="resolvedLangUrl"/>
+                        <loc>${serverName}${resolvedLangUrl}</loc>
                     </sitemap>
                 </c:if>
             </c:forEach>
