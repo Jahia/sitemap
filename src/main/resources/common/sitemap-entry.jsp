@@ -15,8 +15,9 @@
     <%-- Note that there is an issue with vanity urls being processed by c:url when urlRewriteSeoRulesEnabled = false --%>
     <%-- So node url is used instead if seo features (vanity) is not available --%>
     <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, renderContext.site.language)}"/>
-    <c:url var="localeUrl" value="${urlNode.url}"  context="/"/>
-    <c:set var="goodLocalUrl" value="${canUseVanity ? localeUrl : localeUrl}"/>
+    <c:set var="localizedUr" value="${urlNode.url}"/>
+    <c:url var="localeUrl" value="${localizedUr}"  context="/"/>
+    <c:set var="goodLocalUrl" value="${canUseVanity ? localeUrl : localizedUr}"/>
     <c:set var="finalUrl" value="${ (not empty vanityUrl and canUseVanity) ? vanityUrl : goodLocalUrl}"/>
     <%-- The URL host server name based on the input from sitemap UI panel--%>
     <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
