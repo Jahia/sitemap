@@ -33,65 +33,10 @@
     padding-bottom: 30px;
 }
 
-.sitemapIndexFileTitle {
-    display: flex;
-    align-items: center;
-
-    padding-bottom: 10px;
-
-    font-weight: bold;
-    font-size: 14px;
-    font-style: normal;
-
-    color: rgba(19, 28, 33, 0.6);
-
-    line-height: 18px;
-}
-
-.sitemapIndexFileDescription {
-    display: flex;
-    align-items: center;
-
-    padding-bottom: 10px;
-
-    font-weight: normal;
-    font-size: 12px;
-    font-style: normal;
-
-    color: rgba(19, 28, 33, 0.6);
-
-    line-height: 16px;
-}
-
-.sitemapIndexFileCardArea {
-    display: flex;
-    flex-direction: row;
-
-    margin: 20px;
-}
-
-.sitemapIndexFileIconEnabled {
-    transform: scale(1.5);
-}
-
 .sitemapIndexFileIconDisable {
     color: lightgrey;
 
     transform: scale(1.5);
-}
-
-.sitemapIndexFileNameEnabled {
-    margin: 4px 25px;
-}
-
-.sitemapIndexFileNameDisabled {
-    margin: 4px 25px;
-
-    color: lightgrey;
-}
-
-.sitemapIndexFileButton {
-    margin-left: auto;
 }
 
 .sitemapIndexURLTitle {

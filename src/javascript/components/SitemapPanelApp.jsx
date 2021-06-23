@@ -2,12 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
-import {Typography, Button, Chip} from '@jahia/moonstone';
-import {Dropdown, Input, File, OpenInNew, Check} from '@jahia/moonstone';
+import {Typography, Chip} from '@jahia/moonstone';
+import {Dropdown, Input, Check} from '@jahia/moonstone';
 
 import styles from './SitemapPanel.scss';
-
-import {Card} from '@material-ui/core';
 
 import * as compose from 'lodash.flowright';
 import {withApollo} from 'react-apollo';
@@ -16,10 +14,11 @@ import {useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
-import {sitemapIndexUrlBuilder, gqlMutate} from '../utils';
+import {gqlMutate} from '../utils';
 
 import {SnackbarComponent} from './Snackbar/Snackbar';
 import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
+import {SitemapIndexLink} from './panelSections';
 import {useFormik} from 'formik';
 
 const SitemapPanelApp = ({client, t}) => {
@@ -127,10 +126,6 @@ const SitemapPanelApp = ({client, t}) => {
         }
     });
 
-    const onOpenSitemapXMLButtonClick = url => {
-        window.open(url, '_blank');
-    };
-
     const handleSnackBarClose = () => {
         setSnackbarIsOpen(false);
     };
@@ -173,27 +168,15 @@ const SitemapPanelApp = ({client, t}) => {
                                 />
                             </div>
                             <div className={styles.subsection}>
-                                <Typography className={styles.sitemapIndexFileTitle} component="h3">
-                                    {t('labels.settingSection.sitemapIndexFileSection.title')}
-                                </Typography>
-                                <Typography className={styles.sitemapIndexFileDescription} component="p">{t('labels.settingSection.sitemapIndexFileSection.description')}</Typography>
-                                <Card>
-                                    <div className={styles.sitemapIndexFileCardArea}>
-                                        {formik.values.sitemapIndexURL === '' && <Typography className={styles.sitemapIndexFileNameDisabled} component="p">{t('labels.settingSection.sitemapIndexFileSection.missing')}</Typography>}
-                                        {
-                                            formik.values.sitemapIndexURL !== '' &&
-                                            <>
-                                                <File className={styles.sitemapIndexFileIconEnabled} size="big"/>
-                                                <Typography className={styles.sitemapIndexFileNameEnabled} component="p">{sitemapIndexUrlBuilder(formik.values.sitemapIndexURL)}</Typography>
-                                                <Button className={styles.sitemapIndexFileButton} variant="ghost" icon={<OpenInNew size="big"/>} onClick={() => onOpenSitemapXMLButtonClick(sitemapIndexUrlBuilder(formik.values.sitemapIndexURL))}/>
-                                            </>
-                                        }
-                                    </div>
-                                </Card>
+                                <SitemapIndexLink inputUrl={formik.values.sitemapIndexURL} t={t}/>
                             </div>
                             <div className={styles.subsection}>
-                                <Typography className={styles.updateIntervalTitle} component="h3">{t('labels.settingSection.updateIntervalSection.title')}</Typography>
-                                <Typography className={styles.updateIntervalDescription} component="p">{t('labels.settingSection.updateIntervalSection.description')}</Typography>
+                                <Typography className={styles.updateIntervalTitle} component="h3">
+                                    {t('labels.settingSection.updateIntervalSection.title')}
+                                </Typography>
+                                <Typography className={styles.updateIntervalDescription} component="p">
+                                    {t('labels.settingSection.updateIntervalSection.description')}
+                                </Typography>
 
                                 <Dropdown
                                     id="intervalDuration"
