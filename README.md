@@ -1,3 +1,7 @@
+[![CircleCI](https://circleci.com/gh/Jahia/sitemap/tree/master.svg?style=svg)](https://circleci.com/gh/Jahia/sitemap/tree/master)
+![GitHub tag (latest by version)](https://img.shields.io/github/v/tag/Jahia/sitemap?sort=semver)
+![License](https://img.shields.io/github/license/jahia/sitemap)
+
 SEO Sitemap Module
 =========================
 
