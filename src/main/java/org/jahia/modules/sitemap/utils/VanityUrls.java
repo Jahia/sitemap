@@ -56,10 +56,6 @@ public final class VanityUrls {
         return getActiveUrl(vanityUrls);
     }
 
-    public static boolean canUseVanity() {
-        return Boolean.parseBoolean(SettingsBean.getInstance().getString("urlRewriteSeoRulesEnabled", "false"));
-    }
-
     private static String getActiveUrl(List<VanityUrl> urls) {
         Optional<VanityUrl> url = urls.stream().filter(v -> v.isDefaultMapping() && v.isActive()).findFirst();
         return (url.isPresent()) ? url.get().getUrl() : null;

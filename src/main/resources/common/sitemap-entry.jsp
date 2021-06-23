@@ -8,7 +8,7 @@
 
 <c:set var="renderContext" value="${requestScope['renderContext']}"/>
 <c:set var="urlNode" value="${requestScope['urlNode']}"/>
-<c:set var="canUseVanity" value="${sitemap:canUseVanity()}"/>
+<c:set var="canUseVanity" value="${sitemap:urlRewriteEnabled()}"/>
 
 <c:if test="${!urlNode.isNodeType('jseomix:noIndex')}">
 <url>

@@ -27,9 +27,9 @@
         <function-signature>boolean hasActiveUrl(org.jahia.services.content.JCRNodeWrapper)</function-signature>
     </function>
     <function>
-        <name>canUseVanity</name>
-        <function-class>org.jahia.modules.sitemap.utils.VanityUrls</function-class>
-        <function-signature>boolean canUseVanity()</function-signature>
+        <name>urlRewriteEnabled</name>
+        <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
+        <function-signature>boolean urlRewriteEnabled()</function-signature>
     </function>
     <function>
         <name>getSearchEngines</name>

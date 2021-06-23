@@ -23,6 +23,7 @@
  */
 package org.jahia.modules.sitemap.utils;
 
+import org.jahia.settings.SettingsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,5 +62,9 @@ public class Utils {
             logger.error(e.getMessage());
             return null;
         }
+    }
+
+    public static boolean urlRewriteEnabled() {
+        return SettingsBean.getInstance().isUrlRewriteSeoRulesEnabled();
     }
 }
