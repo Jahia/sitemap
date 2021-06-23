@@ -8,7 +8,7 @@
 
 <c:set var="renderContext" value="${requestScope['renderContext']}"/>
 <c:set var="urlNode" value="${requestScope['urlNode']}"/>
-<c:set var="canUseVanity" value="${sitemap:urlRewriteEnabled()}"/>
+<c:set var="urlRewriteEnabled" value="${sitemap:urlRewriteEnabled()}"/>
 
 <c:if test="${!urlNode.isNodeType('jseomix:noIndex')}">
 <url>
@@ -17,8 +17,8 @@
     <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, renderContext.site.language)}"/>
     <c:set var="localizedUr" value="${urlNode.url}"/>
     <c:url var="localeUrl" value="${localizedUr}"  context="/"/>
-    <c:set var="goodLocalUrl" value="${canUseVanity ? localeUrl : localizedUr}"/>
-    <c:set var="finalUrl" value="${ (not empty vanityUrl and canUseVanity) ? vanityUrl : goodLocalUrl}"/>
+    <c:set var="goodLocalUrl" value="${urlRewriteEnabled ? localeUrl : localizedUr}"/>
+    <c:set var="finalUrl" value="${ (not empty vanityUrl and urlRewriteEnabled) ? vanityUrl : goodLocalUrl}"/>
     <%-- The URL host server name based on the input from sitemap UI panel--%>
     <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
     <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
@@ -39,8 +39,8 @@
             <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, lang)}"/>
             <c:set var="localizedUrl" value="${fn:replace(urlNode.url, languageToReplacePart, langReplacement)}"/>
             <c:url var="localeUrl" value="${localizedUrl}" context="/"/>
-            <c:set var="goodLocaleUrl" value="${canUseVanity ? localeUrl : localizedUrl}"/>
-            <c:set var="localeAltUrl" value="${ (not empty vanityUrl and canUseVanity) ? vanityUrl : goodLocaleUrl}"/>
+            <c:set var="goodLocaleUrl" value="${urlRewriteEnabled ? localeUrl : localizedUrl}"/>
+            <c:set var="localeAltUrl" value="${ (not empty vanityUrl and urlRewriteEnabled) ? vanityUrl : goodLocaleUrl}"/>
 
             <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${serverName}${localeAltUrl}"/>
         </c:forEach>
