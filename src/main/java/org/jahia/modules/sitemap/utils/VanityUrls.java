@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.seo.VanityUrl;
 import org.jahia.services.seo.jcr.VanityUrlManager;
-import org.jahia.settings.SettingsBean;
 
 import javax.jcr.RepositoryException;
 import java.util.List;
