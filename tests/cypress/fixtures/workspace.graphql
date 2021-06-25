@@ -1,7 +1,0 @@
-query(
-    $workspace: Workspace
-) {
-    jcr(workspace: $workspace) {
-        workspace
-    }
-}
