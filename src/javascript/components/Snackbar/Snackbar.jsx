@@ -6,7 +6,7 @@ import {Button, Close} from '@jahia/moonstone';
 import styles from './Snackbar.scss';
 
 export const SnackbarComponent = ({
-    open,
+    isOpen,
     message,
     autoHideDuration,
     handleClose
@@ -18,7 +18,7 @@ export const SnackbarComponent = ({
                     classes={{
                         anchorOriginBottomCenter: styles.snackbar
                     }}
-                    open={open}
+                    open={isOpen}
                     autoHideDuration={autoHideDuration}
                     message={message}
                     action={
@@ -34,7 +34,7 @@ export const SnackbarComponent = ({
 };
 
 SnackbarComponent.propTypes = {
-    open: PropTypes.bool.isRequired,
+    isOpen: PropTypes.bool.isRequired,
     message: PropTypes.node.isRequired,
     autoHideDuration: PropTypes.number.isRequired,
     handleClose: PropTypes.func.isRequired

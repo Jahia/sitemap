@@ -196,7 +196,7 @@ const SitemapPanelApp = ({client, t}) => {
                     </div>
                 </div>
                 <SnackbarComponent
-                    open={snackbarIsOpen}
+                    isOpen={snackbarIsOpen}
                     autoHideDuration={2000}
                     message={
                         <div className={styles.snackbarMessageDiv}>
