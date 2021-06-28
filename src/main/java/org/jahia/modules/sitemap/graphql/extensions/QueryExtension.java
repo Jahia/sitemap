@@ -21,24 +21,24 @@
  *
  * ==========================================================================================
  */
-package org.jahia.modules.sitemap.graphql.provider;
+package org.jahia.modules.sitemap.graphql.extensions;
 
-import org.jahia.modules.graphql.provider.dxm.DXGraphQLExtensionsProvider;
-import org.jahia.modules.sitemap.graphql.extensions.QueryExtension;
-import org.osgi.service.component.annotations.Component;
+import graphql.annotations.annotationTypes.GraphQLDescription;
+import graphql.annotations.annotationTypes.GraphQLField;
+import graphql.annotations.annotationTypes.GraphQLName;
+import graphql.annotations.annotationTypes.GraphQLTypeExtension;
+import org.jahia.modules.graphql.provider.dxm.admin.GqlAdminQuery;
+import org.jahia.modules.sitemap.graphql.api.GqlSitemapQueries;
 
-import org.jahia.modules.sitemap.graphql.extensions.MutationExtension;
+@GraphQLTypeExtension(GqlAdminQuery.class)
+@GraphQLDescription("Queries for Sitemap API")
+public class QueryExtension {
 
-import java.util.Arrays;
-import java.util.Collection;
-
-/**
- * Main GraphQL extension provider for the sitemap API
- */
-@Component(immediate = true, service= DXGraphQLExtensionsProvider.class)
-public class DXGraphQLSitemapProvider implements DXGraphQLExtensionsProvider {
-    @Override
-    public Collection<Class<?>> getExtensions() {
-        return Arrays.asList(QueryExtension.class, MutationExtension.class);
+    @GraphQLField
+    @GraphQLName("sitemap")
+    @GraphQLDescription("Sitemap API queries")
+    public static GqlSitemapQueries sitemapApi() {
+        return new GqlSitemapQueries();
     }
+
 }
