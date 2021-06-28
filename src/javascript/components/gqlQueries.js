@@ -13,20 +13,6 @@ const GetNodeMixin = gql`
     }
 `;
 
-const GetProperties = gql`
-    query findPropertiesByPath($pathOrId: String!, $propertyNames: [String!]!) {
-        jcr {
-            nodeByPath(path: $pathOrId) {
-                id: uuid
-                properties(names: $propertyNames) {
-                    name
-                    value
-                }
-            }
-        }
-    }
-`;
-
 const GetNodeSitemapInfo = gql`
     query findNodeSitemapInfo($pathOrId: String!, $mixinsFilter: InputFieldFiltersInput, $propertyNames: [String!]!) {
         jcr {
@@ -44,4 +30,19 @@ const GetNodeSitemapInfo = gql`
     }
 `;
 
-export {GetNodeMixin, GetProperties, GetNodeSitemapInfo};
+const GetSitemapUrl = gql`
+    query getSitemapUrl($siteKey: String!) {
+        admin {
+            sitemap {
+              siteUrl(siteKey: $siteKey)
+              urlRewriteSeoRulesEnabled 
+            }
+        }
+    }
+`;
+
+export {
+    GetNodeMixin,
+    GetNodeSitemapInfo,
+    GetSitemapUrl
+};

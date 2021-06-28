@@ -168,7 +168,10 @@ const SitemapPanelApp = ({client, t}) => {
                                 />
                             </div>
                             <div className={styles.subsection}>
-                                <SitemapIndexLink inputUrl={formik.values.sitemapIndexURL} t={t}/>
+                                <SitemapIndexLink
+                                    inputUrl={formik.values.sitemapIndexURL}
+                                    siteKey={currentState.site}
+                                    t={t}/>
                             </div>
                             <div className={styles.subsection}>
                                 <Typography className={styles.updateIntervalTitle} component="h3">

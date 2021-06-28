@@ -3,9 +3,31 @@ import PropTypes from 'prop-types';
 import {Card} from '@material-ui/core';
 import {Button, File, OpenInNew, Typography} from '@jahia/moonstone';
 import styles from './SitemapIndexLink.scss';
+import {useGetSitemapUrl} from '~/hooks/graphql';
 
-const SitemapIndexLink = ({inputUrl, t}) => {
-    const indexUrl = `${inputUrl}${window.contextJsParameters.contextPath}/sitemap.xml`;
+/**
+ * Get hostname part of the input URL
+ * @param inputUrl e.g. "https://yahoo.com:8080/path/to/url"
+ * @returns {string|string} hostname part - e.g. "https://yahoo.com:8080"
+ */
+const getHostname = inputUrl => {
+    let hostname = inputUrl;
+    try {
+        const url = new URL(inputUrl);
+        hostname = url.origin;
+    } catch (_) {
+        // Ignore if unparseable
+    }
+
+    return hostname;
+};
+
+const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
+    const [siteUrl, isSeoRulesEnabled] = useGetSitemapUrl(siteKey);
+    const indexUrl = (isSeoRulesEnabled) ?
+        `${inputUrl}${window.contextJsParameters.contextPath}/sitemap.xml` :
+        `${getHostname(inputUrl)}${siteUrl}/sitemap.xml`;
+
     return (
         <>
             <Typography className={styles.sitemapIndexFileTitle} component="h3">
@@ -42,7 +64,8 @@ const SitemapIndexLink = ({inputUrl, t}) => {
 };
 
 SitemapIndexLink.propTypes = {
-    inputUrl: PropTypes.string,
+    inputUrl: PropTypes.string.isRequired,
+    siteKey: PropTypes.string.isRequired,
     t: PropTypes.func
 };
 
