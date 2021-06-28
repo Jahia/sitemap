@@ -24,7 +24,7 @@ const getHostname = inputUrl => {
 
 const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
     const [siteUrl, isSeoRulesEnabled] = useGetSitemapUrl(siteKey);
-    const indexUrl = (isSeoRulesEnabled) ?
+    const indexUrl = (isSeoRulesEnabled || !siteUrl) ?
         `${inputUrl}${window.contextJsParameters.contextPath}/sitemap.xml` :
         `${getHostname(inputUrl)}${siteUrl}/sitemap.xml`;
 
