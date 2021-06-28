@@ -70,9 +70,9 @@
   "resolutions": {
     "graphql": "15.4.0",
     "@jahia/data-helper/graphql": "^15.4.0",
-    "**/meow/trim-newlines": "3.0.1",
-    "**/css-select/css-what": "5.0.1",
-    "**/cheerio-select-tmp/css-what": "5.0.1",
+    "**/meow/trim-newlines": "^3.0.1",
+    "**/css-select/css-what": "^5.0.1",
+    "**/cheerio-select-tmp/css-what": "^5.0.1",
     "**/glob-parent": "^5.1.2"
   },
   "devDependencies": {
