@@ -25,6 +25,11 @@ package org.jahia.modules.sitemap.services;
 
 import net.htmlparser.jericho.Source;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
+import org.jahia.modules.sitemap.utils.CacheUtils;
+import org.jahia.modules.sitemap.utils.ConversionUtils;
+import org.jahia.services.content.decorator.JCRSiteNode;
+import org.jahia.services.sites.JahiaSitesService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import org.jahia.modules.sitemap.config.ConfigService;
@@ -32,10 +37,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Map;
 
 @Component(immediate = true, service = SitemapService.class)
 public class SitemapServiceImpl implements SitemapService {
@@ -46,6 +53,15 @@ public class SitemapServiceImpl implements SitemapService {
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
 
     private ConfigService configService;
+
+    @Activate
+    public void activate(Map<String, Object> props) {
+        logger.info("Activator started for sitemap...");
+
+        // Flushing the sitemap caches on activate
+        flushSitemapCaches();
+        logger.info("Activator completed for sitemap...");
+    }
 
     @Reference(service = ConfigService.class)
     public void setConfigService(ConfigService configService) {
@@ -75,5 +91,28 @@ public class SitemapServiceImpl implements SitemapService {
             }
         }
         return true;
+    }
+
+    private void flushSitemapCaches() {
+        JahiaSitesService jahiaSitesService = JahiaSitesService.getInstance();
+        List<JCRSiteNode> siteList = null;
+        try {
+            siteList = jahiaSitesService.getSitesNodeList();
+
+            for (int i = 0; i < siteList.size(); i++) {
+                try {
+                    String siteKey = siteList.get(i).getSiteKey();
+                    logger.info("Site " + siteKey + " flush in progress...");
+                    Long expirationTimeDifference = -1L;
+                    // We are refreshing just the sitemap cache
+                    CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, ConversionUtils.convertFromHour(4L)),
+                            siteKey);
+                } catch (Exception e) {
+                    // If breaks for one site will skip for now
+                }
+            }
+        } catch (RepositoryException e) {
+            // Skip if we cannot get the list of site nodes
+        }
     }
 }
