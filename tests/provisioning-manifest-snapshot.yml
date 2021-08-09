@@ -1,4 +1,5 @@
 - addMavenRepository: 'https://store.jahia.com/nexus/content/repositories/jahia-public-app-store@id=JahiaStore'
+- addMavenRepository: 'https://devtools.jahia.com/nexus/content/groups/public/@snapshots@noreleases'
 - installBundle:
     - 'mvn:org.jahia.modules/press/3.0.0'
     - 'mvn:org.jahia.modules/person/3.1.0'
@@ -17,6 +18,6 @@
     - 'mvn:org.jahia.modules/dx-base-demo-components/2.1.0'
     - 'mvn:org.jahia.modules/digitall/2.0.0'
     - 'mvn:org.jahia.modules/site-settings-seo/3.0.0-SNAPSHOT'
-    - 'mvn:org.jahia.modules/sitemap/4.0.0-SNAPSHOT'
+    - 'mvn:org.jahia.modules/sitemap/LATEST'
   autoStart: true
   uninstallPreviousVersion: true
