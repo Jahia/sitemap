@@ -12,7 +12,7 @@ orbs:
 parameters:
   AUDITCI_LEVEL:
     type: string
-    default: "high"
+    default: "critical"
   TESTS_PATH:
     type: string
     default: "tests/"
