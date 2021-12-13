@@ -95,6 +95,7 @@ workflows:
           requires:
             - jahia-modules-orb/initialize
           auditci_level: << pipeline.parameters.AUDITCI_LEVEL >>
+          base_image: cimg/node:14.18
       - jahia-modules-orb/build:
           context: QA_ENVIRONMENT
           requires:
