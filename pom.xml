@@ -90,7 +90,7 @@
               <artifacts>
                 <artifact>
                   <file>
-                    src/main/resources/META-INF/configuration/org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg
+                    src/main/resources/META-INF/configurations/org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg
                   </file>
                   <type>cfg</type>
                   <classifier>sitemap-cfg</classifier>
