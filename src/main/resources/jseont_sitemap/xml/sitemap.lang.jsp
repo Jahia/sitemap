@@ -16,10 +16,13 @@
 <%-- node check type to make sure sitemap is not enabled then disabled --%>
 <c:if test="${entryNode.isNodeType('jseomix:sitemap')}">
 	<?xml version="1.0" encoding="UTF-8"?>
-	<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
-			xmlns:xhtml="https://www.w3.org/1999/xhtml">
-
-			<%-- list of parent nodes to exclude --%>
+	<urlset
+			xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9 https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://www.w3.org/1999/xhtml https://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd"
+			xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
+			xmlns:xhtml="https://www.w3.org/1999/xhtml"
+	>
+		<%-- list of parent nodes to exclude --%>
 		<jcr:sql var="excludeNodes"
 				 sql="SELECT * FROM [jseomix:sitemapResource]
             WHERE ISDESCENDANTNODE(['${entryNode.path}'])"/>
