@@ -33,17 +33,18 @@
     <c:if test="${locales.size() > 1}"><%-- no need for alt if there's only one locale --%>
         <c:forEach var="locale" items="${locales}">
             <c:set var="lang" value="${locale.toString()}"/>
-            <c:set var="langReplacement" value="/${locale.toString()}/"/>
-            <c:set var="langDashFormat" value="${locale.toLanguageTag()}"/>
-
-            <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, lang)}"/>
-            <c:set var="localizedUrl" value="${fn:replace(urlNode.url, languageToReplacePart, langReplacement)}"/>
-            <c:url var="localeUrl" value="${localizedUrl}" context="/"/>
-            <c:set var="goodLocaleUrl" value="${urlRewriteEnabled ? localeUrl : localizedUrl}"/>
-            <c:set var="localeAltUrl" value="${ (not empty vanityUrl and urlRewriteEnabled) ? vanityUrl : goodLocaleUrl}"/>
-
+            
             <%-- the alternate languages should list all the other (alternate) languages and not the current language --%>
-            <c:if test="${finalUrl != localeAltUrl}">
+            <c:if test="${lang != renderContext.site.language}">
+                <c:set var="langReplacement" value="/${locale.toString()}/"/>
+                <c:set var="langDashFormat" value="${locale.toLanguageTag()}"/>
+
+                <c:url var="vanityUrl" value="${sitemap:getLocaleVanityUrl(urlNode, lang)}"/>
+                <c:set var="localizedUrl" value="${fn:replace(urlNode.url, languageToReplacePart, langReplacement)}"/>
+                <c:url var="localeUrl" value="${localizedUrl}" context="/"/>
+                <c:set var="goodLocaleUrl" value="${urlRewriteEnabled ? localeUrl : localizedUrl}"/>
+                <c:set var="localeAltUrl" value="${ (not empty vanityUrl and urlRewriteEnabled) ? vanityUrl : goodLocaleUrl}"/>
+
                 <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${serverName}${localeAltUrl}"/>
             </c:if>
         </c:forEach>
