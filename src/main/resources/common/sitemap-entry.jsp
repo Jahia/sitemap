@@ -42,7 +42,10 @@
             <c:set var="goodLocaleUrl" value="${urlRewriteEnabled ? localeUrl : localizedUrl}"/>
             <c:set var="localeAltUrl" value="${ (not empty vanityUrl and urlRewriteEnabled) ? vanityUrl : goodLocaleUrl}"/>
 
-            <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${serverName}${localeAltUrl}"/>
+            <%-- the alternate languages should list all the other (alternate) languages and not the current language --%>
+            <c:if test="${finalUrl != localeAltUrl}">
+                <xhtml:link rel="alternate" hreflang="${langDashFormat}" href="${serverName}${localeAltUrl}"/>
+            </c:if>
         </c:forEach>
     </c:if>
 </url>
