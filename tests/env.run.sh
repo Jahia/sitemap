@@ -50,6 +50,14 @@ do
 done
 cd ..
 
+echo "$(date +'%d %B %Y - %k:%M') == Executing configuration manifest: provisioning-manifest-configure.yml =="
+curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisioning --form script="@./provisioning-manifest-configure.yml;type=text/yaml"
+if [[ $? -eq 1 ]]; then
+  echo "PROVISIONING FAILURE - EXITING SCRIPT, NOT RUNNING THE TESTS"
+  echo "failure" > ./results/test_failure
+  exit 1
+fi
+
 echo "$(date +'%d %B %Y - %k:%M') == Fetching the list of installed modules =="
 ./node_modules/jahia-reporter/bin/run utils:modules \
   --moduleId="${MODULE_ID}" \

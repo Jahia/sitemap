@@ -1,0 +1,3 @@
+# Enable sitemap on digitall
+- enable: "sitemap"
+  site: "digitall"

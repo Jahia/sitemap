@@ -1,0 +1,23 @@
+    mutation ($parentPathOrId: String!, $name: String!, $template: String!, $language: String!) {
+    jcr(workspace: EDIT) {
+        addNode(
+            parentPathOrId: $parentPathOrId
+            name: $name
+            primaryNodeType: "jnt:page"
+            properties: [
+                { name: "j:templateName", type: STRING, value: $template }
+                { name: "jcr:title", type: STRING, value: $name, language: $language }
+            ]
+        ) {
+            addChild(name: "area-main", primaryNodeType: "jnt:contentList") {
+                addChild(
+                    name: "text"
+                    primaryNodeType: "jnt:text"
+                    properties: [{ language: $language, name: "text", type: STRING, value: $name }]
+                ) {
+                    uuid
+                }
+            }
+        }
+    }
+}
