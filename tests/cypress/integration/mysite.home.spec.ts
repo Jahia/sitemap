@@ -1,7 +1,7 @@
 import { siteHomePage } from '../page-object/site.home.page'
 import { webProjectSettings } from '../page-object/webProjectSettings.page'
 import { manageModules } from '../page-object/manageModules.page'
-import { sitemapPage } from '../page-object/sitemap.page'
+import { SitemapPage } from '../page-object/sitemap.page'
 import { getUrlInfoWithHost } from '../support/utilites'
 
 describe('Enable sitemap on MySite', () => {
@@ -37,7 +37,10 @@ describe('Enable sitemap on MySite', () => {
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache()
 
         // Save the root URL
-        sitemapPage.goTo().inputSitemapRootURL(Cypress.config().baseUrl).clickOnSave().clickFlushCache()
+        const siteMapPage = SitemapPage.visit()
+        siteMapPage.inputSitemapRootURL(Cypress.config().baseUrl)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickFlushCache()
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500)
 
@@ -98,7 +101,10 @@ describe('Enable sitemap on MySite', () => {
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
 
         // Save the root URL
-        sitemapPage.goTo().inputSitemapRootURL(Cypress.config().baseUrl).clickOnSave().clickFlushCache()
+        const siteMapPage = SitemapPage.visit()
+        siteMapPage.inputSitemapRootURL(Cypress.config().baseUrl)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickFlushCache()
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500)
 
@@ -159,7 +165,10 @@ describe('Enable sitemap on MySite', () => {
         siteHomePage.publishSite('My Site').clickPublishAll().flushCache() // publish the whole site and flush
 
         // Save the root URL
-        sitemapPage.goTo().inputSitemapRootURL(Cypress.config().baseUrl).clickOnSave().clickFlushCache()
+        const siteMapPage = SitemapPage.visit()
+        siteMapPage.inputSitemapRootURL(Cypress.config().baseUrl)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickFlushCache()
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500)
 

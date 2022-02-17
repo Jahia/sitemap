@@ -1,4 +1,4 @@
-import { sitemapPage } from '../../page-object/sitemap.page'
+import { SitemapPage } from '../../page-object/sitemap.page'
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
 const homePagePath = sitePath + '/home'
@@ -60,7 +60,12 @@ describe('Check sitemap-lang.xml file on MySite', () => {
         })
 
         // Save the root sitemap URL and Flush sitemap cache
-        sitemapPage.goTo(siteKey, langEn).inputSitemapRootURL(siteMapRootUrl).clickOnSave().clickFlushCache()
+        const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        siteMapPage.inputSitemapRootURL(siteMapRootUrl)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
     })
 
     afterEach('Cleanup test data', () => {
