@@ -66,12 +66,6 @@ For each search engine, you will have to follow their policy. For example on Goo
 you manually register you sitemap using their webmaster tools (to follow what happens and have feedback in your 
 Google environment).
 
-Deploying
------------------------------------------------------------------------------
-After installing the sitemap module to Jahia, the `cfg` file still needs to be deployed manually. The file can be found in this
-[link.](https://github.com/Jahia/sitemap/blob/master/src/main/resources/META-INF/configuration/org.jahia.modules.sitemap.config.impl.ConfigServiceImpl.cfg)
-It should be copied to `$FACTORY_DATA/karaf/etc`
-
 Reading the configuration data from JSP
 ----
 The `sitemap.tld` has been updated functions to get the configurations. To use them, simply use JSP syntax. For example:
