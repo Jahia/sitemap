@@ -10,12 +10,6 @@
 <c:set var="urlNode" value="${requestScope['urlNode']}"/>
 <c:set var="urlRewriteEnabled" value="${sitemap:urlRewriteEnabled()}"/>
 
-<%
-    if (request.getParameter("sitemap_debug") != null) {
-        pageContext.setAttribute("siteMapDebug", request.getParameter("sitemap_debug"));
-    }
-%>
-
 <c:if test="${!urlNode.isNodeType('jseomix:noIndex')}">
 <url>
     <%-- Note that there is an issue with vanity urls being processed by c:url when urlRewriteSeoRulesEnabled = false --%>
@@ -30,7 +24,7 @@
     <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
 
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
-    <c:if test="${siteMapDebug}">
+    <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
     <%-- we add some current node informations for debug --%>
     <!--node path: ${urlNode.path}-->
     <!--node url: ${urlNode.url}-->
