@@ -11,8 +11,8 @@
 <c:set var="urlRewriteEnabled" value="${sitemap:urlRewriteEnabled()}"/>
 
 <%
-    if (request.getParameter("debug") != null) {
-        pageContext.setAttribute("siteMapDebug", request.getParameter("debug"));
+    if (request.getParameter("sitemap_debug") != null) {
+        pageContext.setAttribute("siteMapDebug", request.getParameter("sitemap_debug"));
     }
 %>
 
@@ -31,7 +31,7 @@
 
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
     <c:if test="${siteMapDebug}">
-    <%-- we add node path / url / type and id information for debug --%>
+    <%-- we add some current node informations for debug --%>
     <!--node path: ${urlNode.path}-->
     <!--node url: ${urlNode.url}-->
     <!--node type: ${urlNode.primaryNodeTypeName}-->
