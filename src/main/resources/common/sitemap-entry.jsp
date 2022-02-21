@@ -24,7 +24,7 @@
     <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
 
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
-
+    <!--${urlNode}-->
     <loc>${serverName}${finalUrl}</loc>
     <lastmod><fmt:formatDate value="${lastModified.date.time}" pattern="yyyy-MM-dd"/></lastmod>
 
