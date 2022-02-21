@@ -36,9 +36,9 @@
             </sitemap>
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
-            <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLanguages" var="inactiveLanguages"/>
+            <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
             <c:forEach var="lang" items="${languages}">
-                <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLanguages, lang)}">
+                <c:if test="${not (currentLanguage eq lang) and not functions:contains(inactiveLiveLanguages, lang)}">
                     <c:set value="/${lang.toString()}/" var="anotherLanguagePart"/>
                     <c:set var="langNodeUrl" value="${fn:replace(nodeUrl, languageToReplacePart, anotherLanguagePart)}"/>
                     <sitemap>

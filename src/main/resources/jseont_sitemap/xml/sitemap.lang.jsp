@@ -12,9 +12,11 @@
 <%--@elvariable id="`url" type="org.jahia.services.render.URLGenerator"--%>
 
 <c:set var="entryNode" value="${renderContext.site}"/>
+<c:set var="currentLanguage" value="${renderContext.site.language}"/>
+<jcr:nodeProperty node="${entryNode}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
 
 <%-- node check type to make sure sitemap is not enabled then disabled --%>
-<c:if test="${entryNode.isNodeType('jseomix:sitemap')}">
+<c:if test="${entryNode.isNodeType('jseomix:sitemap') and not functions:contains(inactiveLiveLanguages, currentLanguage)}">
 	<?xml version="1.0" encoding="UTF-8"?>
 	<urlset
 			xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
