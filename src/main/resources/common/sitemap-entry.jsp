@@ -25,11 +25,18 @@
 
     <jcr:nodeProperty var="lastModified" node="${urlNode}" name="jcr:lastModified"/>
     <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
-    <%-- we add some current node informations for debug --%>
-    <!--node path: ${urlNode.path}-->
-    <!--node url: ${urlNode.url}-->
-    <!--node type: ${urlNode.primaryNodeTypeName}-->
-    <!--node uuid: ${urlNode.identifier}-->
+        <%-- we add some current node informations for debug --%>
+        <c:set var="nodePath" value="${urlNode.path}"/>
+        <c:set var="nodeUrl" value="${urlNode.url}"/>
+        <%-- xml comment can't contain two hyphens --%>
+        <c:if test="${fn:contains(nodePath, '--') || fn:contains(nodeUrl, '--')}">
+            <c:set var="nodePath" value="${nodePath.replaceAll('-', '%2D')}"/>
+            <c:set var="nodeUrl" value="${nodeUrl.replaceAll('-', '%2D')}"/>
+        </c:if>
+        <!-- node path: ${nodePath} -->
+        <!-- node url: ${nodeUrl} -->
+        <!-- node type: ${urlNode.primaryNodeTypeName} -->
+        <!-- node uuid: ${urlNode.identifier} -->
     </c:if>
     <loc>${serverName}${finalUrl}</loc>
     <lastmod><fmt:formatDate value="${lastModified.date.time}" pattern="yyyy-MM-dd"/></lastmod>
