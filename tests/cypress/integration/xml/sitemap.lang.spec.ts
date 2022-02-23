@@ -124,9 +124,7 @@ describe('Check sitemap-lang.xml file on MySite', () => {
             Cypress.$(urls).each(($idx, $list) => {
                 const pageUrl = $list.getElementsByTagName('loc')
                 const siteUrl = pageUrl[0].innerHTML
-                cy.log('siteUrlArray: ' + siteUrl)
                 if (siteUrl.indexOf('history.html') > 0) {
-                    cy.log('dans le if: ' + siteUrl.indexOf('history.html'))
                     const nodeItems = $list.getElementsByTagName('xhtml:link')
                     if (nodeItems.length > 0) {
                         for (const c of nodeItems) {
