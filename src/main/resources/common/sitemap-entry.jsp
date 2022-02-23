@@ -39,9 +39,19 @@
     <c:if test="${locales.size() > 1}"><%-- no need for alt if there's only one locale --%>
         <c:forEach var="locale" items="${locales}">
             <c:set var="lang" value="${locale.toString()}"/>
-            
+
+            <c:set var="isValidLanguage" value="true"/>
+            <c:if test="${urlNode.hasProperty('j:invalidLanguages')}"><%-- the alternate languages should not list invalid language --%>
+                <jcr:nodeProperty node="${urlNode}" name="j:invalidLanguages" var="invalidLanguages"/>
+                <c:forEach items="${invalidLanguages}" var="invalidLanguage">
+                    <c:if test="${invalidLanguage eq lang}">
+                        <c:set var="isValidLanguage" value="false"/>
+                    </c:if>
+                </c:forEach>
+            </c:if>
+
             <%-- the alternate languages should list all the other (alternate) languages and not the current language --%>
-            <c:if test="${lang != renderContext.site.language}">
+            <c:if test="${lang != renderContext.site.language && isValidLanguage}">
                 <c:set var="langReplacement" value="/${locale.toString()}/"/>
                 <c:set var="langDashFormat" value="${locale.toLanguageTag()}"/>
 
