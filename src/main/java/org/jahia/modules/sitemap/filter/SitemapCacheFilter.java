@@ -85,10 +85,12 @@ public class SitemapCacheFilter extends AbstractFilter {
         } catch (IOException e) { // something happened; re-render
             logger.error("Unable to read sitemap file cache contents.");
         } finally {
+            // TODO this is deprecate please use something else
             IOUtils.closeQuietly(inputStream);
         }
 
         // re-render by returning null; manually flush jahia cache prior to render
+        // TODO why flushing jahia cache here ?
         CacheHelper.flushOutputCachesForPath(resource.getPath(), false);
         return null;
     }
@@ -113,6 +115,7 @@ public class SitemapCacheFilter extends AbstractFilter {
                 refreshSitemapCache(sitemapNode, inputStream);
             }
         } finally {
+            // TODO this is deprecate please use something else
             IOUtils.closeQuietly(inputStream);
         }
 
@@ -132,8 +135,14 @@ public class SitemapCacheFilter extends AbstractFilter {
         return JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
                 Constants.LIVE_WORKSPACE, null, new JCRCallback<JCRNodeWrapper>() {
             @Override public JCRNodeWrapper doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                // TODO very dangerous to use the JCR to cache a binary file.
+                // TODO what would happen if two node cluster receive a request at the same time ?
+                // TODO they both will try to generate the sitemap and store in the JCR because of JCR cluster sync not fast enough
+                // TODO we should consider caching the file on the file system or in memory using EHCache,
+                // TODO also we can avoid cluster issue by having a separate cache on each cluster nodes.
                 JCRNodeWrapper node = session.getNode(nodePath);
                 node.uploadFile(cacheName, data, "application/xml");
+                // TODO performing save operation during render is never a good idea
                 session.save();
                 return node;
             }
@@ -144,6 +153,7 @@ public class SitemapCacheFilter extends AbstractFilter {
     /** Apply file caching only for default template */
     public boolean needsCaching(Resource resource) {
         String templateName = resource.getTemplate();
+        // TODO be careful here it seem's the jseont:sitemapResource are not cached anymore
         return "lang".equalsIgnoreCase(templateName);
     }
 

@@ -105,6 +105,7 @@ public class SitemapServiceImpl implements SitemapService {
                     logger.info("Site " + siteKey + " flush in progress...");
                     Long expirationTimeDifference = -1L;
                     // We are refreshing just the sitemap cache
+                    // TODO expiration unit is wrong hours instead of ms, anyway it's stupid to pass expiration when we want to flush the cache
                     CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, ConversionUtils.convertFromHour(4L)),
                             siteKey);
                 } catch (Exception e) {

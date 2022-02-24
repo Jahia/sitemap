@@ -55,6 +55,7 @@ public class CacheUtils {
      * @param siteKey
      * @throws RepositoryException
      */
+    // TODO expiration unit is wrong hours instead of ms, anyway it's stupid to pass expiration when we want to flush the cache
     public static void refreshSitemapCache(long expiration, String siteKey) throws RepositoryException {
         String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
@@ -68,10 +69,13 @@ public class CacheUtils {
                 for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
                     JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
                     // Flush the sitemap node per the path
+                    // TODO why flushing jahia output cache ?
                     CacheHelper.flushOutputCachesForPath(sitemapNode.getPath(), false);
+                    // TODO expiration unit is wrong hours instead of ms, anyway it's stupid to pass expiration when we want to flush the cache
                     refreshExpiredCache(sitemapNode, expiration);
 
                     // get all caches for sitemap resource
+                    // TODO the code below should be out side the loop
                     String sitePath = sitemapNode.getParent().getPath();
                     String query = "SELECT * from [jseont:sitemapResource] WHERE ISDESCENDANTNODE('%s')";
                     QueryResult subResult = QueryHelper.getQuery(session, String.format(query, sitePath));
@@ -80,7 +84,9 @@ public class CacheUtils {
                     for (NodeIterator iter2 = subResult.getNodes(); iter2.hasNext(); ) {
                         JCRNodeWrapper sitemapResourceNode = (JCRNodeWrapper) iter2.nextNode();
                         // Flush the sitemap resource node per the path
+                        // TODO why flushing jahia output cache ?
                         CacheHelper.flushOutputCachesForPath(sitemapResourceNode.getPath(), false);
+                        // TODO expiration unit is wrong hours instead of ms, anyway it's stupid to pass expiration when we want to flush the cache
                         refreshExpiredCache(sitemapResourceNode, expiration);
                     }
                 }
@@ -96,6 +102,7 @@ public class CacheUtils {
      * @param siteKey   [String] site key
      * @throws RepositoryException
      */
+    // TODO I dont understand why flushing jahia pages is required. the sitemap do not render pages.
     public static void flushJntPages(String siteKey) throws RepositoryException {
         String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
@@ -118,6 +125,9 @@ public class CacheUtils {
     }
 
     /** Delete all expired sitemap cache nodes for a given sitemap node */
+    // TODO why expiration here ??? we want to delete the cache anyway.
+    // TODO anyway it's using a bad unit, every caller are using hours, and the isExpired is using ms.
+    // TODO so it's like calling expiration with 4ms diff wich make no sense at all.
     private static void refreshExpiredCache(JCRNodeWrapper sitemapNode, long expiration) throws RepositoryException {
         // safety check to make sure we're only dealing with sitemap nodes since we're dealing with delete operation
         if (!sitemapNode.isNodeType("jseont:sitemap") && !sitemapNode.isNodeType("jseont:sitemapResource")) return;

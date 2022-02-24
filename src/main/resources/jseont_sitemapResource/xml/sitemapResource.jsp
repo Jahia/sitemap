@@ -10,6 +10,7 @@
 <%--@elvariable id="currentNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
 <%--@elvariable id="`url" type="org.jahia.services.render.URLGenerator"--%>
+<%-- TODO This JSP is a copy paste of sitemap.lang.jsp, please consider centralizing the code using a shared view --%>
 
 <c:set var="entryNode" value="${currentNode.parent}"/>
 

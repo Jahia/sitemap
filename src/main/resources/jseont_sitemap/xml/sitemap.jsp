@@ -49,6 +49,7 @@
             </c:forEach>
 
             <%--  Separate sitemaps for jseomix:sitemapResource node option --%>
+            <%--  TODO why separate sitemaps does not benefit from the other languages available ? --%>
             <jcr:jqom var="additionalMaps">
                 <query:selector nodeTypeName="jseomix:sitemapResource" selectorName="stmp"/>
                 <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>

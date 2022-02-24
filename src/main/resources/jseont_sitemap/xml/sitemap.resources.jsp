@@ -17,6 +17,7 @@
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 
+<%-- TODO remove this file if not used --%>
 <c:set target="${renderContext}" property="contentType" value="text/xml;charset=UTF-8"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

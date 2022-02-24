@@ -67,8 +67,12 @@ public class GqlSitemapMutation {
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
         try {
+            // TODO this is completely useless to calculate the expiration here we want to delete all the caches,
+            // TODO so why calculating an expiration ?
+            // TODO also there is a big misconception here the unity is ms but we pass hours ...
             CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference,
                     ConversionUtils.convertFromHour(4L)), siteKey);
+            // TODO I dont understand why we need to flush jahia output cache, the sitemap is not rendering pages ?
             CacheUtils.flushJntPages(siteKey); // Flushing specific jnt pages
             return true;
         } catch (RepositoryException e) {

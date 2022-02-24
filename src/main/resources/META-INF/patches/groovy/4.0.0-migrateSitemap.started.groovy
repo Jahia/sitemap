@@ -178,4 +178,5 @@ def runProgram() {
     System.out.println("************** Do not forget to verify and publish your site **************");
 }
 
+// TODO seem's dangerous to execute migration on all the cluster nodes, should we check for processing node ?
 runProgram();

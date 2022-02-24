@@ -27,8 +27,12 @@ public class RobotsFilter extends AbstractFilter {
 
     @Activate
     public void activate() {
+        // TODO Why do we want it not be cached ? please consider moving this filter in a better position so it could benefit from cache system
         setPriority(15.1f); //Priority before cache filter
+        // TODO missing setApplyOnMainResource(true);
+        // TODO this filter will be triggered even for pages and other main resources displayed in pages
         setApplyOnNodeTypes(String.format("%s,%s", NO_FOLLOW_MIXIN, NO_INDEX_MIXIN));
+        // TODO why preview, no robots can crawl the preview ... ?
         setApplyOnModes("preview,live");
         setDescription("Responsible for handling 'nofollow' and 'noindex' attributes of <meta name='robots'/> tag.");
         logger.debug("Activated RobotsFilter");
@@ -36,6 +40,8 @@ public class RobotsFilter extends AbstractFilter {
 
     @Override
     public String execute(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
+        // TODO optimization here: Why not checking first that the HTML contains a <head> before continue ?
+        // TODO it's done at the end of the addRobotsTag, would be better to do it before calculating stuff.
         Source source = new Source(previousOut);
         OutputDocument od = new OutputDocument(source);
         addRobotsTag(source, od, resource);

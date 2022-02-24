@@ -46,6 +46,9 @@ public final class QueryHelper {
         String nodePath = node.getPath();
         while (excludeNodesIter.hasNext()) {
             JCRNodeWrapper p = (JCRNodeWrapper) excludeNodesIter.nextNode();
+            // TODO what if the excluded node is /sites/digitall/events
+            // TODO and node path is /sites/digitall/events-community yet it's bug it will be considered as excluded but shouldn't
+            // TODO update for: nodePath.startsWith(p.getPath() + "/")
             if (nodePath.startsWith(p.getPath())) return true;
         }
         return false;
@@ -58,6 +61,8 @@ public final class QueryHelper {
         String query = "SELECT * FROM [%s] WHERE ISDESCENDANTNODE('%s')";
         QueryResult queryResult = getQuery(ctx.getSite().getSession(), String.format(query, nodeType, rootPath));
 
+        // TODO we are doing the query two times here, why not doing the query directly using Guest session ?
+        // TODO use directly something like this: JCRTemplate.getInstance().doExecute("guest", null, ctx.getSite().getSession().getWorkspace(), ctx.getSite().getSession().getLocale(), callback);
         Set<String> inclPaths = getGuestNodes(rootPath, nodeType);
         List<JCRNodeWrapper> result = new LinkedList<>();
         for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
@@ -70,6 +75,9 @@ public final class QueryHelper {
 
     public static Set<String> getGuestNodes(String rootPath, String nodeType) throws RepositoryException {
         String query = "SELECT * FROM [%s] WHERE ISDESCENDANTNODE('%s')";
+        // TODO Session leak here never call login like that
+        // TODO the session is never closed, actually you can see it in the tools each call to a sitemap create new session
+        // TODO use JCRTemplate.getInstance().doExecute("guest") instead
         JCRSessionWrapper liveGuestSession = JCRSessionFactory.getInstance().login("live");
         QueryResult queryResult = getQuery(liveGuestSession, String.format(query, nodeType, rootPath));
         Set<String> result = new HashSet<>();
@@ -85,6 +93,7 @@ public final class QueryHelper {
             return session.getWorkspace().getQueryManager()
                     .createQuery(query, Query.JCR_SQL2).execute();
         } catch (RepositoryException e) {
+            // TODO this is not good I dont see any calling checking null, dangerous return here, please change that.
             return null;
         }
     }

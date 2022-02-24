@@ -30,9 +30,11 @@
             WHERE ISDESCENDANTNODE(['${entryNode.path}'])"/>
 
 			<%-- jnt:page under currentNode --%>
+			<%-- TODO we can modify the signature of sitemap:getSitemapEntries to handle multiple type to avoid code duplicate: 'jnt:page,'jmix:mainResource' --%>
 		<c:forEach var="childUrlNode" items="${sitemap:getSitemapEntries(renderContext, entryNode.path, 'jnt:page')}">
 			<c:if test="${!sitemap:excludeNode(childUrlNode, excludeNodes.nodes)}">
 				<c:set var="urlNode" value="${childUrlNode}" scope="request"/>
+				<%-- TODO render context can be set globally outside the loop --%>
 				<c:set var="renderContext" value="${renderContext}" scope="request"/>
 				<jsp:include page="../../common/sitemap-entry.jsp"/>
 			</c:if>
@@ -42,6 +44,7 @@
 		<c:forEach var="childUrlNode" items="${sitemap:getSitemapEntries(renderContext, entryNode.path, 'jmix:mainResource')}">
 			<c:if test="${!sitemap:excludeNode(childUrlNode, excludeNodes.nodes)}">
 				<c:set var="urlNode" value="${childUrlNode}" scope="request"/>
+				<%-- TODO render context can be set globally outside the loop --%>
 				<c:set var="renderContext" value="${renderContext}" scope="request"/>
 				<jsp:include page="../../common/sitemap-entry.jsp"/>
 			</c:if>
