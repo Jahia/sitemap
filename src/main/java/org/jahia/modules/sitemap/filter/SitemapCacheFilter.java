@@ -153,7 +153,6 @@ public class SitemapCacheFilter extends AbstractFilter {
     /** Apply file caching only for default template */
     public boolean needsCaching(Resource resource) {
         String templateName = resource.getTemplate();
-        // TODO be careful here it seem's the jseont:sitemapResource are not cached anymore
         return "lang".equalsIgnoreCase(templateName);
     }
 
