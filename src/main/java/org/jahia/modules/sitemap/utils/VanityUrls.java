@@ -37,6 +37,8 @@ import java.util.Optional;
  */
 public final class VanityUrls {
 
+    // TODO this is a bean we should instantiate this Object
+    // TOTO Actually we should use the VanityUrlService instead, because it contains a cache to be able to speed up vanities reading
     static VanityUrlManager vanityUrlManager = new VanityUrlManager();
 
     private VanityUrls() {}
