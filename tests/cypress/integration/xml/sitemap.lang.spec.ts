@@ -12,7 +12,7 @@ const langFr = 'fr'
 const langAll = 'de,en,fr'
 const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
-describe('Check sitemap-lang.xml file on MySite', () => {
+describe('Check sitemap-lang.xml file on digitall', () => {
     beforeEach('Create content for test', () => {
         // create a test page
         cy.apollo({
@@ -42,6 +42,26 @@ describe('Check sitemap-lang.xml file on MySite', () => {
         cy.apollo({
             variables: {
                 pathOrId: testPagePath,
+                language: langAll,
+                publishSubNodes: false,
+                includeSubTree: false,
+            },
+            mutationFile: 'graphql/jcrPublishNode.graphql',
+        })
+
+        // update history page to invalid 'de' language
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
+                properties: [{ name: 'j:invalidLanguages', values: ['de'], language: langEn }],
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+
+        // publish history page in all wanted languages
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
                 language: langAll,
                 publishSubNodes: false,
                 includeSubTree: false,
@@ -100,27 +120,7 @@ describe('Check sitemap-lang.xml file on MySite', () => {
     })
 
     it('alternate url should not contains invalid language', () => {
-        // update history page to invalid de language
-        cy.apollo({
-            variables: {
-                pathOrId: historyPagePath,
-                properties: [{ name: 'j:invalidLanguages', values: ['de'], language: langEn }],
-            },
-            mutationFile: 'graphql/jcrUpdateNode.graphql',
-        })
-
-        // publish history page in all wanted languages
-        cy.apollo({
-            variables: {
-                pathOrId: historyPagePath,
-                language: langAll,
-                publishSubNodes: false,
-                includeSubTree: false,
-            },
-            mutationFile: 'graphql/jcrPublishNode.graphql',
-        })
-
-        cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
+        cy.requestFindXMLElementByTagName(langFr + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
                 const pageUrl = $list.getElementsByTagName('loc')
                 const siteUrl = pageUrl[0].innerHTML

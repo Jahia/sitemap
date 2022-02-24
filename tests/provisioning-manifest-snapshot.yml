@@ -18,6 +18,7 @@
     - 'mvn:org.jahia.modules/dx-base-demo-components/2.1.0'
     - 'mvn:org.jahia.modules/digitall/2.0.0'
     - 'mvn:org.jahia.modules/site-settings-seo/3.0.0'
+    - 'mvn:org.jahia.modules/graphql-dxm-provider/'
     - 'mvn:org.jahia.modules/sitemap/LATEST'
   autoStart: true
   uninstallPreviousVersion: true
