@@ -31,17 +31,14 @@ abstract class Scroller extends ScrollableQueryCallback<Void> {
     }
 
     protected void reverseMixins(JCRNodeWrapper node) {
-
         if (node.isNodeType("jmix:sitemap") && node.isNodeType("jmix:noindex")) {
             logger.error("Node " + node.getPath() + " was added to the sitemap but also marked as noIndex");
-            node.removeMixin("jmix:sitemap");
-            node.removeMixin("jmix:noindex");
-            node.addMixin("jseomix:noIndex");
-            logger.info("Mixins jmix:sitemap and jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
-        } else if (node.isNodeType("jmix:sitemap")) {
+        }
+        if (node.isNodeType("jmix:sitemap")) {
             node.removeMixin("jmix:sitemap");
             logger.info("Mixins jmix:sitemap has been removed on node " + node.getPath());
-        } else if (node.isNodeType("jmix:noindex")) {
+        }
+        if (node.isNodeType("jmix:noindex")) {
             node.removeMixin("jmix:noindex");
             node.addMixin("jseomix:noIndex");
             logger.info("Mixin jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
