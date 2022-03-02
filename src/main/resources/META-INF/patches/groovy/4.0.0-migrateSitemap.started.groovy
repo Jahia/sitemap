@@ -30,7 +30,13 @@ abstract class Scroller extends ScrollableQueryCallback<Void> {
         return session
     }
 
-    protected void reverseMixins(JCRNodeWrapper node) {
+    /**
+     * Remove the mixins added in the version 3 of the module because in the version 4, the jnt:page and jmix:mainResource are
+     * automatically added to the sitemap.
+     * Set the mixin jseomix:noIndex where there was the mixin jmix:noindex
+     * @param node to update
+     */
+    protected void cleanOldMixins(JCRNodeWrapper node) {
         if (node.isNodeType("jmix:sitemap") && node.isNodeType("jmix:noindex")) {
             logger.error("Node " + node.getPath() + " was added to the sitemap but also marked as noIndex");
         }
@@ -74,6 +80,9 @@ class RemoveSiteMapNodes extends Scroller {
     }
 }
 
+/**
+ * Get the jnt:page nodes of a site and clean the mixins on them
+ */
 class ProcessJntPage extends Scroller {
 
     ProcessJntPage(JCRSessionWrapper session, String sitePath) {
@@ -90,7 +99,7 @@ class ProcessJntPage extends Scroller {
         NodeIterator nodeIterator = stepResult.getNodes();
         while (nodeIterator.hasNext()) {
             JCRNodeWrapper node = (JCRNodeWrapper) nodeIterator.nextNode();
-            reverseMixins(node);
+            cleanOldMixins(node);
         }
         session.save();
         return true;
@@ -102,6 +111,9 @@ class ProcessJntPage extends Scroller {
     }
 }
 
+/**
+ * Get the jnt:content nodes of a site and clean the mixins on them
+ */
 class ProcessJntContent extends Scroller {
 
     ProcessJntContent(JCRSessionWrapper session, String sitePath) {
@@ -118,7 +130,7 @@ class ProcessJntContent extends Scroller {
         NodeIterator nodeIterator = stepResult.getNodes();
         while (nodeIterator.hasNext()) {
             JCRNodeWrapper node = (JCRNodeWrapper) nodeIterator.nextNode();
-            reverseMixins(node);
+            cleanOldMixins(node);
         }
         session.save();
         return true;
@@ -160,7 +172,7 @@ def removeJntSiteMapNodes(List<JCRSiteNode> sites) {
     });
 }
 
-def addRemoeApplicableMixins(List<JCRSiteNode> sites) {
+def processNodes(List<JCRSiteNode> sites) {
     JCRTemplate.getInstance().doExecuteWithSystemSession(new JCRCallback<Void>() {
 
         @Override
@@ -178,7 +190,7 @@ def runProgram() {
     System.out.println("************** Starting Sitemap migration **************");
     List<JCRSiteNode> sites = getApplicableSiteNodes();
     removeJntSiteMapNodes(sites);
-    addRemoeApplicableMixins(sites);
+    processNodes(sites);
     System.out.println("************** Sitemap migration completed **************");
     System.out.println("************** Do not forget to verify and publish your site **************");
 }
