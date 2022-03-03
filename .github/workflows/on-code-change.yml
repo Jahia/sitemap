@@ -47,22 +47,10 @@ jobs:
         with:
           module_id: sitemap
 
-  sonar-analysis:
-    name: Sonar Analysis
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/sonar-analysis@v1
-        with:
-          github_pr_id: ${{github.event.number}}
-          sonar_url: ${{ secrets.SONAR_URL }}
-          sonar_token: ${{ secrets.SONAR_TOKEN }}
-
   integration-tests:
     name: Integration Tests
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: jahia/jahia-modules-action/integration-tests@v1
@@ -94,6 +82,17 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15
 
+  sonar-analysis:
+    name: Sonar Analysis
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jahia/jahia-modules-action/sonar-analysis@v1
+        with:
+          github_pr_id: ${{github.event.number}}
+          sonar_url: ${{ secrets.SONAR_URL }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   publish:
     name: Publish module
