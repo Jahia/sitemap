@@ -47,6 +47,7 @@ const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
                                     {indexUrl}
                                 </Typography>
                                 <Button variant="ghost"
+                                        data-sel-role="sitemapIndexLinkButton"
                                         className={styles.sitemapIndexFileButton}
                                         icon={<OpenInNew size="big"/>}
                                         onClick={() => window.open(indexUrl, '_blank')}/>

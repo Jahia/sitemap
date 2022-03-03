@@ -85,6 +85,7 @@ export const SitemapPanelHeaderComponent = ({
                 title={t('labels.header.title', {siteName: siteKey})}
                 mainActions={[
                     <Button key="submitButton"
+                            data-sel-role="sitemapSubmitButton"
                             color="accent"
                             icon={<Save/>}
                             label={(isSitemapMixinEnabled) ? t('labels.header.save') : t('labels.header.activate')}
@@ -96,12 +97,14 @@ export const SitemapPanelHeaderComponent = ({
                 ]}
                 toolbarLeft={[
                     <Button key="flushCacheButton"
+                            data-sel-role="sitemapFlushCacheButton"
                             variant="ghost"
                             label={t('labels.header.flushCacheButtonLabel')}
                             icon={<Delete/>}
                             disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
                             onClick={() => handleDialogOpen('flushCache', t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
                     <Button key="submitToGoogleButton"
+                            data-sel-role="sitemapSubmitToGoogleButton"
                             variant="ghost"
                             label={t('labels.header.submitToGoogleButtonLabel')}
                             icon={<Upload/>}

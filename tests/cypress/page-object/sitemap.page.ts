@@ -2,10 +2,10 @@ import { BasePage } from './base.page'
 
 export class SitemapPage extends BasePage {
     elements = {
-        saveButton: "button[type='submit']",
-        sitemapRootUrlInput: "input[id='sitemapIndexURL']",
-        headerFlushCacheSpan: 'Flush cache',
-        dialogFlushCacheSpan: 'flush cache',
+        saveButton: "button[data-sel-role='sitemapSubmitButton']",
+        sitemapRootUrlInput: "input[data-sel-role='sitemapIndexURL']",
+        headerFlushCacheSpan: "button[data-sel-role='sitemapFlushCacheButton']",
+        dialogFlushCacheSpan: "button[data-sel-role='sitemapDialogSubmitButton']",
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -27,7 +27,7 @@ export class SitemapPage extends BasePage {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     clickFlushCache() {
-        cy.contains(this.htmlElements.span, this.elements.headerFlushCacheSpan, { timeout: 10000 }).click()
-        cy.contains(this.htmlElements.span, this.elements.dialogFlushCacheSpan, { timeout: 10000 }).click()
+        cy.get(this.elements.headerFlushCacheSpan, { timeout: 10000 }).click()
+        cy.get(this.elements.dialogFlushCacheSpan, { timeout: 10000 }).click()
     }
 }

@@ -160,6 +160,7 @@ const SitemapPanelApp = ({client, t}) => {
                                 <Input
                                     required
                                     id="sitemapIndexURL"
+                                    data-sel-role="sitemapIndexURL"
                                     name="sitemapIndexURL"
                                     placeholder="http://your-site-root"
                                     value={formik.values.sitemapIndexURL}
@@ -183,6 +184,7 @@ const SitemapPanelApp = ({client, t}) => {
 
                                 <Dropdown
                                     id="intervalDuration"
+                                    data-sel-role="sitemapIntervalDuration"
                                     name="intervalDuration"
                                     isDisabled={false}
                                     variant="outlined"

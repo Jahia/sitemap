@@ -30,8 +30,8 @@ export const DialogComponent = ({
                 </DialogContent>
                 <Separator spacing="none"/>
                 <DialogActions>
-                    <Button key="cancelButton" size="big" label={t('labels.dialog.buttonCancel')} onClick={handleClose}/>
-                    <Button key="submitButton" color="accent" size="big" label={submitButtonText} onClick={handleSubmit}/>
+                    <Button key="cancelButton" data-sel-role="sitemapDialogCancelButton" size="big" label={t('labels.dialog.buttonCancel')} onClick={handleClose}/>
+                    <Button key="submitButton" data-sel-role="sitemapDialogSubmitButton" color="accent" size="big" label={submitButtonText} onClick={handleSubmit}/>
                 </DialogActions>
             </Dialog>
         </>
