@@ -89,7 +89,7 @@ jobs:
 
   publish:
     name: Publish module
-    needs: [integration-tests, sonar-analysis]
+    needs: [integration-tests-standalone, sonar-analysis]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     container:
