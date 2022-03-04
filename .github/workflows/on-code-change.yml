@@ -53,9 +53,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Test
+        uses: actions/github-script@0.3.0
+        with:
+          github-token: ${{github.token}}
+          script: |
+            const core = require('@actions/core')
+            const prNumber = context.payload.number;
+            core.exportVariable('PR_NUMBER', prNumber);
       - uses: jahia/jahia-modules-action/sonar-analysis@v1
         with:
-          github_pr_id: ${{github.event.number}}
+          # github_pr_id: ${{github.event.number}}
+          github_pr_id: ${{ env.PR_NUMBER }}
           sonar_url: ${{ secrets.SONAR_URL }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
 
