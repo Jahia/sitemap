@@ -60,7 +60,7 @@ jobs:
           script: |
             const core = require('@actions/core')
             const prNumber = context.payload.number;
-            console.log(prNumber)
+            console.log(JSON.stringify(context.payload))
       - uses: jahia/jahia-modules-action/sonar-analysis@v1
         with:
           github_pr_id: ${{github.event.number}}
