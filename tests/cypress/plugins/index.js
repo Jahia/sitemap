@@ -1,6 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cypressTypeScriptPreprocessor = require("./cy-ts-preprocessor");
 
+/* eslint-disable @typescript-eslint/no-var-requires */
+const env = require('./env')
+
 module.exports = (on, config) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("@cypress/code-coverage/task")(on, config);
@@ -18,6 +21,6 @@ module.exports = (on, config) => {
         includeSuccessfulHookLogs: true,
     }
     require('cypress-terminal-report/src/installLogsPrinter')(on, optionsPrinter)
-        
+
     return config;
 };
