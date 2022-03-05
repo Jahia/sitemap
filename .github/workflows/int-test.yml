@@ -6,7 +6,7 @@ on:
 
 jobs:
   integration-tests-standalone:
-    name: Integration Tests
+    name: Integration Tests Standalone
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
           zencrepes_secret: ${{ secrets.ZENCREPES_WEBHOOK_SECRET }}
 
   integration-tests-cluster:
-    name: Integration Tests
+    name: Integration Tests Cluster
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
