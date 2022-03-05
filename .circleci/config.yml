@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  hello_world:
+  build:
     resource_class: small
     docker:
       - image: cimg/node:lts
