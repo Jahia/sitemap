@@ -88,10 +88,6 @@ services:
     networks:
       jahia-net:
         ipv4_address: 172.24.24.51
-    ports:
-      - 8080:8080
-      - 8101:8101
-      - 8000:8000
     extra_hosts:
       - jahia:127.0.0.1
     environment:
@@ -121,10 +117,6 @@ services:
     networks:
       jahia-net:
         ipv4_address: 172.24.24.52
-    ports:
-      - 8080:8080
-      - 8101:8101
-      - 8000:8000
     extra_hosts:
       - jahia:127.0.0.1
     environment:
