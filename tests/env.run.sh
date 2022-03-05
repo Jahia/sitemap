@@ -59,7 +59,7 @@ if [[ $? -eq 1 ]]; then
 fi
 
 echo "$(date +'%d %B %Y - %k:%M') == Fetching the list of installed modules =="
-./node_modules/jahia-reporter/bin/run utils:modules \
+./node_modules/@jahia/jahia-reporter/bin/run utils:modules \
   --moduleId="${MODULE_ID}" \
   --jahiaUrl="${JAHIA_URL}" \
   --jahiaPassword="${SUPER_USER_PASSWORD}" \
@@ -76,15 +76,21 @@ fi
 
 echo "$(date +'%d %B %Y - %k:%M')== Sleeping for an additional 120 seconds =="
 sleep 120
+
 echo "$(date +'%d %B %Y - %k:%M')== DONE - Sleeping for an additional 120 seconds =="
 curl -u root:${SUPER_USER_PASSWORD} -X POST ${JAHIA_URL}/modules/api/provisioning --form script='[{"karafCommand":"bundle:list"}]'
+
 echo "$(date +'%d %B %Y - %k:%M')== Run tests =="
 yarn e2e:ci
 if [[ $? -eq 0 ]]; then
+  echo "$(date +'%d %B %Y - %k:%M') == Full execution successful =="
   echo "success" > ./results/test_success
+  yarn report:merge; yarn report:html
   exit 0
 else
+  echo "$(date +'%d %B %Y - %k:%M') == One or more failed tests =="
   echo "failure" > ./results/test_failure
+  yarn report:merge; yarn report:html
   exit 1
 fi
 
