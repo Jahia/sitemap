@@ -51,7 +51,7 @@
   "scripts": {
     "instrument": "nyc instrument --compact=false cypress instrumented",
     "e2e:coverage": "yarn instrument && yarn cypress run --config integrationFolder=./instrumented/integration && yarn nyc report --reporter=html --report-dir=./results/coverage && yarn nyc report",
-    "e2e:ci": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=reporter-config.json",
+    "e2e:ci": "cypress run",
     "e2e:debug": "cypress open",
     "report:merge": "mochawesome-merge results/reports/cypress*.json > results/reports/report.json && rm results/reports/cypress*.json",
     "report:html": "marge --inline results/reports/report.json --reportDir results/reports/",
