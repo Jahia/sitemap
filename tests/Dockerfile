@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y jq python3 cmake g++
 RUN adduser --disabled-password jahians
 
 USER jahians
+# USER root
 WORKDIR /home/jahians
 
 COPY --chown=jahians:jahians package.json yarn.lock /home/jahians/
@@ -14,7 +15,8 @@ RUN mkdir -p /home/jahians/run-artifacts /home/jahians/results /home/jahians/cyp
 #CI=true reduces the verbosity of the installation logs
 RUN CI=true yarn install
 
-COPY --chown=jahians:jahians . /home/jahians
+# COPY --chown=jahians:jahians . /home/jahians
+COPY --chown=root:root . /home/jahians
 
 RUN CI=true /home/jahians/node_modules/.bin/cypress install
 
