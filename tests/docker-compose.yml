@@ -24,6 +24,7 @@ services:
     image: '${TESTS_IMAGE}'
     # https://github.com/cypress-io/cypress/issues/350
     ipc: host
+    shm_size: '2gb'
     # deploy:
     #   resources:
     #     limits:
