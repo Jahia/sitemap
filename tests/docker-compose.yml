@@ -1,60 +1,69 @@
-version: '3.6'
-services:
-    mariadb:
-        image: library/mariadb:10-focal
-        container_name: mariadb
-        networks:
-            - jahia-net
-        command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10
-        environment:
-            MYSQL_ROOT_PASSWORD: root1234
-            MYSQL_DATABASE: jahia
-            MYSQL_USER: jahia
-            MYSQL_PASSWORD: jahia
-    jahia:
-        image: '${JAHIA_IMAGE}'
-        container_name: jahia
-        ports:
-            - 8080:8080
-            - 8101:8101
-            - 8000:8000
-        extra_hosts:
-            - jahia:127.0.0.1
-        environment:
-            jahia_cfg_karaf_remoteShellHost: 0.0.0.0
-            DB_VENDOR: mariadb
-            DB_HOST: mariadb
-            DB_NAME: jahia
-            DB_USER: jahia
-            DB_PASS: jahia
-            JAHIA_LICENSE: ${JAHIA_LICENSE}
-            SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
-            PROCESSING_SERVER: 'true'
-            JPDA: ${JPDA}
-        networks:
-            - jahia-net
-    # Cypress container
-    cypress:
-        image: '${TESTS_IMAGE}'
-        # https://github.com/cypress-io/cypress/issues/350
-        ipc: host
-        container_name: cypress
-        depends_on:
-            - jahia
-        environment:
-            - MANIFEST=${MANIFEST}
-            - JAHIA_USERNAME=${JAHIA_USERNAME}
-            - JAHIA_PASSWORD=${JAHIA_PASSWORD}
-            - JAHIA_URL=${JAHIA_URL}
-            - JAHIA_HOST=${JAHIA_HOST}
-            - JAHIA_PORT=${JAHIA_PORT}
-            - NEXUS_USERNAME=${NEXUS_USERNAME}
-            - NEXUS_PASSWORD=${NEXUS_PASSWORD}
-        networks:
-            - jahia-net
+version: '3.9'
+
 networks:
-    jahia-net:
-        name: jahia-net
-        ipam:
-            config:
-                - subnet: 172.24.24.0/24
+  jahia-net:
+    name: jahia-net
+    ipam:
+      config:
+        - subnet: 172.24.24.0/24
+
+services:
+  mariadb:
+    image: library/mariadb:10-focal
+    container_name: mariadb
+    networks:
+      - jahia-net
+    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: jahia
+      MYSQL_USER: jahia
+      MYSQL_PASSWORD: jahia
+
+  # Cypress container
+  cypress:
+    image: '${TESTS_IMAGE}'
+    # https://github.com/cypress-io/cypress/issues/350
+    ipc: host
+    container_name: cypress
+    depends_on:
+        - jahia
+    environment:
+        - MANIFEST=${MANIFEST}
+        - JAHIA_USERNAME=${JAHIA_USERNAME}
+        - JAHIA_PASSWORD=${JAHIA_PASSWORD}
+        - JAHIA_URL=${JAHIA_URL}
+        - JAHIA_HOST=${JAHIA_HOST}
+        - JAHIA_PORT=${JAHIA_PORT}
+        - NEXUS_USERNAME=${NEXUS_USERNAME}
+        - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+    networks:
+        - jahia-net
+
+  jahia:
+    image: '${JAHIA_IMAGE}'
+    hostname: 'jahia.dev.sandbox.jahia.com'
+    container_name: jahia
+    networks:
+      jahia-net:
+        ipv4_address: 172.24.24.50
+    ports:
+      - 8080:8080
+      - 8101:8101
+      - 8000:8000
+    extra_hosts:
+      - jahia:127.0.0.1
+    environment:
+      jahia_cfg_karaf_remoteShellHost: 0.0.0.0
+      DB_VENDOR: mariadb
+      DB_HOST: mariadb
+      DB_NAME: jahia
+      DB_USER: jahia
+      DB_PASS: jahia
+      MAX_RAM_PERCENTAGE: 95
+      RESTORE_MODULE_STATES: 'false'
+      JAHIA_LICENSE: ${JAHIA_LICENSE}
+      SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
+      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      PROCESSING_SERVER: 'true'
+      JPDA: ${JPDA}
