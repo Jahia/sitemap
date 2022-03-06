@@ -1,5 +1,6 @@
 {
     "chromeWebSecurity": false,
+    "numTestsKeptInMemory": 0,
     "failOnStatusCode": false,
     "defaultCommandTimeout": 30000,
     "videoUploadOnPasses": false,
