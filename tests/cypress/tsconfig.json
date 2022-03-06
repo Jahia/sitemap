@@ -9,7 +9,11 @@
     "isolatedModules": false,
     "types": [
       "cypress",
+      "cypress-file-upload",
+      "node",
+      "cypress-wait-until",
       "@jahia/cypress"
-    ]
+    ],
+    "lib": [ "es2015" ]    
   }
 }
