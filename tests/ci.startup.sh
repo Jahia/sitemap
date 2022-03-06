@@ -32,11 +32,11 @@ fi
 
 if [[ $1 != "notests" ]]; then
     if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
-        export JAHIA_URL=http://haproxy.jahia.net:8080
-        export JAHIA_PROCESSING_URL=http://jahia.jahia.net:8080
+        export JAHIA_URL=http://haproxy.dev.sandbox.jahia.com:8080
+        export JAHIA_PROCESSING_URL=http://jahia.dev.sandbox.jahia.com:8080
     else
-        export JAHIA_URL=http://jahia.jahia.net:8080
-        export JAHIA_PROCESSING_URL=http://jahia.jahia.net:8080
+        export JAHIA_URL=http://jahia.dev.sandbox.jahia.com:8080
+        export JAHIA_PROCESSING_URL=http://dev.sandbox.jahia.com:8080
     fi
     echo "$(date +'%d %B %Y - %k:%M') [TESTS] == Starting cypress tests =="
     docker-compose up --abort-on-container-exit --renew-anon-volumes cypress

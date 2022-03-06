@@ -4,8 +4,6 @@
 
 source ./set-env.sh
 
-source .env
-
 #!/usr/bin/env bash
 START_TIME=$SECONDS
 echo " == Using MANIFEST: ${MANIFEST}"

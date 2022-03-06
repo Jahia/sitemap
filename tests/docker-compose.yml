@@ -35,8 +35,8 @@ services:
       - MANIFEST=${MANIFEST}
       - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
       - JAHIA_CLUSTER_ENABLED=${JAHIA_CLUSTER_ENABLED:-false}
-      - JAHIA_URL=${JAHIA_URL:-http://jahia.jahia.net:8080}
-      - JAHIA_PROCESSING_URL=${JAHIA_PROCESSING_URL:-http://jahia.jahia.net:8080}
+      - JAHIA_URL=${JAHIA_URL:-http://jahia.dev.sandbox.jahia.com:8080}
+      - JAHIA_PROCESSING_URL=${JAHIA_PROCESSING_URL:-http://jahia.dev.sandbox.jahia.com:8080}
       - NEXUS_USERNAME=${NEXUS_USERNAME}
       - NEXUS_PASSWORD=${NEXUS_PASSWORD}
       # Not needed anymore?
@@ -47,12 +47,12 @@ services:
 
   jahia:
     image: '${JAHIA_IMAGE}'
-    hostname: 'jahia.jahia.net'
+    hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia
-    deploy:
-      resources:
-        limits:
-          memory: 4G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 6G
     networks:
       jahia-net:
         ipv4_address: 172.24.24.50
@@ -70,6 +70,7 @@ services:
       DB_USER: jahia
       DB_PASS: jahia
       MAX_RAM_PERCENTAGE: 95
+      RESTORE_MODULE_STATES: 'false'
       JAHIA_LICENSE: ${JAHIA_LICENSE}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
@@ -78,12 +79,12 @@ services:
 
   jahia-browsing-a:
     image: '${JAHIA_IMAGE}'
-    hostname: 'jahia-browsing-a.jahia.net'
+    hostname: 'jahia-browsing-a.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
-    deploy:
-      resources:
-        limits:
-          memory: 4G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 6G
     networks:
       jahia-net:
         ipv4_address: 172.24.24.51
@@ -107,12 +108,12 @@ services:
 
   jahia-browsing-b:
     image: '${JAHIA_IMAGE}'
-    hostname: 'jahia-browsing-b.jahia.net'
+    hostname: 'jahia-browsing-b.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
-    deploy:
-      resources:
-        limits:
-          memory: 4G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 6G
     networks:
       jahia-net:
         ipv4_address: 172.24.24.52
@@ -136,7 +137,7 @@ services:
 
   haproxy:
     image: haproxytech/haproxy-alpine:2.4
-    hostname: haproxy.jahia.net
+    hostname: haproxy.dev.sandbox.jahia.com
     container_name: haproxy
     ports:
         - "18080:8080"
