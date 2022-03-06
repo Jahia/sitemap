@@ -1,19 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
-    "**/*/*.ts", "support/index.js"
-  ],
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "noEmit": false,
-    "isolatedModules": false,
-    "types": [
-      "cypress",
-      "cypress-file-upload",
-      "node",
-      "cypress-wait-until",
-      "@jahia/cypress"
-    ],
-    "lib": [ "es2015" ]    
-  }
+    "../node_modules/cypress",
+    "*/*.ts"
+  ]
 }
