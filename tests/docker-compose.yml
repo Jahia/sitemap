@@ -24,10 +24,10 @@ services:
     image: '${TESTS_IMAGE}'
     # https://github.com/cypress-io/cypress/issues/350
     ipc: host
-    deploy:
-      resources:
-        limits:
-          memory: 4G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 4G
     container_name: cypress
     depends_on:
       - jahia
