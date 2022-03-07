@@ -26,6 +26,13 @@ fi
 docker-compose up -d --renew-anon-volumes --remove-orphans --force-recreate mariadb jahia
 
 if [[ $1 != "notests" ]]; then
+    if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
+        export JAHIA_URL=http://haproxy:8080
+        export JAHIA_PROCESSING_URL=http://jahia:8080
+    else
+        export JAHIA_URL=http://jahia:8080
+        export JAHIA_PROCESSING_URL=http://jahia:8080
+    fi
     echo "$(date +'%d %B %Y - %k:%M') [TESTS] == Starting cypress tests =="
     docker-compose up --abort-on-container-exit --renew-anon-volumes cypress
 fi

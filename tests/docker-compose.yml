@@ -67,3 +67,65 @@ services:
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
       PROCESSING_SERVER: 'true'
       JPDA: ${JPDA}
+
+  jahia-browsing-a:
+    image: '${JAHIA_IMAGE}'
+    # hostname: 'jahia.dev.sandbox.jahia.com'
+    container_name: jahia-browsing-a
+    networks:
+      jahia-net:
+        ipv4_address: 172.24.24.51
+    extra_hosts:
+      - jahia:127.0.0.1
+    environment:
+      jahia_cfg_karaf_remoteShellHost: 0.0.0.0
+      DB_VENDOR: mariadb
+      DB_HOST: mariadb
+      DB_NAME: jahia
+      DB_USER: jahia
+      DB_PASS: jahia
+      MAX_RAM_PERCENTAGE: 95
+      RESTORE_MODULE_STATES: 'false'
+      JAHIA_LICENSE: ${JAHIA_LICENSE}
+      SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
+      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      PROCESSING_SERVER: 'false'
+      PROCESSING_HOST: jahia
+      JPDA: ${JPDA}
+
+  jahia-browsing-b:
+    image: '${JAHIA_IMAGE}'
+    # hostname: 'jahia.dev.sandbox.jahia.com'
+    container_name: jahia-browsing-b
+    networks:
+      jahia-net:
+        ipv4_address: 172.24.24.52
+    extra_hosts:
+      - jahia:127.0.0.1
+    environment:
+      jahia_cfg_karaf_remoteShellHost: 0.0.0.0
+      DB_VENDOR: mariadb
+      DB_HOST: mariadb
+      DB_NAME: jahia
+      DB_USER: jahia
+      DB_PASS: jahia
+      MAX_RAM_PERCENTAGE: 95
+      RESTORE_MODULE_STATES: 'false'
+      JAHIA_LICENSE: ${JAHIA_LICENSE}
+      SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
+      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      PROCESSING_SERVER: 'false'
+      PROCESSING_HOST: jahia
+      JPDA: ${JPDA}
+
+  haproxy:
+    image: haproxytech/haproxy-alpine:2.4
+    hostname: haproxy.dev.sandbox.jahia.com
+    container_name: haproxy
+    ports:
+        - "18080:8080"
+        - "18404:8404"
+    volumes:
+        - './:/usr/local/etc/haproxy:ro'
+    networks:
+        -  jahia-net
