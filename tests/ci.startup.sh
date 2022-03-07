@@ -25,6 +25,11 @@ fi
 
 docker-compose up -d --renew-anon-volumes --remove-orphans --force-recreate mariadb jahia
 
+if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
+    echo "$(date +'%d %B %Y - %k:%M') [JAHIA_CLUSTER_ENABLED] == Starting a cluster of one processing and two browsing =="
+    docker-compose up -d haproxy jahia-browsing-a jahia-browsing-b 
+fi
+
 if [[ $1 != "notests" ]]; then
     if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
         export JAHIA_URL=http://haproxy:8080
