@@ -8,6 +8,7 @@ jobs:
   integration-tests-standalone:
     name: Integration Tests Standalone
     runs-on: self-hosted
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: jahia/jahia-modules-action/integration-tests@v1
@@ -39,6 +40,7 @@ jobs:
   integration-tests-cluster:
     name: Integration Tests Cluster
     runs-on: self-hosted
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: jahia/jahia-modules-action/integration-tests@v1
