@@ -42,7 +42,7 @@ services:
 
   jahia:
     image: '${JAHIA_IMAGE}'
-    hostname: 'jahia.dev.sandbox.jahia.com'
+    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia
     networks:
       jahia-net:
