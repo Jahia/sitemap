@@ -23,48 +23,95 @@
  */
 package org.jahia.modules.sitemap.utils;
 
-import org.jahia.settings.SettingsBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jahia.api.Constants;
+import org.jahia.modules.sitemap.beans.SitemapEntry;
+import org.jahia.registries.ServicesRegistry;
+import org.jahia.services.content.JCRContentUtils;
+import org.jahia.services.content.JCRNodeWrapper;
+import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.render.RenderContext;
+import org.jahia.services.usermanager.JahiaUser;
 
-import java.net.URI;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * General utility class
+ * Utility helper class for Sitemap
  */
-public class Utils {
+public final class Utils {
 
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
+
+    private Utils() {}
 
     /**
-     * General utility method to get the server-name based on url
-     * In the-case it cannot be parsed to URL or it does not have protocol will return null
-     *
-     * @param urlString [String] url string
-     * @return  servername in format of protocal://hostname:port
+     * @return sitemap entries that are publicly accessible
      */
-    public static String getServerName(String urlString) {
-        try {
-            URI url = new URI(urlString);
-            String protocol = url.getScheme();
-            String host = url.getHost();
-            int port = url.getPort();
-            if (protocol == null && host.startsWith("www.")) { // for edge cases where starts with www. remove first 4 characters
-                return String.format("%s:%d", host.substring(4), port);
-            } else {
-                if (port == -1) {
-                    return String.format("%s://%s", protocol, host);
-                } else {
-                    return String.format("%s://%s:%d", protocol, host, port);
+    public static Set<SitemapEntry> getSitemapEntries(RenderContext renderContext, String rootPath, List<String> nodeTypes, Locale locale) throws RepositoryException {
+        final Set<SitemapEntry> result = new LinkedHashSet<>();
+        List<String> excludedPath = new ArrayList<>();
+        JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
+        JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
+            // add root node into results
+            JCRNodeWrapper rootNode = session.getNode(rootPath);
+            if (isValidEntry(rootNode, renderContext)) {
+                result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
+            }
+            // look for sub nodes
+            for (String nodeType : nodeTypes) {
+                String query = String.format("SELECT * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+                QueryResult queryResult = getQuery(session, query);
+                for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
+                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
+                    if (node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
+                        excludedPath.add(node.getPath());
+                    } else if (isValidEntry(node, renderContext)) {
+                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
+                    }
+
                 }
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
             return null;
-        }
+        });
+        // Filter out excluded path
+        return result.stream().filter(sitemapEntry -> excludedPath.stream().noneMatch(path -> sitemapEntry.getPath().startsWith(path + "/") || sitemapEntry.getPath().equals(path))).collect(Collectors.toSet());
     }
 
-    public static boolean urlRewriteEnabled() {
-        return SettingsBean.getInstance().isUrlRewriteSeoRulesEnabled();
+    private static SitemapEntry buildSiteMapEntry(JCRNodeWrapper node, Locale currentLocale, JahiaUser guestUser, RenderContext renderContext) throws RepositoryException {
+        // look for other languages
+        List<SitemapEntry> linksInOtherLanguages = new ArrayList<>();
+        for (Locale otherLocale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
+            if (otherLocale.equals(currentLocale)) {
+                continue;
+            }
+            JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, otherLocale, sessionInOtherLocale -> {
+                if (!sessionInOtherLocale.nodeExists(node.getPath())) {
+                    return null;
+                }
+                JCRNodeWrapper nodeInOtherLocale = sessionInOtherLocale.getNode(node.getPath());
+                if (nodeInOtherLocale != null && isValidEntry(nodeInOtherLocale, renderContext)) {
+                    linksInOtherLanguages.add(new SitemapEntry(nodeInOtherLocale.getPath(), nodeInOtherLocale.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), otherLocale, null));
+                }
+                return null;
+            });
+        }
+        return new SitemapEntry(node.getPath(), node.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), currentLocale, linksInOtherLanguages);
     }
+
+    private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) {
+        // node displayable
+        return JCRContentUtils.isADisplayableNode(node, renderContext);
+    }
+
+    public static QueryResult getQuery(JCRSessionWrapper session, String query) throws RepositoryException {
+        return session.getWorkspace().getQueryManager()
+                .createQuery(query, Query.JCR_SQL2).execute();
+    }
+
 }

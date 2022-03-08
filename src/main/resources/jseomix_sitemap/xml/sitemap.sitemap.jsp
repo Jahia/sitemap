@@ -24,9 +24,10 @@
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <c:if test="${renderContext.liveMode}">
             <c:set var="nodeUrl" value="${renderContext.site}"/>
-            <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
-            <c:set var="serverName" value="${sitemap:getServerName(urlHostServerName)}"/>
-            <c:set var="langXmlChunk" value="-lang.xml"/>
+            <c:if test="${!empty pageContext.request.serverPort}">
+                <c:set var="port" value=":${pageContext.request.serverPort}"/>
+            </c:if>
+            <c:set var="serverName" value="${pageContext.request.scheme}://${pageContext.request.serverName}${port}"/>
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
             <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>

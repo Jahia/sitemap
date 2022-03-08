@@ -61,7 +61,7 @@ public class CacheUtils {
         JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
                 Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
             @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                QueryResult result = QueryHelper.getQuery(session, String.format("SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE"
+                QueryResult result = Utils.getQuery(session, String.format("SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE"
                         + "('/sites%s')", subSite));
                 if (result == null) return null;
 
@@ -74,7 +74,7 @@ public class CacheUtils {
                     // get all caches for sitemap resource
                     String sitePath = sitemapNode.getParent().getPath();
                     String query = "SELECT * from [jseont:sitemapResource] WHERE ISDESCENDANTNODE('%s')";
-                    QueryResult subResult = QueryHelper.getQuery(session, String.format(query, sitePath));
+                    QueryResult subResult = Utils.getQuery(session, String.format(query, sitePath));
                     if (subResult == null) continue;
 
                     for (NodeIterator iter2 = subResult.getNodes(); iter2.hasNext(); ) {

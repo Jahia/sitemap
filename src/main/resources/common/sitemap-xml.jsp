@@ -7,36 +7,26 @@
 
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
 <%--@elvariable id="childUrlNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
+<%--@elvariable id="sitemapEntry" type="org.jahia.modules.sitemap.beans.SitemapEntry"--%>
 
 <c:set var="renderContext" value="${requestScope['renderContext']}"/>
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="https://www.w3.org/1999/xhtml">
-    <c:set var="urlRewriteEnabled" value=""/>
-    <%-- current page node --%>
-    <jcr:node var="entryNode" path="${param.entryNodePath}"/>
-    <jcr:nodeProperty node="${entryNode}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
-    <c:if test="${empty inactiveLiveLanguages || not functions:contains(inactiveLiveLanguages, renderContext.mainResourceLocale.language)}">
-        <jsp:include page="./sitemap-entry.jsp">
-            <jsp:param name="urlNodePath" value="${param.entryNodePath}"/>
-        </jsp:include>
+    <%-- The URL host server name based on the input from sitemap UI panel--%>
+    <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
+    <c:set var="port" value=""/>
+    <c:if test="${!empty pageContext.request.serverPort}">
+        <c:set var="port" value=":${pageContext.request.serverPort}"/>
     </c:if>
-    <%-- jnt:page under currentNode --%>
-    <c:forEach var="childUrlNodePath" items="${sitemap:getSitemapEntries(param.entryNodePath, 'jnt:page', renderContext.mainResourceLocale)}">
-        <jcr:nodeProperty node="${childUrlNode}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
-        <c:if test="${empty inactiveLiveLanguages || not functions:contains(inactiveLiveLanguages, renderContext.mainResourceLocale.language)}">
-            <jsp:include page="./sitemap-entry.jsp">
-                <jsp:param name="urlNodePath" value="${childUrlNodePath}"/>
-            </jsp:include>
-        </c:if>
+    <c:set var="serverName" value="${pageContext.request.scheme}://${pageContext.request.serverName}${port}"/>
+    <c:forEach var="sitemapEntry" items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
+        <url>
+            <loc>${serverName}<c:url context="/" value="${sitemapEntry.link}"/></loc>
+            <lastmod>${sitemapEntry.lastMod}</lastmod>
+            <c:forEach items="${sitemapEntry.linksInOtherLanguages}" var="link">
+                <xhtml:link rel="alternate" hreflang="${link.locale}" href="${serverName}<c:url value="${link.link}" context="/"/>"/>
+            </c:forEach>
+        </url>
     </c:forEach>
-
-    <%-- jmix:mainResource under currentNode --%>
-    <c:forEach var="childUrlNodePath"
-               items="${sitemap:getSitemapEntries(param.entryNodePath, 'jmix:mainResource', renderContext.mainResourceLocale)}">
-        <jsp:include page="./sitemap-entry.jsp">
-            <jsp:param name="urlNodePath" value="${childUrlNodePath}"/>
-        </jsp:include>
-    </c:forEach>
-
 </urlset>

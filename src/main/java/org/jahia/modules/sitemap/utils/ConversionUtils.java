@@ -23,8 +23,6 @@
  */
 package org.jahia.modules.sitemap.utils;
 
-import org.jahia.services.content.JCRPropertyWrapper;
-import org.jahia.services.content.JCRValueWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,31 +34,6 @@ import java.util.concurrent.TimeUnit;
 public class ConversionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionUtils.class);
-
-    /**
-     * Converting time to milliseconds
-     * If the time is null, empty, or length <= 1 will just return default value
-     * @param time          [String] Format in "[time][unit]" ex: 4h
-     * @param defaultValue
-     * @return
-     */
-    public static long toMilliSecondsLong(String time, long defaultValue) {
-        if (time == null || time.isEmpty() || time.length() <= 1) return defaultValue;
-        String timeValue = time.substring(0, time.length() - 1);
-        String unit = time.substring(time.length() - 1);
-
-        try {
-            switch (unit) {
-                case "h":
-                    return convertFromHour(Long.parseLong(timeValue));
-                default:
-                    return defaultValue;
-            }
-        } catch (Exception e) {
-            logger.error("Unable to convert timeValue will default to default value.");
-            return defaultValue;
-        }
-    }
 
     public static long convertFromHour(long hours) {
         return TimeUnit.HOURS.toMillis(hours);
