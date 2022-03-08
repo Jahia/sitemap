@@ -62,12 +62,12 @@ public final class QueryHelper {
     /**
      * @return sitemap entries that are publicly accessible
      */
-    public static Set<String> getSitemapEntries(String rootPath, String nodeType) throws RepositoryException {
+    public static Set<String> getSitemapEntries(String rootPath, String nodeType, Locale locale) throws RepositoryException {
         String query = String.format("SELECT * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
         final Set<String> result = new HashSet<>();
         List<String> excludedPath = new ArrayList<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
-        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(guestUser, Constants.LIVE_WORKSPACE, null, session -> {
+        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             QueryResult queryResult = getQuery(session, query);
             for (NodeIterator iter = queryResult.getNodes(); iter.hasNext();) {
                 JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();

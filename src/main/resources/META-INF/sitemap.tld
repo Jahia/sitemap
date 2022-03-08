@@ -46,7 +46,7 @@
     <function>
         <name>getSitemapEntries</name>
         <function-class>org.jahia.modules.sitemap.utils.QueryHelper</function-class>
-        <function-signature>java.util.Set getSitemapEntries(java.lang.String,java.lang.String)</function-signature>
+        <function-signature>java.util.Set getSitemapEntries(java.lang.String,java.lang.String,java.util.Locale)</function-signature>
     </function>
     <function>
         <name>excludeNode</name>

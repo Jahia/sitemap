@@ -12,7 +12,9 @@
 <jcr:node var="urlNode" path="${param.urlNodePath}"/>
 <c:set var="renderContext" value="${requestScope['renderContext']}"/>
 <c:set var="urlRewriteEnabled" value="${sitemap:urlRewriteEnabled()}"/>
-<% System.out.println("isNodeType => " + request.getParameter("urlNode")); %>
+<c:if test="${empty urlNode}">
+    <% System.out.println("urlNode empty for path => " + request.getParameter("urlNodePath")); %>
+</c:if>
 <c:if test="${!jcr:isNodeType(urlNode,'jseomix:noIndex')}">
     <url>
             <%-- Note that there is an issue with vanity urls being processed by c:url when urlRewriteSeoRulesEnabled = false --%>

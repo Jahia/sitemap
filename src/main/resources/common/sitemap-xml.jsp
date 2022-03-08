@@ -22,7 +22,7 @@
         </jsp:include>
     </c:if>
     <%-- jnt:page under currentNode --%>
-    <c:forEach var="childUrlNodePath" items="${sitemap:getSitemapEntries(param.entryNodePath, 'jnt:page')}">
+    <c:forEach var="childUrlNodePath" items="${sitemap:getSitemapEntries(param.entryNodePath, 'jnt:page', renderContext.mainResourceLocale)}">
         <jcr:nodeProperty node="${childUrlNode}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
         <c:if test="${empty inactiveLiveLanguages || not functions:contains(inactiveLiveLanguages, renderContext.mainResourceLocale.language)}">
             <jsp:include page="./sitemap-entry.jsp">
@@ -33,7 +33,7 @@
 
     <%-- jmix:mainResource under currentNode --%>
     <c:forEach var="childUrlNodePath"
-               items="${sitemap:getSitemapEntries(param.entryNodePath, 'jmix:mainResource')}">
+               items="${sitemap:getSitemapEntries(param.entryNodePath, 'jmix:mainResource', renderContext.mainResourceLocale)}">
         <jsp:include page="./sitemap-entry.jsp">
             <jsp:param name="urlNodePath" value="${childUrlNodePath}"/>
         </jsp:include>
