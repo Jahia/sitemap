@@ -192,7 +192,6 @@ const SitemapPanelApp = ({client, t}) => {
                                     value={formik.values.sitemapCacheDuration}
                                     data={dropdownData}
                                     onChange={(e, item) => {
-                                        // FIXME existing issue with moonstone that uses item not event for the target value
                                         formik.setFieldValue('sitemapCacheDuration', item.value);
                                     }}
                                 />

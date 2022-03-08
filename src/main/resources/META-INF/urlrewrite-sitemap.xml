@@ -7,12 +7,17 @@
     <rule>
         <condition type="attribute" name="jahiaSiteKeyForCurrentServerName" operator="notequal">^$</condition>
         <from>^/(.*)/sitemap.xml$</from>
-        <to last="true">/cms/render/live/%{attribute:siteDefaultLanguage}/sites/%{attribute:jahiaSiteKeyForCurrentServerName}/sitemap.xml</to>
+        <to last="true">/cms/render/live/%{attribute:siteDefaultLanguage}/sites/%{attribute:jahiaSiteKeyForCurrentServerName}.sitemap.xml</to>
+    </rule>
+    <rule>
+        <condition type="attribute" name="jahiaSiteKeyForCurrentServerName" operator="equal">^$</condition>
+        <from>^/(.*)/sitemap.xml$</from>
+        <to last="true">/$1.sitemap.xml</to>
     </rule>
 
     <rule>
         <from>^/(.*)/sitemap-lang.xml$</from>
-        <to>/$1/sitemap.lang.xml</to>
+        <to>/$1.sitemapLang.xml</to>
     </rule>
 
 </urlrewrite>

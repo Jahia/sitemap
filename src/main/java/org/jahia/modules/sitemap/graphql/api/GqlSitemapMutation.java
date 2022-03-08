@@ -39,8 +39,6 @@ import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.services.SitemapService;
 
 import org.jahia.modules.sitemap.utils.CacheUtils;
-import org.jahia.modules.sitemap.utils.ConversionUtils;
-import org.jahia.services.cache.CacheHelper;
 
 public class GqlSitemapMutation {
 
@@ -63,13 +61,10 @@ public class GqlSitemapMutation {
     @GraphQLField
     @GraphQLDescription("Delete existing sitemap cache if exists before expiration time difference")
     public Boolean deleteSitemapCache(
-            @GraphQLName("expirationTimeDifference") @GraphQLDescription("The expiration time difference in (ms)") @GraphQLNonNull Long expirationTimeDifference,
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
         try {
-            CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference,
-                    ConversionUtils.convertFromHour(4L)), siteKey);
-            CacheUtils.flushJntPages(siteKey); // Flushing specific jnt pages
+            CacheUtils.flushCache(siteKey);
             return true;
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);

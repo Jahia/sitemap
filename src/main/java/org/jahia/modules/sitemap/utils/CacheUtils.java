@@ -50,12 +50,12 @@ public class CacheUtils {
     }
 
     /**
-     * Delete all sitemap cache nodes that are older than expiration (in ms)
-     * @param expiration
+     * Delete all sitemap cache nodes
      * @param siteKey
      * @throws RepositoryException
      */
-    public static void refreshSitemapCache(long expiration, String siteKey) throws RepositoryException {
+    public static void flushCache(String siteKey) throws RepositoryException {
+        // This will be reworked
         String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
         JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
@@ -69,7 +69,7 @@ public class CacheUtils {
                     JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
                     // Flush the sitemap node per the path
                     CacheHelper.flushOutputCachesForPath(sitemapNode.getPath(), false);
-                    refreshExpiredCache(sitemapNode, expiration);
+                    refreshExpiredCache(sitemapNode);
 
                     // get all caches for sitemap resource
                     String sitePath = sitemapNode.getParent().getPath();
@@ -81,7 +81,7 @@ public class CacheUtils {
                         JCRNodeWrapper sitemapResourceNode = (JCRNodeWrapper) iter2.nextNode();
                         // Flush the sitemap resource node per the path
                         CacheHelper.flushOutputCachesForPath(sitemapResourceNode.getPath(), false);
-                        refreshExpiredCache(sitemapResourceNode, expiration);
+                        refreshExpiredCache(sitemapResourceNode);
                     }
                 }
 
@@ -91,43 +91,15 @@ public class CacheUtils {
         });
     }
 
-    /**
-     * Helper utiity to flushJntPages under the subsite
-     * @param siteKey   [String] site key
-     * @throws RepositoryException
-     */
-    public static void flushJntPages(String siteKey) throws RepositoryException {
-        String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
-
-        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
-                Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
-                    @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                        QueryResult result = QueryHelper.getQuery(session, String.format("SELECT * from [jnt:page] WHERE ISDESCENDANTNODE"
-                                + "('/sites%s')", subSite));
-                        if (result == null) return null;
-
-                        for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
-                            JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
-                            CacheHelper.flushOutputCachesForPath(sitemapNode.getPath(), false);
-                        }
-
-                        session.save();
-                        return null;
-                    }
-                });
-    }
-
     /** Delete all expired sitemap cache nodes for a given sitemap node */
-    private static void refreshExpiredCache(JCRNodeWrapper sitemapNode, long expiration) throws RepositoryException {
+    private static void refreshExpiredCache(JCRNodeWrapper sitemapNode) throws RepositoryException {
         // safety check to make sure we're only dealing with sitemap nodes since we're dealing with delete operation
         if (!sitemapNode.isNodeType("jseont:sitemap") && !sitemapNode.isNodeType("jseont:sitemapResource")) return;
 
         // assumption: only file caches under the sitemap node
         for (NodeIterator iter = sitemapNode.getNodes(); iter.hasNext(); ) {
             JCRNodeWrapper cacheNode = (JCRNodeWrapper) iter.nextNode();
-            if (isExpired(cacheNode, expiration)) {
-                cacheNode.remove();
-            }
+            cacheNode.remove();
         }
     }
 

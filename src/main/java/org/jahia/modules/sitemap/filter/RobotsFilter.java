@@ -1,5 +1,6 @@
 package org.jahia.modules.sitemap.filter;
 
+import com.google.common.base.Joiner;
 import net.htmlparser.jericho.*;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.render.RenderContext;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,12 +26,13 @@ public class RobotsFilter extends AbstractFilter {
 
     private static final String NO_FOLLOW_MIXIN = "jseomix:noFollow";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
+    private static final String HEADER_META_TEMPLATE = "<meta name=\"robots\" content=\"%s\"/>";
 
     @Activate
     public void activate() {
-        setPriority(15.1f); //Priority before cache filter
+        setPriority(17);
         setApplyOnNodeTypes(String.format("%s,%s", NO_FOLLOW_MIXIN, NO_INDEX_MIXIN));
-        setApplyOnModes("preview,live");
+        setApplyOnModes("live");
         setDescription("Responsible for handling 'nofollow' and 'noindex' attributes of <meta name='robots'/> tag.");
         logger.debug("Activated RobotsFilter");
     }
@@ -37,38 +40,34 @@ public class RobotsFilter extends AbstractFilter {
     @Override
     public String execute(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
         Source source = new Source(previousOut);
-        OutputDocument od = new OutputDocument(source);
-        addRobotsTag(source, od, resource);
-        return od.toString();
+        //Add meta tags to top of head tag.
+        List<Element> headList = source.getAllElements(HTMLElementName.HEAD);
+        String tag;
+        if (!headList.isEmpty() && (tag = addRobotsTag(resource)) != null) {
+            OutputDocument od = new OutputDocument(source);
+            StartTag et = headList.get(0).getStartTag();
+            od.replace(et.getEnd(), et.getEnd(), tag);
+            return od.toString();
+        }
+        return previousOut;
     }
 
-    private void addRobotsTag(Source source, OutputDocument od, Resource resource) throws RepositoryException {
+    private String addRobotsTag(Resource resource) throws RepositoryException {
         JCRNodeWrapper node = resource.getNode();
-        StringBuilder tag = new StringBuilder("<meta name=\"robots\"");
-        StringBuilder content = new StringBuilder();
+        List<String> content = new ArrayList<>();
 
         if (node.isNodeType(NO_FOLLOW_MIXIN)) {
-            content.append("nofollow");
+            content.add("nofollow");
         }
 
         if (node.isNodeType(NO_INDEX_MIXIN)) {
-            if (content.length() != 0) {
-                content.append(",");
-            }
-
-            content.append("noindex");
+            content.add("noindex");
         }
 
-        if (content.length() != 0) {
-            tag.append(String.format(" content=\"%s\"", content));
-            tag.append("/>\n");
-
-            //Add meta tags to top of head tag.
-            List<Element> headList = source.getAllElements(HTMLElementName.HEAD);
-            if (!headList.isEmpty()) {
-                StartTag et = headList.get(0).getStartTag();
-                od.replace(et.getEnd(), et.getEnd(), tag);
-            }
+        if (content.size() != 0) {
+           return String.format(HEADER_META_TEMPLATE, Joiner.on(",").join(content));
         }
+
+        return null;
     }
 }

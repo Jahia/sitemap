@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 
 const deleteSitemapCache = gql`
-    mutation deleteSitemapCache($expirationTimeDifference: Long!, $siteKey: String) {
+    mutation deleteSitemapCache($siteKey: String) {
         admin {
             sitemap {
-                deleteSitemapCache(expirationTimeDifference: $expirationTimeDifference, siteKey: $siteKey)
+                deleteSitemapCache(siteKey: $siteKey)
             }
         }
     }

@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.jahia.modules.sitemap.constant.SitemapConstant.*;
@@ -50,7 +49,6 @@ public class ConfigServiceImpl implements ConfigService {
     private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
     private static final String PROP_FORMAT="%s%s%s";
     private static final String EMPTY_STRING="";
-    public static final long MIN_FREQUENCY = 1L;
     private Map<String, String> properties;
 
     public ConfigServiceImpl() {

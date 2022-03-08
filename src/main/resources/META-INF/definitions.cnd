@@ -3,9 +3,11 @@
 <jnt = 'http://www.jahia.org/jahia/nt/1.0'>
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
+// Deprecated use mixin instead
 [jseont:sitemap] > nt:base
  + * (jnt:file)
 
+// Deprecated use mixin instead
 [jseont:sitemapResource] > nt:base
  + * (jnt:file)
 
@@ -13,13 +15,13 @@
  extends = jnt:virtualsite
  - sitemapIndexURL (string) = '' hidden autocreated
  - sitemapCacheDuration (string) = '' hidden autocreated
- + sitemap (jseont:sitemap) = jseont:sitemap mandatory autocreated
+ + sitemap (jseont:sitemap) = jseont:sitemap mandatory
 
 // dedicated sitemap
 [jseomix:sitemapResource] mixin
  extends = jnt:page, jmix:mainResource
  itemtype = seo
- + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory autocreated
+ + sitemap (jseont:sitemapResource) = jseont:sitemapResource mandatory
 
 [jseomix:noIndex] mixin
  extends = jnt:page, jmix:mainResource

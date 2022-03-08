@@ -4,7 +4,6 @@ import i18next from 'i18next';
 import SitemapPanelApp from './components/SitemapPanelApp';
 
 export default function () {
-    // TODO update permission
     registry.add('callback', 'sitemap', {
         targets: ['jahiaApp-init:25'],
         callback: async () => {
@@ -13,7 +12,7 @@ export default function () {
                 targets: ['jcontent-siteSettingsSeo:75'],
                 label: 'sitemap:labels.sitemap',
                 isSelectable: true,
-                // RequiredPermission: 'siteAdminUrlmapping',
+                requiredPermission: 'siteAdminUrlmapping',
                 requireModuleInstalledOnSite: 'sitemap',
                 render: () => React.createElement(SitemapPanelApp)
             });

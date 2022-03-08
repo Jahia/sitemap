@@ -23,14 +23,20 @@
  */
 package org.jahia.modules.sitemap.utils;
 
+import org.jahia.api.Constants;
+import org.jahia.api.usermanager.JahiaUserManagerService;
+import org.jahia.registries.ServicesRegistry;
+import org.jahia.services.JahiaService;
 import org.jahia.services.content.*;
 import org.jahia.services.render.RenderContext;
+import org.jahia.services.usermanager.JahiaUser;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Utility helper class for Sitemap
@@ -45,8 +51,10 @@ public final class QueryHelper {
     public static boolean excludeNode(JCRNodeWrapper node, NodeIterator excludeNodesIter) {
         String nodePath = node.getPath();
         while (excludeNodesIter.hasNext()) {
-            JCRNodeWrapper p = (JCRNodeWrapper) excludeNodesIter.nextNode();
-            if (nodePath.startsWith(p.getPath())) return true;
+            String path = ((JCRNodeWrapper) excludeNodesIter.nextNode()).getPath();
+            if (nodePath.equals(path) && nodePath.startsWith(path + "/")) {
+                return true;
+            }
         }
         return false;
     }
@@ -54,39 +62,30 @@ public final class QueryHelper {
     /**
      * @return sitemap entries that are publicly accessible
      */
-    public static List<JCRNodeWrapper> getSitemapEntries(RenderContext ctx, String rootPath, String nodeType) throws RepositoryException {
-        String query = "SELECT * FROM [%s] WHERE ISDESCENDANTNODE('%s')";
-        QueryResult queryResult = getQuery(ctx.getSite().getSession(), String.format(query, nodeType, rootPath));
-
-        Set<String> inclPaths = getGuestNodes(rootPath, nodeType);
-        List<JCRNodeWrapper> result = new LinkedList<>();
-        for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
-            JCRNodeWrapper n = (JCRNodeWrapper) iter.nextNode();
-            boolean isPublic = inclPaths.contains(n.getPath());
-            if (isPublic && !n.isNodeType(DEDICATED_SITEMAP_MIXIN)) result.add(n);
-        }
-        return result;
-    }
-
-    public static Set<String> getGuestNodes(String rootPath, String nodeType) throws RepositoryException {
-        String query = "SELECT * FROM [%s] WHERE ISDESCENDANTNODE('%s')";
-        JCRSessionWrapper liveGuestSession = JCRSessionFactory.getInstance().login("live");
-        QueryResult queryResult = getQuery(liveGuestSession, String.format(query, nodeType, rootPath));
-        Set<String> result = new HashSet<>();
-        for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
-            JCRNodeWrapper n = (JCRNodeWrapper) iter.nextNode();
-            result.add(n.getPath());
-        }
-        return result;
-    }
-
-    public static QueryResult getQuery(JCRSessionWrapper session, String query) {
-        try {
-            return session.getWorkspace().getQueryManager()
-                    .createQuery(query, Query.JCR_SQL2).execute();
-        } catch (RepositoryException e) {
+    public static Set<String> getSitemapEntries(String rootPath, String nodeType) throws RepositoryException {
+        String query = String.format("SELECT * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+        final Set<String> result = new HashSet<>();
+        List<String> excludedPath = new ArrayList<>();
+        JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
+        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(guestUser, Constants.LIVE_WORKSPACE, null, session -> {
+            QueryResult queryResult = getQuery(session, query);
+            for (NodeIterator iter = queryResult.getNodes(); iter.hasNext();) {
+                JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
+                if (node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
+                    excludedPath.add(node.getPath());
+                }
+                result.add(node.getPath());
+            }
             return null;
-        }
+        });
+        // Filter out excluded path
+        Set<String> collect = result.stream().filter(nodePath -> !excludedPath.stream().anyMatch(path -> nodePath.startsWith(path + "/") || nodePath.equals(path))).collect(Collectors.toSet());
+        return collect;
+    }
+
+    public static QueryResult getQuery(JCRSessionWrapper session, String query) throws RepositoryException {
+        return session.getWorkspace().getQueryManager()
+                .createQuery(query, Query.JCR_SQL2).execute();
     }
 
 }

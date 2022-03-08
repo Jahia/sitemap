@@ -62,6 +62,8 @@ public class SitemapCacheFilter extends AbstractFilter {
 
     @Activate
     public void activate() {
+        // Disable filter as it will be rework (and sitemap node not used anymore)
+        setDisabled(true);
         setPriority(15f);
         setApplyOnNodeTypes("jseont:sitemapResource,jseont:sitemap");
         setApplyOnModes("live");
@@ -154,8 +156,8 @@ public class SitemapCacheFilter extends AbstractFilter {
             JCRNodeWrapper siteNode = cacheNode.getResolveSite();
             if (siteNode != null) {
                 JCRPropertyWrapper cacheDurationProperty = siteNode.getProperty(SitemapConstant.SITEMAP_CACHE_DURATION);
-                String propertyValue = ConversionUtils.getValueFromJCRProperty(cacheDurationProperty);
-                expiration = ConversionUtils.toMilliSecondsLong(propertyValue, expiration);
+                // String propertyValue = ConversionUtils.getValueFromJCRProperty(cacheDurationProperty);
+                // expiration = ConversionUtils.toMilliSecondsLong(propertyValue, expiration);
             }
         } catch (RepositoryException e) {
             logger.error("Unable to retrieve node information.");

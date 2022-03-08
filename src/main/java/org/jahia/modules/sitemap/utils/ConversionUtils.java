@@ -37,30 +37,6 @@ public class ConversionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionUtils.class);
 
-    public static long longVal(Long l, long defaultValue) {
-        return l == null ? defaultValue : l.longValue();
-    }
-
-    /**
-     * Getting the value from JCR property if cannot find return null
-     * @param propertyWrapper
-     * @return
-     */
-    public static String getValueFromJCRProperty(JCRPropertyWrapper propertyWrapper) {
-        try {
-            if (propertyWrapper != null) {
-                JCRValueWrapper valueWrapper = propertyWrapper.getValue();
-                if (valueWrapper != null) {
-                    return valueWrapper.getString();
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Unable to get value from JCR property wrapper");
-            return null;
-        }
-        return null;
-    }
-
     /**
      * Converting time to milliseconds
      * If the time is null, empty, or length <= 1 will just return default value

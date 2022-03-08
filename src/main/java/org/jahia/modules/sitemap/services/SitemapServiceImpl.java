@@ -26,7 +26,6 @@ package org.jahia.modules.sitemap.services;
 import net.htmlparser.jericho.Source;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.utils.CacheUtils;
-import org.jahia.modules.sitemap.utils.ConversionUtils;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.sites.JahiaSitesService;
 import org.osgi.service.component.annotations.Activate;
@@ -48,7 +47,6 @@ import java.util.Map;
 public class SitemapServiceImpl implements SitemapService {
 
     private static Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
-    private static String CHAR_ENCODING="ISO-8859-1";
 
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
 
@@ -75,7 +73,7 @@ public class SitemapServiceImpl implements SitemapService {
             logger.warn("There are not entries found in the configuration: sitemap.search-engines");
             return false;
         }
-        if (!sitemapUrlPath.isEmpty() && !searchEngines.isEmpty()) {
+        if (!sitemapUrlPath.isEmpty()) {
             for (String s : searchEngines) {
                 try {
                     URL url = new URL(s + sitemapUrlPath);
@@ -103,10 +101,8 @@ public class SitemapServiceImpl implements SitemapService {
                 try {
                     String siteKey = siteList.get(i).getSiteKey();
                     logger.info("Site " + siteKey + " flush in progress...");
-                    Long expirationTimeDifference = -1L;
                     // We are refreshing just the sitemap cache
-                    CacheUtils.refreshSitemapCache(ConversionUtils.longVal(expirationTimeDifference, ConversionUtils.convertFromHour(4L)),
-                            siteKey);
+                    CacheUtils.flushCache(siteKey);
                 } catch (Exception e) {
                     // If breaks for one site will skip for now
                 }

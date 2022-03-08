@@ -24,9 +24,10 @@
 package org.jahia.modules.sitemap.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.jahia.services.SpringContextSingleton;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.seo.VanityUrl;
-import org.jahia.services.seo.jcr.VanityUrlManager;
+import org.jahia.services.seo.jcr.VanityUrlService;
 
 import javax.jcr.RepositoryException;
 import java.util.List;
@@ -35,11 +36,10 @@ import java.util.Optional;
 /**
  * Utility functions for getting information on Vanity URLs
  */
+
 public final class VanityUrls {
 
-    static VanityUrlManager vanityUrlManager = new VanityUrlManager();
-
-    private VanityUrls() {}
+    static VanityUrlService vanityUrlService = (VanityUrlService) SpringContextSingleton.getBean("org.jahia.services.seo.jcr.VanityUrlService");
 
 
     public static boolean hasActiveUrl(JCRNodeWrapper node) throws RepositoryException {
@@ -51,7 +51,7 @@ public final class VanityUrls {
     }
 
     public static String getActiveUrl(JCRNodeWrapper node, String langCode) throws RepositoryException {
-        List<VanityUrl> vanityUrls = vanityUrlManager.getVanityUrls(node, langCode, node.getSession());
+        List<VanityUrl> vanityUrls = vanityUrlService.getVanityUrls(node, langCode, node.getSession());
         return getActiveUrl(vanityUrls);
     }
 
