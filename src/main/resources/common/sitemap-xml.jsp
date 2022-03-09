@@ -15,17 +15,23 @@
         xmlns:xhtml="https://www.w3.org/1999/xhtml">
     <%-- The URL host server name based on the input from sitemap UI panel--%>
     <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
-    <c:set var="port" value=""/>
-    <c:if test="${!empty pageContext.request.serverPort}">
-        <c:set var="port" value=":${pageContext.request.serverPort}"/>
-    </c:if>
-    <c:set var="serverName" value="${pageContext.request.scheme}://${pageContext.request.serverName}${port}"/>
-    <c:forEach var="sitemapEntry" items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
+    <c:choose>
+        <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
+            <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="serverUrl"
+                   value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+        </c:otherwise>
+    </c:choose>
+    <c:forEach var="sitemapEntry"
+               items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
         <url>
-            <loc>${serverName}<c:url context="/" value="${sitemapEntry.link}"/></loc>
+            <loc>${serverUrl}<c:url context="/" value="${sitemapEntry.link}"/></loc>
             <lastmod>${sitemapEntry.lastMod}</lastmod>
             <c:forEach items="${sitemapEntry.linksInOtherLanguages}" var="link">
-                <xhtml:link rel="alternate" hreflang="${link.locale}" href="${serverName}<c:url value="${link.link}" context="/"/>"/>
+                <xhtml:link rel="alternate" hreflang="${link.locale}"
+                            href="${serverUrl}<c:url value="${link.link}" context="/"/>"/>
             </c:forEach>
         </url>
     </c:forEach>

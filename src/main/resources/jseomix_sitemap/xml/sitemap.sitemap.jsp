@@ -24,18 +24,22 @@
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <c:if test="${renderContext.liveMode}">
             <c:set var="nodeUrl" value="${renderContext.site}"/>
-            <c:if test="${!empty pageContext.request.serverPort}">
-                <c:set var="port" value=":${pageContext.request.serverPort}"/>
-            </c:if>
-            <c:set var="serverName" value="${pageContext.request.scheme}://${pageContext.request.serverName}${port}"/>
+            <c:choose>
+                <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
+                    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+                </c:otherwise>
+            </c:choose>
             <%-- language site maps --%>
             <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
             <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
             <c:forEach var="lang" items="${languages}">
                 <c:if test="${not functions:contains(inactiveLiveLanguages, lang)}">
                     <sitemap>
-                        <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${renderContext.site.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
-                        <loc>${serverName}${resolvedLangUrl}</loc>
+                        <c:set value="${renderContext.request.contextPath}/${lang}${renderContext.site.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
+                        <loc>${serverUrl}${resolvedLangUrl}</loc>
                     </sitemap>
                 </c:if>
             </c:forEach>
