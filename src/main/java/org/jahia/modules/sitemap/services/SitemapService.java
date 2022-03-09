@@ -29,5 +29,18 @@ import javax.jcr.RepositoryException;
 
 public interface SitemapService {
 
-    public Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
+    /**
+     * TODO add java doc
+     * @param sitemapIndexXMLUrlPath
+     * @return
+     * @throws SitemapException
+     */
+    Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
+
+    /**
+     * TODO add java doc
+     * @param siteKey
+     * @throws RepositoryException
+     */
+    void flushCache(String siteKey) throws RepositoryException;
 }

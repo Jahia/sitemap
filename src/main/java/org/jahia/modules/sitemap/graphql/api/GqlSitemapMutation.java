@@ -38,8 +38,6 @@ import javax.jcr.RepositoryException;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.services.SitemapService;
 
-import org.jahia.modules.sitemap.utils.CacheUtils;
-
 public class GqlSitemapMutation {
 
     @Inject
@@ -64,7 +62,7 @@ public class GqlSitemapMutation {
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
         try {
-            CacheUtils.flushCache(siteKey);
+            sitemapService.flushCache(siteKey);
             return true;
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);

@@ -26,7 +26,6 @@ package org.jahia.modules.sitemap.filter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.api.Constants;
-import org.jahia.modules.sitemap.utils.CacheUtils;
 import org.jahia.services.cache.CacheHelper;
 import org.jahia.services.content.*;
 import org.jahia.services.render.RenderContext;
@@ -43,8 +42,8 @@ import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
-import org.jahia.modules.sitemap.utils.ConversionUtils;
 import org.jahia.modules.sitemap.constant.SitemapConstant;
 
 /**
@@ -163,7 +162,7 @@ public class SitemapCacheFilter extends AbstractFilter {
             logger.error("Unable to retrieve node information.");
             return false;
         }
-        return !CacheUtils.isExpired(cacheNode, expiration);
+        return !isExpired(cacheNode, expiration);
     }
 
     public JCRNodeWrapper getCacheNode(JCRNodeWrapper sitemapNode) throws RepositoryException {
@@ -173,7 +172,13 @@ public class SitemapCacheFilter extends AbstractFilter {
     }
 
     public String getCacheName(JCRNodeWrapper sitemapNode) {
-        return CacheUtils.CACHE_NAME + "-" + sitemapNode.getLanguage();
+        return "sitemap-cache" + "-" + sitemapNode.getLanguage();
     }
 
+    public boolean isExpired(JCRNodeWrapper cacheNode, long expiration) {
+        if (expiration < 0) return true; // If expiration is negative then is expired
+        Date lastModified = cacheNode.getContentLastModifiedAsDate();
+        long expirationInMs = lastModified.getTime() + expiration;
+        return System.currentTimeMillis() > expirationInMs;
+    }
 }

@@ -31,9 +31,6 @@ import java.util.Map;
  * @author nonico
  */
 public interface ConfigService {
-
-    void setProperties(Map<String,String> properties);
     List<String> getSearchEngines();
     List<String> getIncludeContentTypes();
-
 }

@@ -57,7 +57,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Activate
     public void activate(Map<String, ?> props) {
-        properties = initProperties(props);
+        properties = props.keySet().stream()
+                .filter(propsKey -> !props.get(propsKey).toString().isEmpty())
+                .collect(Collectors.toMap(propsKey -> propsKey, propsKey -> props.get(propsKey).toString(), (a, b) -> b));
         logger.info("Sitemap configuration activated");
     }
 
@@ -67,26 +69,16 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void setProperties(Map<String,String> properties) {
-        this.properties = properties;
-    }
-
-    @Override
     public List<String> getSearchEngines() {
         final String searchEnginesStr = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, SEARCH_ENGINES),
                 EMPTY_STRING);
         return new ArrayList<>(Arrays.asList(searchEnginesStr.split(",")));
     }
 
-    @Override public List<String> getIncludeContentTypes() {
+    @Override
+    public List<String> getIncludeContentTypes() {
         final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
                 EMPTY_STRING);
         return new ArrayList<>(Arrays.asList(includedContentTypes.split(",")));
-    }
-
-    private Map<String, String> initProperties(Map<String,?> props) {
-        return props.keySet().stream()
-                .filter(propsKey -> !props.get(propsKey).toString().isEmpty())
-                .collect(Collectors.toMap(propsKey -> propsKey, propsKey -> props.get(propsKey).toString(), (a, b) -> b));
     }
 }

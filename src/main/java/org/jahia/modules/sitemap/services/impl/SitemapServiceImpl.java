@@ -21,13 +21,17 @@
  *
  * ==========================================================================================
  */
-package org.jahia.modules.sitemap.services;
+package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
+import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
-import org.jahia.modules.sitemap.utils.CacheUtils;
-import org.jahia.services.content.decorator.JCRSiteNode;
-import org.jahia.services.sites.JahiaSitesService;
+import org.jahia.modules.sitemap.services.SitemapService;
+import org.jahia.modules.sitemap.utils.Utils;
+import org.jahia.services.content.JCRCallback;
+import org.jahia.services.content.JCRNodeWrapper;
+import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.JCRTemplate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -36,7 +40,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.query.QueryResult;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -55,9 +61,7 @@ public class SitemapServiceImpl implements SitemapService {
     @Activate
     public void activate(Map<String, Object> props) {
         logger.info("Activator started for sitemap...");
-
-        // Flushing the sitemap caches on activate
-        flushSitemapCaches();
+        // TODO could be a good place to init the cache here.
         logger.info("Activator completed for sitemap...");
     }
 
@@ -91,24 +95,38 @@ public class SitemapServiceImpl implements SitemapService {
         return true;
     }
 
-    private void flushSitemapCaches() {
-        JahiaSitesService jahiaSitesService = JahiaSitesService.getInstance();
-        List<JCRSiteNode> siteList = null;
-        try {
-            siteList = jahiaSitesService.getSitesNodeList();
+    @Override
+    public void flushCache(String siteKey) throws RepositoryException {
+        // This will be reworked
+        String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
 
-            for (int i = 0; i < siteList.size(); i++) {
-                try {
-                    String siteKey = siteList.get(i).getSiteKey();
-                    logger.info("Site " + siteKey + " flush in progress...");
-                    // We are refreshing just the sitemap cache
-                    CacheUtils.flushCache(siteKey);
-                } catch (Exception e) {
-                    // If breaks for one site will skip for now
-                }
-            }
-        } catch (RepositoryException e) {
-            // Skip if we cannot get the list of site nodes
-        }
+        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
+                Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
+                    @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                        QueryResult result = Utils.getQuery(session, String.format("SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE"
+                                + "('/sites%s')", subSite));
+                        if (result == null) return null;
+
+                        for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
+                            JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
+                            // Flush the sitemap node per the path
+                            // TODO flush cache for: sitemapNode
+
+                            // get all caches for sitemap resource
+                            String sitePath = sitemapNode.getParent().getPath();
+                            String query = "SELECT * from [jseont:sitemapResource] WHERE ISDESCENDANTNODE('%s')";
+                            QueryResult subResult = Utils.getQuery(session, String.format(query, sitePath));
+                            if (subResult == null) continue;
+
+                            for (NodeIterator iter2 = subResult.getNodes(); iter2.hasNext(); ) {
+                                JCRNodeWrapper sitemapResourceNode = (JCRNodeWrapper) iter2.nextNode();
+                                // Flush the sitemap resource node per the path
+                                // TODO flush cache for: sitemapResourceNode
+                            }
+                        }
+
+                        return null;
+                    }
+                });
     }
 }
