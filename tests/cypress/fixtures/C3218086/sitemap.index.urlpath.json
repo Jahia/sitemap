@@ -1,4 +1,4 @@
 {
-  "siteMapPath": "/sites/mySite/sitemap-lang.xml",
+  "siteMapPath": "/cms/render/live/en/sites/mySite/sitemap-lang.xml",
   "mySitePaths": ["/sites/mySite/home.html", "/sites/mySite/home/search-results.html"]
 }
