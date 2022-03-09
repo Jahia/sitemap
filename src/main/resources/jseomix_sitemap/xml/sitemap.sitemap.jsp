@@ -38,7 +38,7 @@
             <c:forEach var="lang" items="${languages}">
                 <c:if test="${not functions:contains(inactiveLiveLanguages, lang)}">
                     <sitemap>
-                        <c:set value="${renderContext.request.contextPath}/${lang}${renderContext.site.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
+                        <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${renderContext.site.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
                         <loc>${serverUrl}${resolvedLangUrl}</loc>
                     </sitemap>
                 </c:if>
