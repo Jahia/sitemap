@@ -57,7 +57,7 @@
                         <sitemap>
                             <c:set var="nodePath" value="${node.path}/"/>
                             <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${node.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
-                            <loc>${serverName}${resolvedLangUrl}</loc>
+                            <loc>${serverUrl}${resolvedLangUrl}</loc>
                         </sitemap>
                     </c:if>
                 </c:forEach>
