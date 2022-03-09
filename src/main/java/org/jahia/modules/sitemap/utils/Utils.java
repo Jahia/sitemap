@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 public final class Utils {
 
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
+    private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
 
     private Utils() {}
 
@@ -104,9 +105,9 @@ public final class Utils {
         return new SitemapEntry(node.getPath(), node.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), currentLocale, linksInOtherLanguages);
     }
 
-    private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) {
+    private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) throws RepositoryException {
         // node displayable
-        return JCRContentUtils.isADisplayableNode(node, renderContext);
+        return !node.isNodeType(NO_INDEX_MIXIN) && JCRContentUtils.isADisplayableNode(node, renderContext);
     }
 
     public static QueryResult getQuery(JCRSessionWrapper session, String query) throws RepositoryException {
