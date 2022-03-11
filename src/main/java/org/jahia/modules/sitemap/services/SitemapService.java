@@ -23,24 +23,29 @@
  */
 package org.jahia.modules.sitemap.services;
 
+import net.sf.ehcache.Ehcache;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
-
-import javax.jcr.RepositoryException;
 
 public interface SitemapService {
 
-    /**
-     * TODO add java doc
-     * @param sitemapIndexXMLUrlPath
-     * @return
-     * @throws SitemapException
-     */
     Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
 
     /**
-     * TODO add java doc
-     * @param siteKey
-     * @throws RepositoryException
+     * Gets sitemap ehcache.
+     * @return sitemap Ehcache.
      */
-    void flushCache(String siteKey) throws RepositoryException;
+    Ehcache getSitemapEhCache();
+
+    /**
+     * Flush sitemap Ehcache.
+     */
+    void flushSitemapEhCache();
+
+    /**
+     * Retrieves cache expiration time based on JCR sitemapCacheDuration property
+     * @param sitemapCacheDurationPropertyValue (JCR property string value)
+     * @return int expiration date in seconds (default value 144000 seconds = 4h).
+     */
+    int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue);
+
 }

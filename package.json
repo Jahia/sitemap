@@ -35,9 +35,6 @@
   "jahia": {
     "remotes": {
       "jahia": "javascript/apps/remoteEntry.js"
-    },
-    "apps": {
-      "jahia": "configs/sitemap.jsp"
     }
   },
   "dependencies": {

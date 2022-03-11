@@ -69,16 +69,16 @@ const SitemapPanelApp = ({client, t}) => {
 
     const dropdownData = [{
         label: `4 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '4h'
+        value: '4'
     }, {
         label: `8 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '8h'
+        value: '8'
     }, {
         label: `24 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '24h'
+        value: '24'
     }, {
         label: `48 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '48h'
+        value: '48'
     }];
 
     const convertCacheDurationToLabel = durationValue => {
