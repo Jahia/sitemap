@@ -1,6 +1,10 @@
 package groovy
 
-import org.jahia.services.content.*
+import org.jahia.services.content.JCRCallback
+import org.jahia.services.content.JCRNodeWrapper
+import org.jahia.services.content.JCRSessionWrapper
+import org.jahia.services.content.JCRNodeIteratorWrapper
+import org.jahia.services.content.JCRTemplate
 import org.jahia.services.content.decorator.JCRSiteNode
 import org.jahia.services.sites.JahiaSitesService
 import org.jahia.settings.SettingsBean
@@ -17,7 +21,7 @@ def getApplicableSiteNodes(JCRSessionWrapper session) {
 
 def checkIfBothMixinsArePresent(JCRNodeWrapper node) {
     if (node.isNodeType("jmix:sitemap") && node.isNodeType("jmix:noindex")) {
-        logger.error("Node " + node.getPath() + " was added to the sitemap but also marked as noIndex");
+        System.err.println("Node " + node.getPath() + " was added to the sitemap but also marked as noIndex");
     }
 }
 
@@ -33,36 +37,34 @@ def removeJntSitemapNodes(JCRSessionWrapper session, String sitePath) {
 def removeJmixSitemapMixin(JCRSessionWrapper session, String sitePath) {
     QueryResult qr = session.getWorkspace().getQueryManager().createQuery("select * from [jmix:sitemap] as sel where isdescendantnode" +
             "(sel,['" + sitePath + "'])", Query.JCR_SQL2).execute();
-    NodeIterator nodeIterator = qr.getNodes();
-    for (JCRNodeIteratorWrapper nodeIt = nodeIterator; nodeIt.hasNext();) {
+    for (JCRNodeIteratorWrapper nodeIt = qr.getNodes(); nodeIt.hasNext();) {
         JCRNodeWrapper node = nodeIt.next();
         checkIfBothMixinsArePresent(node);
         node.removeMixin("jmix:sitemap");
-        logger.info("Mixins jmix:sitemap has been removed on node " + node.getPath());
+        System.out.println("Mixins jmix:sitemap has been removed on node " + node.getPath());
     }
 }
 
 def updateJmixNoindexMixin(JCRSessionWrapper session, String sitePath) {
     QueryResult qr = session.getWorkspace().getQueryManager().createQuery("select * from [jmix:noindex] as sel where isdescendantnode" +
             "(sel,['" + sitePath + "'])", Query.JCR_SQL2).execute();
-    NodeIterator nodeIterator = qr.getNodes();
-    for (JCRNodeIteratorWrapper nodeIt = nodeIterator; nodeIt.hasNext();) {
+    for (JCRNodeIteratorWrapper nodeIt = qr.getNodes(); nodeIt.hasNext();) {
         JCRNodeWrapper node = nodeIt.next();
         checkIfBothMixinsArePresent(node);
         node.removeMixin("jmix:noindex");
         node.addMixin("jseomix:noIndex");
-        logger.info("Mixin jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
+        System.out.println("Mixin jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
     }
 }
 
 def removeSitemapResourceNodes(JCRSessionWrapper session, String sitePath, String nodetype) {
-    logger.info("Clean up of " + nodetype + " node on " + session.getWorkspace().getName() + " workspace");
+    System.out.println("Clean up of " + nodetype + " node on " + session.getWorkspace().getName() + " workspace");
     QueryResult qr = session.getWorkspace().getQueryManager().createQuery("select * from [" + nodetype + "] as sel where isdescendantnode" +
             "(sel,['" + sitePath + "'])", Query.JCR_SQL2).execute();
     NodeIterator nodeIterator = qr.getNodes();
     for (JCRNodeIteratorWrapper nodeIt = nodeIterator; nodeIt.hasNext();) {
         JCRNodeWrapper node = nodeIt.next();
-        logger.info("Node of type "  + nodetype + " with path [" + node.getPath() + "] will be removed");
+        System.out.println("Node of type "  + nodetype + " with path [" + node.getPath() + "] will be removed");
         node.remove();
     }
 }
@@ -76,16 +78,6 @@ def processNodes(List<JCRSiteNode> sites, JCRSessionWrapper session) {
         removeSitemapResourceNodes(session, site.getPath(), "jseont:sitemap");
     }
     session.save();
-}
-
-def runProgram() {
-    System.out.println("************** Starting Sitemap migration **************");
-    JCRTemplate.getInstance().doExecuteWithSystemSession(new JCRCallback<Void>() {
-        @Override
-        Void doInJCR(JCRSessionWrapper session) throws RepositoryException {
-            processNodes(getApplicableSiteNodes(session) as List<JCRSiteNode>, session);
-        }
-    });
 }
 
 def runProgram() {
