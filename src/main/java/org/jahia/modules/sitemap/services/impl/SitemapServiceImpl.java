@@ -25,7 +25,7 @@ package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
 import net.sf.ehcache.Ehcache;
-import org.jahia.modules.sitemap.constant.SitemapConstant;
+import net.sf.ehcache.Element;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.services.SpringContextSingleton;
@@ -52,6 +52,8 @@ public class SitemapServiceImpl implements SitemapService {
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
 
     private static final String SITEMAP_CACHE_NAME = "sitemapCache";
+
+    private static final int SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
 
     private Ehcache sitemapCache;
 
@@ -95,17 +97,46 @@ public class SitemapServiceImpl implements SitemapService {
         return true;
     }
 
-    public Ehcache getSitemapEhCache() {
-        return sitemapCache;
-    }
-
     public void flushSitemapEhCache() {
         // TODO if on cluster we send a specific event to hazelcast otherwise we just flush current cache
         logger.info("a flush of sitemap cache was triggered");
         sitemapCache.flush();
     }
 
-    public int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue) {
+    public boolean isSitemapEhCacheEntryExist(String targetSitemapCacheKey) {
+        return sitemapCache.get(targetSitemapCacheKey) != null;
+    }
+
+    public String getSitemapEhCacheEntryValue(String targetSitemapCacheKey) {
+        return sitemapCache.get(targetSitemapCacheKey).getObjectValue().toString();
+    }
+
+    public void addSitemapEhCacheEntry(String targetSitemapCacheKey, String sitemap, String sitemapCacheDuration) {
+
+        // we get the desired cache expiration time in seconds
+        int expiredAt = getSitemapCacheExpirationInSeconds(sitemapCacheDuration);
+
+        Element sitemapCacheElement = new Element(targetSitemapCacheKey, sitemap);
+        sitemapCacheElement.setEternal(false);
+        sitemapCacheElement.setTimeToLive(expiredAt);
+
+        sitemapCache.put(sitemapCacheElement);
+
+    }
+
+    @Deactivate
+    public void deactivate() {
+        if (sitemapCache != null) {
+            sitemapCache.flush();
+        }
+    }
+
+    /**
+     * Retrieves cache expiration time based on JCR sitemapCacheDuration property
+     * @param sitemapCacheDurationPropertyValue (JCR property string value)
+     * @return int expiration date in seconds (default value 144000 seconds = 4h).
+     */
+    private int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue) {
         if (sitemapCacheDurationPropertyValue != null) {
             // to retro compatibility with older version of sitemap
             if (sitemapCacheDurationPropertyValue.contains("h")) {
@@ -115,13 +146,6 @@ public class SitemapServiceImpl implements SitemapService {
             return Integer.parseInt(sitemapCacheDurationPropertyValue) * 3600; // in seconds
         }
 
-        return SitemapConstant.SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS;
-    }
-
-    @Deactivate
-    public void deactivate() {
-        if (sitemapCache != null) {
-            sitemapCache.flush();
-        }
+        return SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS;
     }
 }

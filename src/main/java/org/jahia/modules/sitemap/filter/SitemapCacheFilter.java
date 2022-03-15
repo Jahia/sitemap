@@ -23,8 +23,6 @@
  */
 package org.jahia.modules.sitemap.filter;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
@@ -54,13 +52,13 @@ public class SitemapCacheFilter extends AbstractFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapCacheFilter.class);
 
-    private static final String PREFIX_CACHE_NAME = "sitemap-cache-";
-    private Ehcache sitemapCache;
+    private static final String SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY = "org.jahia.modules.sitemap.filter.targetSitemapCacheKey";
+    private static final String SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY = "org.jahia.modules.sitemap.filter.isCached";
+
     private SitemapService sitemapService;
 
     @Reference
     public void setSitemapService(SitemapService sitemapService) {
-        sitemapCache = sitemapService.getSitemapEhCache();
         this.sitemapService = sitemapService;
     }
 
@@ -68,6 +66,7 @@ public class SitemapCacheFilter extends AbstractFilter {
     public void activate() {
         setPriority(15f);
         setApplyOnNodeTypes("jseomix:sitemap,jseomix:sitemapResource");
+        setApplyOnTemplates("sitemapLang");
         setApplyOnModes("live");
         setDescription("Filter for sitemap caching");
         logger.debug("Activated SitemapCacheFilter");
@@ -83,12 +82,13 @@ public class SitemapCacheFilter extends AbstractFilter {
             RenderChain chain
     ) throws Exception {
 
-        if (needsCaching(resource)) return null;
+        String targetSitemapCacheKey = resource.getNode().getPath() + "#" + resource.getNode().getLanguage();
 
-        String targetSitemapCacheKey = PREFIX_CACHE_NAME + resource.getNode().getLanguage();
+        renderContext.getRequest().setAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY, targetSitemapCacheKey );
 
-        if (sitemapCache.get(targetSitemapCacheKey) != null) {
-            return "";
+        if (sitemapService.isSitemapEhCacheEntryExist(targetSitemapCacheKey)) {
+            renderContext.getRequest().setAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY, true );
+            return sitemapService.getSitemapEhCacheEntryValue(targetSitemapCacheKey);
         }
 
         return null;
@@ -105,34 +105,19 @@ public class SitemapCacheFilter extends AbstractFilter {
             RenderChain chain
     ) throws RepositoryException {
 
-        if (needsCaching(resource)) return previousOut;
+        String targetSitemapCacheKey = renderContext.getRequest().getAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY).toString();
 
-        // if we are here, the cache does not exist or has expired.
-
-        String targetSitemapCacheKey = PREFIX_CACHE_NAME + resource.getNode().getLanguage();
-
-        if (sitemapCache.get(targetSitemapCacheKey) != null) {
-            sitemapCache.get(targetSitemapCacheKey);
-            return sitemapCache.get(targetSitemapCacheKey).getObjectValue().toString();
+        if (renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY) != null) {
+            return sitemapService.getSitemapEhCacheEntryValue(targetSitemapCacheKey);
         }
 
-        // we get the desired cache expiration time
-        int expiredAt = sitemapService.getSitemapCacheExpirationInSeconds(resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION));
+        // we retrieve the current sitemap cache duration set by user.
+        String sitemapCacheDuration = resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION);
 
-        Element sitemapCacheElement = new Element(targetSitemapCacheKey, previousOut);
-        sitemapCacheElement.setEternal(false);
-        sitemapCacheElement.setTimeToLive(expiredAt);
-
-        sitemapCache.put(sitemapCacheElement);
+        sitemapService.addSitemapEhCacheEntry(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
 
         return previousOut;
 
-    }
-
-    /** Apply caching only for sitemapLang template */
-    private boolean needsCaching(Resource resource) {
-        String templateName = resource.getTemplate();
-        return !"sitemapLang".equalsIgnoreCase(templateName);
     }
 
 }

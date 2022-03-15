@@ -23,7 +23,6 @@
  */
 package org.jahia.modules.sitemap.services;
 
-import net.sf.ehcache.Ehcache;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 
 public interface SitemapService {
@@ -31,21 +30,30 @@ public interface SitemapService {
     Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
 
     /**
-     * Gets sitemap ehcache.
-     * @return sitemap Ehcache.
-     */
-    Ehcache getSitemapEhCache();
-
-    /**
      * Flush sitemap Ehcache.
      */
     void flushSitemapEhCache();
 
     /**
-     * Retrieves cache expiration time based on JCR sitemapCacheDuration property
-     * @param sitemapCacheDurationPropertyValue (JCR property string value)
-     * @return int expiration date in seconds (default value 144000 seconds = 4h).
+     * Adds sitemap cache entry
+     * @param targetSitemapCacheKey (mandatory)
+     * @param sitemap (mandatory)
+     * @param sitemapCacheDuration (mandatory)
      */
-    int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue);
+    void addSitemapEhCacheEntry(String targetSitemapCacheKey, String sitemap, String sitemapCacheDuration);
+
+    /**
+     * Checks if an entry cache exist for a giving sitemap cache key.
+     * @param targetSitemapCacheKey (mandatory)
+     * @return true if a sitemap cache key exist.
+     */
+    boolean isSitemapEhCacheEntryExist(String targetSitemapCacheKey);
+
+    /**
+     * Gets sitemap entry cache value for a giving sitemap cache key.
+     * @param targetSitemapCacheKey (mandatory)
+     * @return sitemap cache content as String.
+     */
+    String getSitemapEhCacheEntryValue(String targetSitemapCacheKey);
 
 }
