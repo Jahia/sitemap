@@ -11,6 +11,7 @@ import org.jahia.settings.SettingsBean
 
 import javax.jcr.NodeIterator
 import javax.jcr.RepositoryException
+import javax.jcr.query.InvalidQueryException
 import javax.jcr.query.Query
 import javax.jcr.query.QueryResult
 
@@ -46,14 +47,18 @@ def removeJmixSitemapMixin(JCRSessionWrapper session, String sitePath) {
 }
 
 def updateJmixNoindexMixin(JCRSessionWrapper session, String sitePath) {
-    QueryResult qr = session.getWorkspace().getQueryManager().createQuery("select * from [jmix:noindex] as sel where isdescendantnode" +
-            "(sel,['" + sitePath + "'])", Query.JCR_SQL2).execute();
-    for (JCRNodeIteratorWrapper nodeIt = qr.getNodes(); nodeIt.hasNext();) {
-        JCRNodeWrapper node = nodeIt.next();
-        checkIfBothMixinsArePresent(node);
-        node.removeMixin("jmix:noindex");
-        node.addMixin("jseomix:noIndex");
-        System.out.println("Mixin jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
+    try{
+        QueryResult qr = session.getWorkspace().getQueryManager().createQuery("select * from [jmix:noindex] as sel where isdescendantnode" +
+                "(sel,['" + sitePath + "'])", Query.JCR_SQL2).execute();
+        for (JCRNodeIteratorWrapper nodeIt = qr.getNodes(); nodeIt.hasNext();) {
+            JCRNodeWrapper node = nodeIt.next();
+            checkIfBothMixinsArePresent(node);
+            node.removeMixin("jmix:noindex");
+            node.addMixin("jseomix:noIndex");
+            System.out.println("Mixin jmix:noindex has been removed and jseomix:noIndex has been added on node " + node.getPath());
+        }
+    } catch (InvalidQueryException e){
+        System.out.println("jmix:noindex mixin is not present on the Jahia instance");
     }
 }
 
