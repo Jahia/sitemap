@@ -1,6 +1,4 @@
-import { BasePage } from './base.page'
-
-export class SitemapPage extends BasePage {
+export class SitemapPage {
     elements = {
         saveButton: "button[data-sel-role='sitemapSubmitButton']",
         sitemapRootUrlInput: "input[data-sel-role='sitemapIndexURL']",

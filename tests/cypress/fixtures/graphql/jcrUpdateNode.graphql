@@ -1,5 +1,6 @@
-mutation updateNode($pathOrId: String!, $properties: [InputJCRProperty] = [], $mixinsToAdd: [String] = [], $mixinsToRemove: [String] = []) {
-    jcr(workspace: EDIT) {
+mutation updateNode($pathOrId: String!, $properties: [InputJCRProperty] = [], $mixinsToAdd: [String] = [], $mixinsToRemove: [String] = [],
+$workspace: Workspace = EDIT) {
+    jcr(workspace: $workspace) {
         mutateNode(pathOrId: $pathOrId) {
             addMixins(mixins: $mixinsToAdd)
             removeMixins(mixins: $mixinsToRemove)

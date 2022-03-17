@@ -3,8 +3,9 @@ const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
 const homePagePath = sitePath + '/home'
 const historyPagePath = '/sites/digitall/home/about/history'
-const testPageName = 'page1'
-const testPagePath = homePagePath + '/' + testPageName
+const searchResultsPageName = 'search-results'
+const searchResultsPagePath = homePagePath + '/' + searchResultsPageName
+const noIndexSitemapMixin = 'jseomix:noIndex'
 const sitemapLangFilePath = sitePath + '/sitemap-lang.xml'
 const langDe = 'de'
 const langEn = 'en'
@@ -13,73 +14,8 @@ const langAll = 'de,en,fr'
 const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap-lang.xml file on digitall', () => {
+
     beforeEach('Create content for test', () => {
-        // create a test page
-        cy.apollo({
-            variables: {
-                parentPathOrId: homePagePath,
-                name: testPageName,
-                template: 'simple',
-                language: langEn,
-            },
-            mutationFile: 'graphql/jcrAddPage.graphql',
-        })
-
-        // update test page title in all wanted languages
-        cy.apollo({
-            variables: {
-                pathOrId: testPagePath,
-                properties: [
-                    { name: 'jcr:title', value: 'Page1' + langDe, language: langDe },
-                    { name: 'jcr:title', value: 'Page1' + langEn, language: langEn },
-                    { name: 'jcr:title', value: 'Page1' + langFr, language: langFr },
-                ],
-            },
-            mutationFile: 'graphql/jcrUpdateNode.graphql',
-        })
-
-        // publish test page in all wanted languages
-        cy.apollo({
-            variables: {
-                pathOrId: testPagePath,
-                language: langAll,
-                publishSubNodes: false,
-                includeSubTree: false,
-            },
-            mutationFile: 'graphql/jcrPublishNode.graphql',
-        })
-
-        // update history page to invalid 'de' language
-        cy.apollo({
-            variables: {
-                pathOrId: historyPagePath,
-                properties: [{ name: 'j:invalidLanguages', values: ['de'], language: langEn }],
-            },
-            mutationFile: 'graphql/jcrUpdateNode.graphql',
-        })
-
-        // publish history page in all wanted languages
-        cy.apollo({
-            variables: {
-                pathOrId: historyPagePath,
-                language: langAll,
-                publishSubNodes: false,
-                includeSubTree: false,
-            },
-            mutationFile: 'graphql/jcrPublishNode.graphql',
-        })
-
-        // Publish the site in all wanted languages
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                language: langAll,
-                publishSubNodes: true,
-                includeSubTree: true,
-            },
-            mutationFile: 'graphql/jcrPublishNode.graphql',
-        })
-
         // Save the root sitemap URL and Flush sitemap cache
         const siteMapPage = SitemapPage.visit(siteKey, langEn)
         siteMapPage.inputSitemapRootURL(siteMapRootUrl)
@@ -90,13 +26,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     })
 
     afterEach('Cleanup test data', () => {
-        cy.apollo({
-            variables: {
-                pathOrId: testPagePath,
-            },
-            mutationFile: 'graphql/jcrDeleteNode.graphql',
-        })
-
+        // deactivate the current sitemap config by removing the mixin
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
@@ -120,6 +50,32 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     })
 
     it('alternate url should not contains invalid language', () => {
+
+        // update history page to invalid 'de' language
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
+                properties: [{ name: 'j:invalidLanguages', values: [langDe], language: langEn }],
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+
+        // publish history page in all wanted languages
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
+                language: langAll,
+                publishSubNodes: false,
+                includeSubTree: false,
+            },
+            mutationFile: 'graphql/jcrPublishNode.graphql',
+        })
+
+        const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        siteMapPage.clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
+
         cy.requestFindXMLElementByTagName(langFr + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
                 const pageUrl = $list.getElementsByTagName('loc')
@@ -136,5 +92,81 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                 }
             })
         })
+
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
+                properties: [{ name: 'j:invalidLanguages', values: [], language: langEn }]
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+
+        // publish history page in all wanted languages
+        cy.apollo({
+            variables: {
+                pathOrId: historyPagePath,
+                language: langAll,
+                publishSubNodes: false,
+                includeSubTree: false,
+            },
+            mutationFile: 'graphql/jcrPublishNode.graphql',
+        })
+
     })
+
+    it('Exclude page from sitemap', function () {
+
+        // check that the page we want to exclude currently exists in the sitemap
+        cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
+            let isTestPassed = false
+            Cypress.$(urls).each(($idx, $list) => {
+                const pageUrl = $list.getElementsByTagName('loc')
+                const siteUrl = pageUrl[0].innerHTML
+                if (siteUrl.indexOf(searchResultsPagePath) > 0) {
+                    isTestPassed = true
+                }
+            })
+            expect(isTestPassed).to.be.equal(true)
+        })
+
+        // add noIndex mixin to the page search-results to exclude from sitemap
+        cy.apollo({
+            variables: {
+                pathOrId: searchResultsPagePath,
+                mixinsToAdd: noIndexSitemapMixin,
+                workspace: 'LIVE'
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+
+        // Save the root sitemap URL and Flush sitemap cache
+        const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        siteMapPage.clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
+
+        // check that the page we want to exclude no longer exist in the sitemap
+        cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
+            let isTestPassed = true
+            Cypress.$(urls).each(($idx, $list) => {
+                const pageUrl = $list.getElementsByTagName('loc')
+                const siteUrl = pageUrl[0].innerHTML
+                if (siteUrl.indexOf(searchResultsPagePath) > 0) {
+                    isTestPassed = false
+                }
+            })
+            expect(isTestPassed).to.be.equal(true)
+        })
+
+        cy.apollo({
+            variables: {
+                pathOrId: searchResultsPagePath,
+                mixinsToRemove: noIndexSitemapMixin,
+                workspace: 'LIVE'
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+
+    })
+
 })
