@@ -139,8 +139,8 @@ public class SitemapServiceImpl implements SitemapService {
     private int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue) {
         if (sitemapCacheDurationPropertyValue != null) {
             // to retro compatibility with older version of sitemap
-            if (sitemapCacheDurationPropertyValue.contains("h")) {
-                sitemapCacheDurationPropertyValue.replace("h", "");
+            if (sitemapCacheDurationPropertyValue.endsWith("h")) {
+                sitemapCacheDurationPropertyValue = sitemapCacheDurationPropertyValue.replace("h", "");
             }
             // property value is in hours we need seconds for the cache expiration
             return Integer.parseInt(sitemapCacheDurationPropertyValue) * 3600; // in seconds

@@ -87,7 +87,7 @@ public class SitemapCacheFilter extends AbstractFilter {
         renderContext.getRequest().setAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY, targetSitemapCacheKey );
 
         if (sitemapService.isSitemapEhCacheEntryExist(targetSitemapCacheKey)) {
-            renderContext.getRequest().setAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY, true );
+            renderContext.getRequest().setAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY, Boolean.TRUE );
             return sitemapService.getSitemapEhCacheEntryValue(targetSitemapCacheKey);
         }
 
@@ -107,14 +107,11 @@ public class SitemapCacheFilter extends AbstractFilter {
 
         String targetSitemapCacheKey = renderContext.getRequest().getAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY).toString();
 
-        if (renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY) != null) {
-            return sitemapService.getSitemapEhCacheEntryValue(targetSitemapCacheKey);
+        if (renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY) == null || !((Boolean) renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY))) {
+            // we retrieve the current sitemap cache duration set by user.0
+            String sitemapCacheDuration = resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION);
+            sitemapService.addSitemapEhCacheEntry(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
         }
-
-        // we retrieve the current sitemap cache duration set by user.
-        String sitemapCacheDuration = resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION);
-
-        sitemapService.addSitemapEhCacheEntry(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
 
         return previousOut;
 
