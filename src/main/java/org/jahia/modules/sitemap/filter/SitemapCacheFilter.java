@@ -23,6 +23,8 @@
  */
 package org.jahia.modules.sitemap.filter;
 
+import org.apache.commons.lang.StringUtils;
+import org.jahia.modules.sitemap.constant.SitemapConstant;
 import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
@@ -37,8 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 
-import org.jahia.modules.sitemap.constant.SitemapConstant;
-
 /**
  * Filter that creates sitemap file nodes for caching.
  *
@@ -47,7 +47,7 @@ import org.jahia.modules.sitemap.constant.SitemapConstant;
  * we've added a custom file-based caching layer to the sitemap.xml views that will be invalidated only after expiration has passed
  * (currently set at 4 hours).
  */
-@Component(service = RenderFilter.class)
+@Component(service = RenderFilter.class, immediate = true)
 public class SitemapCacheFilter extends AbstractFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapCacheFilter.class);
@@ -85,10 +85,10 @@ public class SitemapCacheFilter extends AbstractFilter {
         String targetSitemapCacheKey = resource.getNode().getPath() + "#" + resource.getNode().getLanguage();
 
         renderContext.getRequest().setAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY, targetSitemapCacheKey );
-
-        if (sitemapService.isSitemapEhCacheEntryExist(targetSitemapCacheKey)) {
+        String result = sitemapService.getSitemap(targetSitemapCacheKey);
+        if (!StringUtils.isEmpty(result)) {
             renderContext.getRequest().setAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY, Boolean.TRUE );
-            return sitemapService.getSitemapEhCacheEntryValue(targetSitemapCacheKey);
+            return result;
         }
 
         return null;
@@ -110,7 +110,7 @@ public class SitemapCacheFilter extends AbstractFilter {
         if (renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY) == null || !((Boolean) renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY))) {
             // we retrieve the current sitemap cache duration set by user.0
             String sitemapCacheDuration = resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION);
-            sitemapService.addSitemapEhCacheEntry(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
+            sitemapService.addSitemap(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
         }
 
         return previousOut;

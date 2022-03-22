@@ -27,14 +27,12 @@ import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.annotations.annotationTypes.GraphQLNonNull;
-
 import org.jahia.modules.graphql.provider.dxm.DataFetchingException;
 import org.jahia.modules.graphql.provider.dxm.osgi.annotations.GraphQLOsgiService;
-
-import javax.inject.Inject;
-
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.services.SitemapService;
+
+import javax.inject.Inject;
 
 public class GqlSitemapMutation {
 
@@ -59,7 +57,7 @@ public class GqlSitemapMutation {
     public Boolean deleteSitemapCache(
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
     ){
-        sitemapService.flushSitemapEhCache();
+        sitemapService.askForFlush();
         return true;
     }
 }

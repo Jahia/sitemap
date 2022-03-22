@@ -26,14 +26,15 @@ package org.jahia.modules.sitemap.services.impl;
 import net.htmlparser.jericho.Source;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.jahia.modules.sitemap.config.ConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
+import org.jahia.modules.sitemap.services.SimpleNotificationService;
 import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.services.SpringContextSingleton;
 import org.jahia.services.cache.ehcache.EhCacheProvider;
+import org.jahia.settings.SettingsBean;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-
-import org.jahia.modules.sitemap.config.ConfigService;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -48,23 +49,27 @@ import java.util.List;
 public class SitemapServiceImpl implements SitemapService {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
-
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
-
     private static final String SITEMAP_CACHE_NAME = "sitemapCache";
-
     private static final int SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
 
     private Ehcache sitemapCache;
-
     private ConfigService configService;
+    private SimpleNotificationService simpleEventService;
+    private boolean isClusterActivated;
 
     @Activate
     public void activate() {
-        logger.info("Activator started for sitemap...");
+        logger.info("Sitemap service started");
+        SettingsBean settingsBean = SettingsBean.getInstance();
+        if (settingsBean.isClusterActivated()) {
+            simpleEventService = new HazelcastSimpleNotificationServiceImpl(this::flush);
+            isClusterActivated = true;
+        }
         EhCacheProvider cacheService = (EhCacheProvider) SpringContextSingleton.getBean("ehCacheProvider");
         sitemapCache = cacheService.getCacheManager().addCacheIfAbsent(SITEMAP_CACHE_NAME);
-        sitemapCache.flush();
+        // flush in case an old version of the cache is present.
+        flush();
     }
 
     @Reference(service = ConfigService.class)
@@ -97,37 +102,37 @@ public class SitemapServiceImpl implements SitemapService {
         return true;
     }
 
-    public void flushSitemapEhCache() {
-        // TODO if on cluster we send a specific event to hazelcast otherwise we just flush current cache
-        logger.info("a flush of sitemap cache was triggered");
-        sitemapCache.flush();
+    @Override
+    public void askForFlush() {
+        logger.info("a flush of sitemap cache was requested");
+        if (isClusterActivated) {
+            // In case of cluster notify only, local flush will happen on each node, including the source node of the flush
+            simpleEventService.notifyNodes();
+            return;
+        }
+        flush();
     }
 
-    public boolean isSitemapEhCacheEntryExist(String targetSitemapCacheKey) {
-        return sitemapCache.get(targetSitemapCacheKey) != null;
+    @Override
+    public String getSitemap(String key) {
+        return sitemapCache.get(key) == null ?  null : sitemapCache.get(key).getObjectValue().toString();
     }
 
-    public String getSitemapEhCacheEntryValue(String targetSitemapCacheKey) {
-        return sitemapCache.get(targetSitemapCacheKey).getObjectValue().toString();
-    }
-
-    public void addSitemapEhCacheEntry(String targetSitemapCacheKey, String sitemap, String sitemapCacheDuration) {
-
-        // we get the desired cache expiration time in seconds
-        int expiredAt = getSitemapCacheExpirationInSeconds(sitemapCacheDuration);
-
-        Element sitemapCacheElement = new Element(targetSitemapCacheKey, sitemap);
+    @Override
+    public void addSitemap(String key, String sitemap, String expiration) {
+        Element sitemapCacheElement = new Element(key, sitemap);
         sitemapCacheElement.setEternal(false);
-        sitemapCacheElement.setTimeToLive(expiredAt);
-
+        // we get the desired cache expiration time in seconds
+        sitemapCacheElement.setTimeToLive(getSitemapCacheExpirationInSeconds(expiration));
         sitemapCache.put(sitemapCacheElement);
 
     }
 
     @Deactivate
     public void deactivate() {
-        if (sitemapCache != null) {
-            sitemapCache.flush();
+        flush();
+        if (isClusterActivated) {
+            simpleEventService.unregister();
         }
     }
 
@@ -148,4 +153,10 @@ public class SitemapServiceImpl implements SitemapService {
 
         return SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS;
     }
+
+    private void flush() {
+        logger.info("a flush of sitemap cache was triggered");
+        sitemapCache.flush();
+    }
+
 }

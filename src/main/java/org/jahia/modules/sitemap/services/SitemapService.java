@@ -30,30 +30,24 @@ public interface SitemapService {
     Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
 
     /**
-     * Flush sitemap Ehcache.
+     * In cluster : Send a notification to flush all cluster nodes
+     * In standalone : do flush
      */
-    void flushSitemapEhCache();
+    void askForFlush();
 
     /**
      * Adds sitemap cache entry
-     * @param targetSitemapCacheKey (mandatory)
+     * @param key (mandatory)
      * @param sitemap (mandatory)
-     * @param sitemapCacheDuration (mandatory)
+     * @param expiration (mandatory)
      */
-    void addSitemapEhCacheEntry(String targetSitemapCacheKey, String sitemap, String sitemapCacheDuration);
-
-    /**
-     * Checks if an entry cache exist for a giving sitemap cache key.
-     * @param targetSitemapCacheKey (mandatory)
-     * @return true if a sitemap cache key exist.
-     */
-    boolean isSitemapEhCacheEntryExist(String targetSitemapCacheKey);
+    void addSitemap(String key, String sitemap, String expiration);
 
     /**
      * Gets sitemap entry cache value for a giving sitemap cache key.
-     * @param targetSitemapCacheKey (mandatory)
+     * @param key (mandatory)
      * @return sitemap cache content as String.
      */
-    String getSitemapEhCacheEntryValue(String targetSitemapCacheKey);
+    String getSitemap(String key);
 
 }
