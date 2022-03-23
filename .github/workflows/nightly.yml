@@ -8,6 +8,10 @@ jobs:
   integration-tests-standalone:
     name: Integration Tests (Standalone)
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        jahia_image: ["jahia/jahia-ee:8", "jahia/jahia-ee-dev:8-SNAPSHOT"]
     timeout-minutes: 45
     steps:
       - uses: jahia/jahia-modules-action/helper@v1
@@ -17,7 +21,6 @@ jobs:
           module_id: sitemap
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-snapshot.yml
-          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           should_use_build_artifacts: false
           should_skip_artifacts: true
           should_skip_notifications: true
