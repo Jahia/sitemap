@@ -63,11 +63,6 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
         deleteSitemapCache(siteKey)
 
-        // const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        // siteMapPage.clickFlushCache()
-        // // eslint-disable-next-line cypress/no-unnecessary-waiting
-        // cy.wait(500)
-
         cy.requestFindXMLElementByTagName(langFr + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
                 const pageUrl = $list.getElementsByTagName('loc')
@@ -129,11 +124,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
 
-        // Save the root sitemap URL and Flush sitemap cache
-        const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        siteMapPage.clickFlushCache()
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500)
+        deleteSitemapCache(siteKey)
 
         // check that the page we want to exclude no longer exist in the sitemap
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
