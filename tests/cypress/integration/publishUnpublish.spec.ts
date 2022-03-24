@@ -1,6 +1,4 @@
-import { SitemapPage } from '../../page-object/sitemap.page'
-import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
-const langEn = 'en'
+import { waitUntilRefresh } from '../utils/waitUntilRefresh'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -9,19 +7,28 @@ const testPageName = 'publish_unpublish_test'
 const testPagePath = `${homePagePath}/${testPageName}`
 const languages = ['en', 'de', 'fr']
 const defaultLanguage = 'en'
-const sitemapUrl = `${Cypress.config().baseUrl}/sites/digitall/sitemap.xml`
+const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
+const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
-        // START - Added this for consistency wtih other tests
-        // Save the root sitemap URL and Flush sitemap cache
-        const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        siteMapPage.inputSitemapRootURL(`${Cypress.config().baseUrl}${sitePath}`)
-        siteMapPage.clickOnSave()
-        siteMapPage.clickFlushCache()
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500)
-        // END
+        // Configure sitemap
+        cy.apollo({
+            variables: {
+                pathOrId: sitePath,
+                propertyName: 'sitemapIndexURL',
+                propertyValue: siteMapRootUrl,
+            },
+            mutationFile: 'graphql/jcrAddProperty.graphql',
+        })
+        cy.apollo({
+            variables: {
+                pathOrId: sitePath,
+                propertyName: 'sitemapCacheDuration',
+                propertyValue: '4h',
+            },
+            mutationFile: 'graphql/jcrAddProperty.graphql',
+        })
 
         // Creates the test page with content in all 3 languages
         cy.apollo({
@@ -53,6 +60,24 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 includeSubTree: true,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
+        })
+    })
+
+    // Before running the other tests, verify Sitemap is configured properly for digitall
+    it('Verify sitemap is configured properly for site', function () {
+        cy.apollo({
+            variables: {
+                pathOrId: '/sites/digitall',
+                mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
+                propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
+            },
+            queryFile: 'graphql/jcrGetSitemapConfig.graphql',
+        }).should((response: any) => {
+            const r = response?.data?.jcr?.nodeByPath
+            cy.log(JSON.stringify(r))
+            expect(r.id).not.to.be.null
+            expect(r.mixinTypes[0].name).to.equal('jseomix:sitemap')
+            expect(r.name).to.equal(siteKey)
         })
     })
 

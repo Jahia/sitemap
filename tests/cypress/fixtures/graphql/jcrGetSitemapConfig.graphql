@@ -1,0 +1,15 @@
+query ($pathOrId: String!, $mixinsFilter: InputFieldFiltersInput, $propertyNames: [String!]!) {
+  jcr {
+    nodeByPath(path: $pathOrId) {
+      id: uuid
+      name
+      mixinTypes(fieldFilter: $mixinsFilter) {
+        name
+      }
+      properties(names: $propertyNames) {
+        name
+        value
+      }
+    }
+  }
+}
