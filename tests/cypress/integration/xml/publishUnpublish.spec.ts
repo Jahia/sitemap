@@ -1,4 +1,6 @@
+import { SitemapPage } from '../../page-object/sitemap.page'
 import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
+const langEn = 'en'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -11,6 +13,16 @@ const sitemapUrl = `${Cypress.config().baseUrl}/sites/digitall/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
+        // START - Added this for consistency wtih other tests
+        // Save the root sitemap URL and Flush sitemap cache
+        const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        siteMapPage.inputSitemapRootURL(`${Cypress.config().baseUrl}${sitePath}`)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickFlushCache()
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
+        // END
+
         // Creates the test page with content in all 3 languages
         cy.apollo({
             variables: {
