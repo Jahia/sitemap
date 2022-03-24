@@ -11,6 +11,13 @@ describe('Testing sitemap configuration via GraphQL API', () => {
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
+                mixins: ['jseomix:sitemap'],
+            },
+            mutationFile: 'graphql/jcrAddSitemapMixin.graphql',
+        })
+        cy.apollo({
+            variables: {
+                pathOrId: sitePath,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: siteMapRootUrl,
             },

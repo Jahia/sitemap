@@ -1,4 +1,4 @@
-    mutation ($parentPathOrId: String!, $name: String!, $template: String!, $language: String!) {
+mutation ($parentPathOrId: String!, $name: String!, $template: String!, $language: String!) {
     jcr(workspace: EDIT) {
         addNode(
             parentPathOrId: $parentPathOrId

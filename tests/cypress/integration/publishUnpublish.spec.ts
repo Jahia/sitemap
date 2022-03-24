@@ -16,6 +16,13 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
+                mixins: ['jseomix:sitemap'],
+            },
+            mutationFile: 'graphql/jcrAddSitemapMixin.graphql',
+        })
+        cy.apollo({
+            variables: {
+                pathOrId: sitePath,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: siteMapRootUrl,
             },
