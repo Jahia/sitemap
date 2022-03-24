@@ -69,6 +69,7 @@ jobs:
         with:
           module_id: sitmap
           testrail_project: Sitemap Module
+          artifact_name: Integration-Tests-Standalone
           tests_manifest: provisioning-manifest-build.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           should_use_build_artifacts: true
@@ -100,6 +101,7 @@ jobs:
         with:
           module_id: sitmap
           testrail_project: Sitemap Module
+          artifact_name: Integration-Tests-Cluster
           tests_manifest: provisioning-manifest-build.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           jahia_cluster_enabled: true
