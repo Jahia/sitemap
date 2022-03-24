@@ -24,7 +24,6 @@
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
     "he": "^1.2.0",
-    "husky": "^4.2.5",
     "istanbul-lib-coverage": "^3.0.0",
     "jahia-reporter": "^0.2.23",
     "lint-staged": "^10.2.11",
@@ -60,11 +59,6 @@
       "cypress/integration",
       "cypress/page-object"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{ts,tsx}": [
