@@ -20,8 +20,8 @@ declare namespace Cypress {
 Cypress.Commands.add('goTo', function (url: string) {
     cy.visit(url, {
         auth: {
-            username: Cypress.env('JAHIA_USERNAME'),
-            password: Cypress.env('JAHIA_PASSWORD'),
+            username: 'root',
+            password: Cypress.env('SUPER_USER_PASSWORD'),
         },
     })
 })
