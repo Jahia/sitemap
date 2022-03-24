@@ -15,8 +15,19 @@
 
 // Import commands.js using ES2015 syntax:
 
+import 'cypress-wait-until'
 import "./commands";
 import "@cypress/code-coverage/support";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('cypress-terminal-report/src/installLogsCollector')()
 require('@jahia/cypress/dist/support/registerSupport').registerSupport()
+
+const optionsCollector = {
+    enableExtendedCollector: true,
+    xhr: {
+        printHeaderData: true,
+        printRequestData: true,
+    },
+}
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('cypress-terminal-report/src/installLogsCollector')(optionsCollector)

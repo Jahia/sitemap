@@ -7,3 +7,5 @@ node_modules
 .env
 artifacts
 build-dependencies
+results
+run-artifacts

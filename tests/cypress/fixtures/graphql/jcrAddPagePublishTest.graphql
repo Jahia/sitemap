@@ -1,0 +1,34 @@
+mutation ($parentPathOrId: String!, $name: String!, $template: String!) {
+  jcr(workspace: EDIT) {
+    addNode(
+      parentPathOrId: $parentPathOrId
+      name: $name
+      primaryNodeType: "jnt:page"
+      properties: [
+        { name: "jcr:title", language: "en", value: "English Title" }
+        { name: "jcr:title", language: "de", value: "German Title" }
+        { name: "jcr:title", language: "fr", value: "French Title" }
+        { name: "j:templateName", type: STRING, value: $template }
+      ]
+    ) {
+      uuid
+      addChild(
+        name: "area-main"
+        primaryNodeType: "jnt:contentList"
+      ) {
+        uuid
+        addChild(
+          name: "content"
+          primaryNodeType: "jnt:text"
+          properties: [
+            { language: "en", name: "text", type: STRING, value: "Text content in English - en" }
+            { language: "de", name: "text", type: STRING, value: "Text content in German - de" }
+            { language: "fr", name: "text", type: STRING, value: "Text content in French - fr" }
+          ]
+        ) {
+            uuid
+        }
+      }
+    }
+  }
+}
