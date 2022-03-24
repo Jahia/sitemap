@@ -2,11 +2,6 @@ import { waitUntilRefresh } from '../utils/waitUntilRefresh'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
-const homePagePath = `${sitePath}/home`
-const testPageName = 'publish_unpublish_test'
-const testPagePath = `${homePagePath}/${testPageName}`
-const languages = ['en', 'de', 'fr']
-const defaultLanguage = 'en'
 const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
 const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
