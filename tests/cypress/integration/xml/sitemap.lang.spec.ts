@@ -1,4 +1,9 @@
 import { SitemapPage } from '../../page-object/sitemap.page'
+
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
 const homePagePath = sitePath + '/home'
@@ -10,30 +15,16 @@ const sitemapLangFilePath = sitePath + '/sitemap-lang.xml'
 const langDe = 'de'
 const langEn = 'en'
 const langFr = 'fr'
-const langAll = 'de,en,fr'
+const languages = ['de', 'en', 'fr']
 const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap-lang.xml file on digitall', () => {
-
-    beforeEach('Create content for test', () => {
-        // Save the root sitemap URL and Flush sitemap cache
-        const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        siteMapPage.inputSitemapRootURL(siteMapRootUrl)
-        siteMapPage.clickOnSave()
-        siteMapPage.clickFlushCache()
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500)
+    beforeEach('Configure sitemap for the test', () => {
+        configureSitemap(sitePath, siteMapRootUrl)
     })
 
-    afterEach('Cleanup test data', () => {
-        // deactivate the current sitemap config by removing the mixin
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                mixinsToRemove: ['jseomix:sitemap'],
-            },
-            mutationFile: 'graphql/jcrUpdateNode.graphql',
-        })
+    afterEach('Remove sitemap configuration via GraphQL', () => {
+        removeSitemapConfiguration(sitePath)
     })
 
     it('alternate url should not contains the default language', () => {
@@ -50,7 +41,6 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     })
 
     it('alternate url should not contains invalid language', () => {
-
         // update history page to invalid 'de' language
         cy.apollo({
             variables: {
@@ -64,17 +54,19 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         cy.apollo({
             variables: {
                 pathOrId: historyPagePath,
-                language: langAll,
+                languages: languages,
                 publishSubNodes: false,
                 includeSubTree: false,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
 
-        const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        siteMapPage.clickFlushCache()
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500)
+        deleteSitemapCache(siteKey)
+
+        // const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        // siteMapPage.clickFlushCache()
+        // // eslint-disable-next-line cypress/no-unnecessary-waiting
+        // cy.wait(500)
 
         cy.requestFindXMLElementByTagName(langFr + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
@@ -96,7 +88,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         cy.apollo({
             variables: {
                 pathOrId: historyPagePath,
-                properties: [{ name: 'j:invalidLanguages', values: [], language: langEn }]
+                properties: [{ name: 'j:invalidLanguages', values: [], language: langEn }],
             },
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
@@ -105,17 +97,15 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         cy.apollo({
             variables: {
                 pathOrId: historyPagePath,
-                language: langAll,
+                languages: languages,
                 publishSubNodes: false,
                 includeSubTree: false,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
-
     })
 
     it('Exclude page from sitemap', function () {
-
         // check that the page we want to exclude currently exists in the sitemap
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
             let isTestPassed = false
@@ -134,7 +124,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToAdd: noIndexSitemapMixin,
-                workspace: 'LIVE'
+                workspace: 'LIVE',
             },
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
@@ -162,11 +152,9 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToRemove: noIndexSitemapMixin,
-                workspace: 'LIVE'
+                workspace: 'LIVE',
             },
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
-
     })
-
 })

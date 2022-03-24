@@ -1,4 +1,5 @@
 import { waitUntilRefresh } from '../utils/waitUntilRefresh'
+import { configureSitemap } from '../utils/configureSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -12,30 +13,7 @@ const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
-        // Configure sitemap
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                mixins: ['jseomix:sitemap'],
-            },
-            mutationFile: 'graphql/jcrAddSitemapMixin.graphql',
-        })
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                propertyName: 'sitemapIndexURL',
-                propertyValue: siteMapRootUrl,
-            },
-            mutationFile: 'graphql/jcrAddProperty.graphql',
-        })
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                propertyName: 'sitemapCacheDuration',
-                propertyValue: '4h',
-            },
-            mutationFile: 'graphql/jcrAddProperty.graphql',
-        })
+        configureSitemap(sitePath, siteMapRootUrl)
 
         // Creates the test page with content in all 3 languages
         cy.apollo({

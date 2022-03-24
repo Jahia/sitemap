@@ -1,4 +1,6 @@
-import { waitUntilRefresh } from '../utils/waitUntilRefresh'
+import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -6,38 +8,17 @@ const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
 const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing sitemap configuration via GraphQL API', () => {
-    before('Configure sitemap via GraphQL', () => {
-        // Configure sitemap
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                mixins: ['jseomix:sitemap'],
-            },
-            mutationFile: 'graphql/jcrAddSitemapMixin.graphql',
-        })
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                propertyName: 'sitemapIndexURL',
-                propertyValue: siteMapRootUrl,
-            },
-            mutationFile: 'graphql/jcrAddProperty.graphql',
-        })
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                propertyName: 'sitemapCacheDuration',
-                propertyValue: '4h',
-            },
-            mutationFile: 'graphql/jcrAddProperty.graphql',
-        })
+    after('Remove sitemap configuration via GraphQL', () => {
+        removeSitemapConfiguration(sitePath)
     })
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
-    it('Verify sitemap is configured properly for site', function () {
+    it(`Apply sitemap configuration for site ${sitePath}`, function () {
+        configureSitemap(sitePath, siteMapRootUrl)
+
         cy.apollo({
             variables: {
-                pathOrId: '/sites/digitall',
+                pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },

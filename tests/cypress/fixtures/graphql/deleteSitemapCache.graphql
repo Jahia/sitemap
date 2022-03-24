@@ -1,0 +1,7 @@
+mutation ($siteKey: String!) {
+    admin {
+        sitemap {
+            deleteSitemapCache(siteKey: $siteKey)
+        }
+    }
+}
