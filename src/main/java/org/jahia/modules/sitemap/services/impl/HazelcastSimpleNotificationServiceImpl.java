@@ -33,6 +33,9 @@ public class HazelcastSimpleNotificationServiceImpl implements SimpleNotificatio
 
             @Override
             public void modifiedService(ServiceReference serviceReference, Object o) {
+                if (listenerId != null) {
+                    topic.removeMessageListener(listenerId);
+                }
                 HazelcastInstance hazelcastInstance = (HazelcastInstance) bundleContext.getService(serviceReference);
                 topic = hazelcastInstance.getTopic(TOPIC_NAME);
                 registerCallback(callback);
