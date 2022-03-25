@@ -1,5 +1,3 @@
-import { SitemapPage } from '../../page-object/sitemap.page'
-
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 
