@@ -1,6 +1,7 @@
 // Fetches a new sitemap until it gets a list of URLs
 // different from the originalSitemapUrls array
 export const waitUntilRefresh = (sitemapUrl: string, originalSitemapUrls: Array<string>) => {
+    cy.log(`waitUntilRefresh, originalSitemapUrls contains: ${originalSitemapUrls.length} URLs`)
     cy.waitUntil(
         () =>
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
