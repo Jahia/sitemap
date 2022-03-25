@@ -24,45 +24,52 @@
 package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
-import org.jahia.api.Constants;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import org.jahia.modules.sitemap.config.ConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
+import org.jahia.modules.sitemap.services.SimpleNotificationService;
 import org.jahia.modules.sitemap.services.SitemapService;
-import org.jahia.modules.sitemap.utils.Utils;
-import org.jahia.services.content.JCRCallback;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.SpringContextSingleton;
+import org.jahia.services.cache.ehcache.EhCacheProvider;
+import org.jahia.settings.SettingsBean;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-
-import org.jahia.modules.sitemap.config.ConfigService;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.QueryResult;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.Map;
 
 @Component(immediate = true, service = SitemapService.class)
 public class SitemapServiceImpl implements SitemapService {
 
-    private static Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
+    private static final String SITEMAP_CACHE_NAME = "sitemapCache";
+    private static final int SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
 
+    private Ehcache sitemapCache;
     private ConfigService configService;
+    private SimpleNotificationService simpleEventService;
+    private boolean isClusterActivated;
 
     @Activate
-    public void activate(Map<String, Object> props) {
-        logger.info("Activator started for sitemap...");
-        // TODO could be a good place to init the cache here.
-        logger.info("Activator completed for sitemap...");
+    public void activate() {
+        logger.info("Sitemap service started");
+        SettingsBean settingsBean = SettingsBean.getInstance();
+        if (settingsBean.isClusterActivated()) {
+            simpleEventService = new HazelcastSimpleNotificationServiceImpl(this::flush);
+            isClusterActivated = true;
+        }
+        EhCacheProvider cacheService = (EhCacheProvider) SpringContextSingleton.getBean("ehCacheProvider");
+        sitemapCache = cacheService.getCacheManager().addCacheIfAbsent(SITEMAP_CACHE_NAME);
+        // flush in case an old version of the cache is present.
+        flush();
     }
 
     @Reference(service = ConfigService.class)
@@ -96,37 +103,60 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     @Override
-    public void flushCache(String siteKey) throws RepositoryException {
-        // This will be reworked
-        String subSite = (siteKey == null || siteKey.isEmpty()) ? "" : ("/" + siteKey);
-
-        JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
-                Constants.LIVE_WORKSPACE, null, new JCRCallback<Object>() {
-                    @Override public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                        QueryResult result = Utils.getQuery(session, String.format("SELECT * from [jseont:sitemap] WHERE ISDESCENDANTNODE"
-                                + "('/sites%s')", subSite));
-                        if (result == null) return null;
-
-                        for (NodeIterator iter = result.getNodes(); iter.hasNext(); ) {
-                            JCRNodeWrapper sitemapNode = (JCRNodeWrapper) iter.nextNode();
-                            // Flush the sitemap node per the path
-                            // TODO flush cache for: sitemapNode
-
-                            // get all caches for sitemap resource
-                            String sitePath = sitemapNode.getParent().getPath();
-                            String query = "SELECT * from [jseont:sitemapResource] WHERE ISDESCENDANTNODE('%s')";
-                            QueryResult subResult = Utils.getQuery(session, String.format(query, sitePath));
-                            if (subResult == null) continue;
-
-                            for (NodeIterator iter2 = subResult.getNodes(); iter2.hasNext(); ) {
-                                JCRNodeWrapper sitemapResourceNode = (JCRNodeWrapper) iter2.nextNode();
-                                // Flush the sitemap resource node per the path
-                                // TODO flush cache for: sitemapResourceNode
-                            }
-                        }
-
-                        return null;
-                    }
-                });
+    public void askForFlush() {
+        logger.info("a flush of sitemap cache was requested");
+        if (isClusterActivated) {
+            // In case of cluster notify only, local flush will happen on each node, including the source node of the flush
+            simpleEventService.notifyNodes();
+            return;
+        }
+        flush();
     }
+
+    @Override
+    public String getSitemap(String key) {
+        return sitemapCache.get(key) == null ?  null : sitemapCache.get(key).getObjectValue().toString();
+    }
+
+    @Override
+    public void addSitemap(String key, String sitemap, String expiration) {
+        Element sitemapCacheElement = new Element(key, sitemap);
+        sitemapCacheElement.setEternal(false);
+        // we get the desired cache expiration time in seconds
+        sitemapCacheElement.setTimeToLive(getSitemapCacheExpirationInSeconds(expiration));
+        sitemapCache.put(sitemapCacheElement);
+
+    }
+
+    @Deactivate
+    public void deactivate() {
+        flush();
+        if (isClusterActivated) {
+            simpleEventService.unregister();
+        }
+    }
+
+    /**
+     * Retrieves cache expiration time based on JCR sitemapCacheDuration property
+     * @param sitemapCacheDurationPropertyValue (JCR property string value)
+     * @return int expiration date in seconds (default value 144000 seconds = 4h).
+     */
+    private int getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue) {
+        if (sitemapCacheDurationPropertyValue != null) {
+            // to retro compatibility with older version of sitemap
+            if (sitemapCacheDurationPropertyValue.endsWith("h")) {
+                sitemapCacheDurationPropertyValue = sitemapCacheDurationPropertyValue.replace("h", "");
+            }
+            // property value is in hours we need seconds for the cache expiration
+            return Integer.parseInt(sitemapCacheDurationPropertyValue) * 3600; // in seconds
+        }
+
+        return SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS;
+    }
+
+    private void flush() {
+        logger.info("a flush of sitemap cache was triggered");
+        sitemapCache.flush();
+    }
+
 }

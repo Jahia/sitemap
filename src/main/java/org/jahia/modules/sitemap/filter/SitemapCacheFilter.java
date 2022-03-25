@@ -23,11 +23,9 @@
  */
 package org.jahia.modules.sitemap.filter;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jahia.api.Constants;
-import org.jahia.services.cache.CacheHelper;
-import org.jahia.services.content.*;
+import org.jahia.modules.sitemap.constant.SitemapConstant;
+import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.filter.AbstractFilter;
@@ -35,16 +33,11 @@ import org.jahia.services.render.filter.RenderChain;
 import org.jahia.services.render.filter.RenderFilter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import org.jahia.modules.sitemap.constant.SitemapConstant;
 
 /**
  * Filter that creates sitemap file nodes for caching.
@@ -54,131 +47,74 @@ import org.jahia.modules.sitemap.constant.SitemapConstant;
  * we've added a custom file-based caching layer to the sitemap.xml views that will be invalidated only after expiration has passed
  * (currently set at 4 hours).
  */
-@Component(service = RenderFilter.class)
+@Component(service = RenderFilter.class, immediate = true)
 public class SitemapCacheFilter extends AbstractFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapCacheFilter.class);
 
+    private static final String SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY = "org.jahia.modules.sitemap.filter.targetSitemapCacheKey";
+    private static final String SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY = "org.jahia.modules.sitemap.filter.isCached";
+
+    private SitemapService sitemapService;
+
+    @Reference
+    public void setSitemapService(SitemapService sitemapService) {
+        this.sitemapService = sitemapService;
+    }
+
     @Activate
     public void activate() {
-        // Disable filter as it will be rework (and sitemap node not used anymore)
-        setDisabled(true);
         setPriority(15f);
-        setApplyOnNodeTypes("jseont:sitemapResource,jseont:sitemap");
+        setApplyOnNodeTypes("jseomix:sitemap,jseomix:sitemapResource");
+        setApplyOnTemplates("sitemapLang");
         setApplyOnModes("live");
-        setDescription("Filter for creating sitemap file nodes for caching");
+        setDescription("Filter for sitemap caching");
         logger.debug("Activated SitemapCacheFilter");
     }
 
     /**
-     * Serve cache contents if cache exists and is not expired. Otherwise, flush sitemap cache and re-render
+     * Stop render if cache exists and not expired
      */
-    @Override public String prepare(RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
-        if (!needsCaching(resource)) return null;
+    @Override
+    public String prepare(
+            RenderContext renderContext,
+            Resource resource,
+            RenderChain chain
+    ) throws Exception {
 
-        JCRNodeWrapper cacheNode = getCacheNode(resource.getNode());
-        InputStream inputStream = null;
-        try {
-            if (isValidCache(cacheNode)) {
-                inputStream = cacheNode.getFileContent().downloadFile();
-                return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            }
-        } catch (IOException e) { // something happened; re-render
-            logger.error("Unable to read sitemap file cache contents.");
-        } finally {
-            IOUtils.closeQuietly(inputStream);
+        String targetSitemapCacheKey = resource.getNode().getPath() + "#" + resource.getNode().getLanguage();
+
+        renderContext.getRequest().setAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY, targetSitemapCacheKey );
+        String result = sitemapService.getSitemap(targetSitemapCacheKey);
+        if (!StringUtils.isEmpty(result)) {
+            renderContext.getRequest().setAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY, Boolean.TRUE );
+            return result;
         }
 
-        // re-render by returning null; manually flush jahia cache prior to render
-        CacheHelper.flushOutputCachesForPath(resource.getPath(), false);
         return null;
     }
 
     /**
-     * Create/refresh file cache with rendered contents (previousOut) if needed.
+     * Create cache, if needed, with rendered contents (previousOut) and expiration time.
      */
     @Override
-    public String execute(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain)
-            throws RepositoryException
-    {
-        if (!needsCaching(resource)) return previousOut;
+    public String execute(
+            String previousOut,
+            RenderContext renderContext,
+            Resource resource,
+            RenderChain chain
+    ) throws RepositoryException {
 
-        JCRNodeWrapper sitemapNode = resource.getNode();
-        JCRNodeWrapper cacheNode = getCacheNode(sitemapNode);
+        String targetSitemapCacheKey = renderContext.getRequest().getAttribute(SITEMAP_FILTER_TARGET_CACHE_KEY_ATTRIBUTE_KEY).toString();
 
-        InputStream inputStream = null;
-        try {
-            // refresh if invalid cache; cache only if there's contents
-            if (!isValidCache(cacheNode) && StringUtils.isNotBlank(previousOut)) {
-                inputStream = IOUtils.toInputStream(previousOut, StandardCharsets.UTF_8);
-                refreshSitemapCache(sitemapNode, inputStream);
-            }
-        } finally {
-            IOUtils.closeQuietly(inputStream);
+        if (renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY) == null || !((Boolean) renderContext.getRequest().getAttribute(SITEMAP_FILTER_IS_CACHED_ATTRIBUTE_KEY))) {
+            // we retrieve the current sitemap cache duration set by user.0
+            String sitemapCacheDuration = resource.getNode().getResolveSite().getPropertyAsString(SitemapConstant.SITEMAP_CACHE_DURATION);
+            sitemapService.addSitemap(targetSitemapCacheKey, previousOut, sitemapCacheDuration);
         }
 
         return previousOut;
+
     }
 
-    /**
-     * Create or refresh file cache for given parent for a given locale
-     * Uses parent session to save
-     * https://stackoverflow.com/questions/4685959/get-file-out-of-jcr-file-node
-     */
-    private JCRNodeWrapper refreshSitemapCache(JCRNodeWrapper sitemapNode, InputStream data) throws RepositoryException {
-        String cacheName = getCacheName(sitemapNode);
-        String nodePath = sitemapNode.getPath();
-
-        // use system session to be able to save file cache in live workspace
-        return JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(null,
-                Constants.LIVE_WORKSPACE, null, new JCRCallback<JCRNodeWrapper>() {
-            @Override public JCRNodeWrapper doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                JCRNodeWrapper node = session.getNode(nodePath);
-                node.uploadFile(cacheName, data, "application/xml");
-                session.save();
-                return node;
-            }
-        });
-    }
-
-
-    /** Apply file caching only for default template */
-    public boolean needsCaching(Resource resource) {
-        String templateName = resource.getTemplate();
-        return "lang".equalsIgnoreCase(templateName);
-    }
-
-    public boolean isValidCache(JCRNodeWrapper cacheNode) {
-        long expiration = 4 * 60 * 60 * 1000L; // Default to 4 hours
-        if (cacheNode == null) return false;
-        try {
-            JCRNodeWrapper siteNode = cacheNode.getResolveSite();
-            if (siteNode != null) {
-                JCRPropertyWrapper cacheDurationProperty = siteNode.getProperty(SitemapConstant.SITEMAP_CACHE_DURATION);
-                // String propertyValue = ConversionUtils.getValueFromJCRProperty(cacheDurationProperty);
-                // expiration = ConversionUtils.toMilliSecondsLong(propertyValue, expiration);
-            }
-        } catch (RepositoryException e) {
-            logger.error("Unable to retrieve node information.");
-            return false;
-        }
-        return !isExpired(cacheNode, expiration);
-    }
-
-    public JCRNodeWrapper getCacheNode(JCRNodeWrapper sitemapNode) throws RepositoryException {
-        if (sitemapNode == null) return null;
-        String cacheName = getCacheName(sitemapNode);
-        return (sitemapNode.hasNode(cacheName)) ? sitemapNode.getNode(cacheName) : null;
-    }
-
-    public String getCacheName(JCRNodeWrapper sitemapNode) {
-        return "sitemap-cache" + "-" + sitemapNode.getLanguage();
-    }
-
-    public boolean isExpired(JCRNodeWrapper cacheNode, long expiration) {
-        if (expiration < 0) return true; // If expiration is negative then is expired
-        Date lastModified = cacheNode.getContentLastModifiedAsDate();
-        long expirationInMs = lastModified.getTime() + expiration;
-        return System.currentTimeMillis() > expirationInMs;
-    }
 }

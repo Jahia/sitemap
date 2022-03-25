@@ -27,6 +27,21 @@
     <c:forEach var="sitemapEntry"
                items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
         <url>
+            <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
+                <jcr:node var="sitemapEntryNode" path="${sitemapEntry.path}" />
+                <%-- we add some current node informations for debug --%>
+                <c:set var="nodePath" value="${sitemapEntryNode.path}"/>
+                <c:set var="nodeUrl" value="${sitemapEntryNode.url}"/>
+                <%-- xml comment can't contain two hyphens --%>
+                <c:if test="${fn:contains(nodePath, '--') || fn:contains(nodeUrl, '--')}">
+                    <c:set var="nodePath" value="${nodePath.replaceAll('-', '%2D')}"/>
+                    <c:set var="nodeUrl" value="${nodeUrl.replaceAll('-', '%2D')}"/>
+                </c:if>
+                <!-- node path: ${nodePath} -->
+                <!-- node url: ${nodeUrl} -->
+                <!-- node type: ${sitemapEntryNode.primaryNodeTypeName} -->
+                <!-- node uuid: ${sitemapEntryNode.identifier} -->
+            </c:if>
             <loc>${serverUrl}<c:url context="/" value="${sitemapEntry.link}"/></loc>
             <lastmod>${sitemapEntry.lastMod}</lastmod>
             <c:forEach items="${sitemapEntry.linksInOtherLanguages}" var="link">

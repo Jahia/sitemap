@@ -1,20 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
-import {Typography, Chip} from '@jahia/moonstone';
-import {Dropdown, Input, Check} from '@jahia/moonstone';
+import {Check, Chip, Dropdown, Input, Typography} from '@jahia/moonstone';
 
 import styles from './SitemapPanel.scss';
 
-import * as compose from 'lodash.flowright';
 import {withApollo} from 'react-apollo';
 import {withTranslation} from 'react-i18next';
 import {useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
 import * as gqlQueries from './gqlQueries';
-import {gqlMutate} from '../utils';
+import {compose, gqlMutate} from '../utils';
 
 import {SnackbarComponent} from './Snackbar/Snackbar';
 import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
@@ -26,10 +24,9 @@ const SitemapPanelApp = ({client, t}) => {
     const [sitemapIndexURL, setSitemapIndexURL] = useState(null);
     const [sitemapCacheDuration, setSitemapCacheDuration] = useState(null);
     const currentState = useSelector(state => ({site: state.site, language: state.language}));
-
     const {data, error, loading, refetch} = useQuery(gqlQueries.GetNodeSitemapInfo, {
         variables: {
-            pathOrId: `/sites/${currentState.site}`,
+            pathOrId: '/sites/' + currentState.site,
             mixinsFilter: {
                 filters: [
                     {fieldName: 'name', value: 'jseomix:sitemap'}
@@ -68,17 +65,17 @@ const SitemapPanelApp = ({client, t}) => {
     }, [data, currentState.site]);
 
     const dropdownData = [{
-        label: `4 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '4h'
+        label: '4 ' + t('labels.settingSection.updateIntervalSection.hours'),
+        value: '4'
     }, {
-        label: `8 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '8h'
+        label: '8 ' + t('labels.settingSection.updateIntervalSection.hours'),
+        value: '8'
     }, {
-        label: `24 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '24h'
+        label: '24 ' + t('labels.settingSection.updateIntervalSection.hours'),
+        value: '24'
     }, {
-        label: `48 ${t('labels.settingSection.updateIntervalSection.hours')}`,
-        value: '48h'
+        label: '48 ' + t('labels.settingSection.updateIntervalSection.hours'),
+        value: '48'
     }];
 
     const convertCacheDurationToLabel = durationValue => {
@@ -104,7 +101,7 @@ const SitemapPanelApp = ({client, t}) => {
         onSubmit: values => {
             if (!sitemapMixinEnabled) {
                 gqlMutate(client, gqlMutations.AddMixin, {
-                    pathOrId: `/sites/${currentState.site}`,
+                    pathOrId: '/sites/' + currentState.site,
                     mixins: ['jseomix:sitemap']
                 });
                 setSitemapMixinEnabled(prevState => !prevState);
@@ -113,12 +110,12 @@ const SitemapPanelApp = ({client, t}) => {
             }
 
             gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: `/sites/${currentState.site}`,
+                pathOrId: '/sites/' + currentState.site,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: formik.values.sitemapIndexURL
             });
             gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: `/sites/${currentState.site}`,
+                pathOrId: '/sites/' + currentState.site,
                 propertyName: 'sitemapCacheDuration',
                 propertyValue: formik.values.sitemapCacheDuration
             });

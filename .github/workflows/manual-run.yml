@@ -2,7 +2,7 @@
 # It is used to trigger an integration tests run using snapshot artifacts
 name: Manual Tests Run
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       jahia_image:
@@ -19,11 +19,11 @@ jobs:
     name: Integration Tests
     runs-on: self-hosted
     steps:
-      - uses: jahia/jahia-modules-action/helper@v1    
+      - uses: jahia/jahia-modules-action/helper@v1
       - uses: actions/checkout@v2
       - uses: KengoTODA/actions-setup-docker-compose@main
         with:
-          version: '1.29.2'      
+          version: '1.29.2'
       - uses: jahia/jahia-modules-action/integration-tests@v1
         with:
           module_id: sitemap
@@ -56,4 +56,4 @@ jobs:
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 15          
+        timeout-minutes: 15

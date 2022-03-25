@@ -38,8 +38,8 @@ jobs:
       credentials:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    steps:          
-      - uses: actions/checkout@v2  
+    steps:
+      - uses: actions/checkout@v2
       - uses: jahia/jahia-modules-action/build@v1
         with:
           module_id: sitemap
