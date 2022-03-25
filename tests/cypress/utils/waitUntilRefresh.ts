@@ -16,7 +16,7 @@ export const waitUntilRefresh = (sitemapUrl: string, originalSitemapUrls: Array<
             }),
         {
             errorMsg: `Unable to detect a difference in sitemap: ${sitemapUrl} within set timeout`, // overrides the default error message
-            timeout: 20000,
+            timeout: 40000,
             verbose: true,
             interval: 1000, // performs the check every 1 sec, default to 200
         },
