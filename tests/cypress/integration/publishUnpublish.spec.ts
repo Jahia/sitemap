@@ -1,5 +1,6 @@
 import { waitUntilRefresh } from '../utils/waitUntilRefresh'
 import { configureSitemap } from '../utils/configureSitemap'
+import { deleteSitemapCache } from '../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -97,6 +98,9 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 mutationFile: 'graphql/jcrPublishNode.graphql',
             })
 
+            // Flush the cache to force a refresh
+            deleteSitemapCache(siteKey)
+
             // Wait until the sitemap is modified
             waitUntilRefresh(sitemapUrl, originalSitemapUrls)
 
@@ -134,6 +138,9 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     },
                     mutationFile: 'graphql/jcrUnpublishNode.graphql',
                 })
+
+                // Flush the cache to force a refresh
+                deleteSitemapCache(siteKey)
 
                 // Wait until the sitemap is modified
                 waitUntilRefresh(sitemapUrl, originalSitemapUrls)
@@ -181,6 +188,9 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                         mutationFile: 'graphql/jcrPublishNode.graphql',
                     })
 
+                    // Flush the cache to force a refresh
+                    deleteSitemapCache(siteKey)
+
                     // Wait until the sitemap is modified
                     waitUntilRefresh(sitemapUrl, originalSitemapUrls)
                 })
@@ -204,6 +214,9 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 },
                 mutationFile: 'graphql/jcrUnpublishNode.graphql',
             })
+
+            // Flush the cache to force a refresh
+            deleteSitemapCache(siteKey)
 
             // Wait until the sitemap is modified
             waitUntilRefresh(sitemapUrl, originalSitemapUrls)
