@@ -53,7 +53,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
     it('Verify sitemap is configured properly for site', function () {
         cy.apollo({
             variables: {
-                pathOrId: '/sites/digitall',
+                pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
