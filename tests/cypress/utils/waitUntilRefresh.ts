@@ -1,6 +1,6 @@
 // Fetches a new sitemap until it gets a list of URLs
 // different from the originalSitemapUrls array
-export const waitUntilRefresh = (sitemapUrl: string, originalSitemapUrls: Array<string>) => {
+export const waitUntilRefresh = (sitemapUrl: string, originalSitemapUrls: Array<string>, targetDifference: number = 0) => {
     cy.log(`waitUntilRefresh, originalSitemapUrls contains: ${originalSitemapUrls.length} URLs`)
     cy.waitUntil(
         () =>
@@ -9,10 +9,10 @@ export const waitUntilRefresh = (sitemapUrl: string, originalSitemapUrls: Array<
                 const difference = originalSitemapUrls
                     .filter((u) => !newSitemapUrls.includes(u))
                     .concat(newSitemapUrls.filter((u) => !originalSitemapUrls.includes(u)))
-                if (difference.length === 0) {
-                    return false
+                if (difference.length >= targetDifference) {
+                    return true
                 }
-                return true
+                return false
             }),
         {
             errorMsg: `Unable to detect a difference in sitemap: ${sitemapUrl} within set timeout`, // overrides the default error message

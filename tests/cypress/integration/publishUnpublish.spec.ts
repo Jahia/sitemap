@@ -102,7 +102,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
             deleteSitemapCache(siteKey)
 
             // Wait until the sitemap is modified
-            waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+            waitUntilRefresh(sitemapUrl, originalSitemapUrls, 3)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
@@ -143,7 +143,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 deleteSitemapCache(siteKey)
 
                 // Wait until the sitemap is modified
-                waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+                waitUntilRefresh(sitemapUrl, originalSitemapUrls, 1)
 
                 // Fetch the new sitemap again and test the result
                 cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
@@ -192,7 +192,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     deleteSitemapCache(siteKey)
 
                     // Wait until the sitemap is modified
-                    waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+                    waitUntilRefresh(sitemapUrl, originalSitemapUrls, 1)
                 })
             })
         })
@@ -219,7 +219,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
             deleteSitemapCache(siteKey)
 
             // Wait until the sitemap is modified
-            waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+            waitUntilRefresh(sitemapUrl, originalSitemapUrls, 1)
 
             // Verify the test page is not included in any of the sitemaps
             cy.task('parseSitemap', { url: sitemapUrl }).then((urls: Array<string>) => {
