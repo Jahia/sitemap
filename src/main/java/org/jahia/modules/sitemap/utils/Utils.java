@@ -58,6 +58,29 @@ public final class Utils {
     private Utils() {
     }
 
+    public static Set<JCRNodeWrapper> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
+        Set<JCRNodeWrapper> results = new HashSet<>();
+        JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
+
+        JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, Locale.forLanguageTag(locale), session -> {
+            // Add site node to results
+            if (isValidEntry(session.getNode(renderContext.getSite().getPath()), renderContext)) {
+                results.add(renderContext.getSite());
+            }
+            String query = String.format("SELECT * FROM [jseomix:sitemapResource] as sel WHERE ISDESCENDANTNODE(sel, '%s')", renderContext.getSite().getPath());
+            QueryResult queryResult = getQuery(session, query);
+            NodeIterator ni = queryResult.getNodes();
+            while (ni.hasNext()) {
+                JCRNodeWrapper n = (JCRNodeWrapper) ni.nextNode();
+                if (isValidEntry(n, renderContext)) {
+                    results.add(n);
+                }
+            }
+            return null;
+        });
+        return results;
+    }
+
     /**
      * @return sitemap entries that are publicly accessible
      */

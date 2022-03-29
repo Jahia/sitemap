@@ -22,50 +22,33 @@
 <c:if test="${renderContext.site.isNodeType('jseomix:sitemap')}">
     <?xml version="1.0" encoding="UTF-8"?>
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <c:if test="${renderContext.liveMode}">
-            <c:set var="nodeUrl" value="${renderContext.site}"/>
-            <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapHostname')}"/>
-            <c:choose>
-                <c:when test="${!empty urlHostServerName}">
-                    <c:set var="serverUrl" value="${urlHostServerName}"/>
-                </c:when>
-                <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
-                    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
-                </c:when>
-                <c:otherwise>
-                    <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
-                </c:otherwise>
-            </c:choose>
-            <%-- language site maps --%>
-            <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
-            <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLiveLanguages" var="inactiveLiveLanguages"/>
-            <c:forEach var="lang" items="${languages}">
-                <c:if test="${not functions:contains(inactiveLiveLanguages, lang)}">
-                    <sitemap>
-                        <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${renderContext.site.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
-                        <loc>${serverUrl}${resolvedLangUrl}</loc>
-                    </sitemap>
-                </c:if>
+    <c:if test="${renderContext.liveMode}">
+        <c:set var="nodeUrl" value="${renderContext.site}"/>
+        <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapHostname')}"/>
+        <c:choose>
+            <c:when test="${!empty urlHostServerName}">
+                <c:set var="serverUrl" value="${urlHostServerName}"/>
+            </c:when>
+            <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
+                <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="serverUrl"
+                       value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
+            </c:otherwise>
+        </c:choose>
+        <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
+        <c:forEach var="lang" items="${languages}">
+                <!-- Dedicated sitemap entries for language: ${lang} -->
+            <c:forEach var="node" items="${sitemap:getSitemapRoots(renderContext, lang.string)}">
+                <sitemap>
+                    <c:set var="nodePath" value="${node.path}/"/>
+                    <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${node.path}/sitemap-lang.xml"
+                           var="resolvedLangUrl"/>
+                    <loc>${serverUrl}${resolvedLangUrl}</loc>
+                </sitemap>
             </c:forEach>
-
-            <%--  Separate sitemaps for jseomix:sitemapResource node option --%>
-            <jcr:jqom var="additionalMaps">
-                <query:selector nodeTypeName="jseomix:sitemapResource" selectorName="stmp"/>
-                <query:descendantNode path="${renderContext.site.path}" selectorName="stmp"/>
-            </jcr:jqom>
-            <c:forEach var="node" items="${additionalMaps.nodes}">
-                <jcr:nodeProperty node="${renderContext.site}" name="j:inactiveLiveLanguages"
-                                  var="inactiveLiveLanguages"/>
-                <c:forEach var="lang" items="${languages}">
-                    <c:if test="${not functions:contains(inactiveLiveLanguages, lang)}">
-                        <sitemap>
-                            <c:set var="nodePath" value="${node.path}/"/>
-                            <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${node.path}/sitemap-lang.xml" var="resolvedLangUrl"/>
-                            <loc>${serverUrl}${resolvedLangUrl}</loc>
-                        </sitemap>
-                    </c:if>
-                </c:forEach>
-            </c:forEach>
-        </c:if>
-    </sitemapindex>
+        </c:forEach>
+        </sitemapindex>
+    </c:if>
 </c:if>

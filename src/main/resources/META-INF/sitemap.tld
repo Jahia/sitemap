@@ -16,5 +16,9 @@
         <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
         <function-signature>java.util.Set getSitemapEntries(org.jahia.services.render.RenderContext,java.lang.String,java.util.List,java.util.Locale)</function-signature>
     </function>
-
+    <function>
+        <name>getSitemapRoots</name>
+        <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
+        <function-signature>java.util.Set getSitemapRoots(org.jahia.services.render.RenderContext,java.lang.String)</function-signature>
+    </function>
 </taglib>
