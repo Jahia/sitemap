@@ -61,12 +61,12 @@ public final class Utils {
     public static Set<JCRNodeWrapper> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
         Set<JCRNodeWrapper> results = new HashSet<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
-
+        // Add site node to results
+        if (renderContext.getSite().getActiveLiveLanguages().contains(locale)) {
+            results.add(renderContext.getSite());
+        }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, Locale.forLanguageTag(locale), session -> {
-            // Add site node to results
-            if (isValidEntry(session.getNode(renderContext.getSite().getPath()), renderContext)) {
-                results.add(renderContext.getSite());
-            }
+
             String query = String.format("SELECT * FROM [jseomix:sitemapResource] as sel WHERE ISDESCENDANTNODE(sel, '%s')", renderContext.getSite().getPath());
             QueryResult queryResult = getQuery(session, query);
             NodeIterator ni = queryResult.getNodes();
@@ -152,7 +152,7 @@ public final class Utils {
             siteKey = ServerNameToSiteMapper.getSiteKeyByServerName(httpServletRequest);
             if (StringUtils.isEmpty(siteKey)) {
                 // If not set, look into the url for any "sites"
-                siteKey = StringUtils.substringBetween(httpServletRequest.getRequestURI(), "/site/", "/");
+                siteKey = StringUtils.substringBetween(httpServletRequest.getRequestURI(), "/sites/", "/");
                 // At last, get default site.
                 if (StringUtils.isEmpty(siteKey) || jahiaSitesService.getSiteByKey(siteKey) == null) {
                     siteKey = jahiaSitesService.getDefaultSite().getSiteKey();
