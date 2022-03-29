@@ -25,15 +25,11 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         removeSitemapConfiguration(sitePath)
     })
 
-    it('alternate url should not contains the default language', () => {
+    it('alternate url should not contains all three languages', () => {
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
                 const nodeItems = $list.getElementsByTagName('xhtml:link')
-                if (nodeItems.length > 0) {
-                    for (const c of nodeItems) {
-                        cy.wrap(c.getAttribute('hreflang')).should('not.contain', langEn)
-                    }
-                }
+                expect(nodeItems.length).to.equal(languages.length)
             })
         })
     })
