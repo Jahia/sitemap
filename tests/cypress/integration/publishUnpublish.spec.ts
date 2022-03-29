@@ -111,7 +111,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     .filter((u) => !newSitemapUrls.includes(u))
                     .concat(newSitemapUrls.filter((u) => !originalSitemapUrls.includes(u)))
 
-                cy.log(`The following URLs are different: ${JSON.stringify(difference)}`)
+                console.log(`The following URLs are different: ${JSON.stringify(difference)}`)
 
                 expect(difference.filter((u) => u.includes(testPageName)).length).to.equal(3)
             })
@@ -149,7 +149,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
                     cy.log(`The updated sitemap contains ${newSitemapUrls.length} URLs`)
                     const removedUrl = originalSitemapUrls.filter((x) => !newSitemapUrls.includes(x))
-                    cy.log(`The following URLs have been removed in the updated sitemap: ${JSON.stringify(removedUrl)}`)
+                    console.log(`The following URLs have been removed in the updated sitemap: ${JSON.stringify(removedUrl)}`)
 
                     // In that case, the url does not contain the language in the URL
                     expect(removedUrl.length).to.equal(1)
