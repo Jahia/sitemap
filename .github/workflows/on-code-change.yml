@@ -103,7 +103,7 @@ jobs:
           testrail_project: Sitemap Module
           artifact_name: Integration-Tests-Cluster
           tests_manifest: provisioning-manifest-build.yml
-          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
+          jahia_image: jahia/jahia-ee:8
           jahia_cluster_enabled: true
           should_use_build_artifacts: true
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
