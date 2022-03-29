@@ -24,7 +24,11 @@
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <c:if test="${renderContext.liveMode}">
             <c:set var="nodeUrl" value="${renderContext.site}"/>
+            <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapHostname')}"/>
             <c:choose>
+                <c:when test="${!empty urlHostServerName}">
+                    <c:set var="serverUrl" value="${urlHostServerName}"/>
+                </c:when>
                 <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
                     <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
                 </c:when>

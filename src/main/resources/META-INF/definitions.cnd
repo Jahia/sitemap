@@ -6,6 +6,7 @@
 [jseomix:sitemap] mixin
  extends = jnt:virtualsite
  - sitemapIndexURL (string) = '' hidden autocreated
+ - sitemapHostname (string) = '' hidden autocreated
  - sitemapCacheDuration (string) = '' hidden autocreated
  + sitemap (jseont:sitemap) = jseont:sitemap
 

@@ -25,7 +25,7 @@ export const SitemapPanelHeaderComponent = ({
         },
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
-            snackBarInfo(t('labels.snackbar.successSubmitToGoogle'));
+            snackBarInfo({message: t('labels.snackbar.successSubmitToGoogle')});
             openSnackBar(true);
             handleDialogClose();
         },

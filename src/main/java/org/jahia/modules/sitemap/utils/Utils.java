@@ -23,6 +23,7 @@
  */
 package org.jahia.modules.sitemap.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
 import org.jahia.registries.ServicesRegistry;
@@ -31,12 +32,17 @@ import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.render.RenderContext;
+import org.jahia.services.seo.urlrewrite.ServerNameToSiteMapper;
+import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
+import org.jahia.settings.SettingsBean;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,7 +55,8 @@ public final class Utils {
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
 
-    private Utils() {}
+    private Utils() {
+    }
 
     /**
      * @return sitemap entries that are publicly accessible
@@ -113,6 +120,37 @@ public final class Utils {
     public static QueryResult getQuery(JCRSessionWrapper session, String query) throws RepositoryException {
         return session.getWorkspace().getQueryManager()
                 .createQuery(query, Query.JCR_SQL2).execute();
+    }
+
+    public static void addRequestAttributes(ServletRequest request) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        JahiaSitesService jahiaSitesService = ServicesRegistry.getInstance().getJahiaSitesService();
+        // resolve site key from hostname
+        String siteDefaultLanguage = null;
+        String siteKey = null;
+        try {
+            siteKey = ServerNameToSiteMapper.getSiteKeyByServerName(httpServletRequest);
+            if (StringUtils.isEmpty(siteKey)) {
+                // If not set, look into the url for any "sites"
+                siteKey = StringUtils.substringBetween(httpServletRequest.getRequestURI(), "/site/", "/");
+                // At last, get default site.
+                if (StringUtils.isEmpty(siteKey) || jahiaSitesService.getSiteByKey(siteKey) == null) {
+                    siteKey = jahiaSitesService.getDefaultSite().getSiteKey();
+                }
+            }
+            // Set language
+            siteDefaultLanguage = jahiaSitesService.getSiteDefaultLanguage(siteKey);
+        } catch (Exception e) {
+            // set language and siteKey if not set
+            if (StringUtils.isEmpty(siteDefaultLanguage)) {
+                siteDefaultLanguage = SettingsBean.getInstance().getDefaultLanguageCode();
+            }
+            if (StringUtils.isEmpty(siteKey)) {
+                siteKey = jahiaSitesService.getDefaultSite().getSiteKey();
+            }
+        }
+        request.setAttribute("jahiaSitemapSiteKey", siteKey);
+        request.setAttribute("jahiaSitemapSiteLanguage", siteDefaultLanguage);
     }
 
 }

@@ -5,28 +5,10 @@ import {Button, File, OpenInNew, Typography} from '@jahia/moonstone';
 import styles from './SitemapIndexLink.scss';
 import {useGetSitemapUrl} from '~/hooks/graphql';
 
-/**
- * Get hostname part of the input URL
- * @param inputUrl e.g. "https://yahoo.com:8080/path/to/url"
- * @returns {string|string} hostname part - e.g. "https://yahoo.com:8080"
- */
-const getHostname = inputUrl => {
-    let hostname = inputUrl;
-    try {
-        const url = new URL(inputUrl);
-        hostname = url.origin;
-    } catch (_) {
-        // Ignore if unparseable
-    }
-
-    return hostname;
-};
-
 const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
-    const [siteUrl, isSeoRulesEnabled] = useGetSitemapUrl(siteKey);
-    const indexUrl = (isSeoRulesEnabled || !siteUrl) ?
-        `${inputUrl}${window.contextJsParameters.contextPath}/sitemap.xml` :
-        `${getHostname(inputUrl)}${siteUrl}/sitemap.xml`;
+    const [siteUrl] = useGetSitemapUrl(siteKey);
+    console.log('link field values siteurl', siteUrl, 'input url', inputUrl);
+    const indexUrl = `${inputUrl}/sitemap.xml`;
 
     return (
         <>

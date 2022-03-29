@@ -41,6 +41,7 @@
         }
     },
     "snackbar": {
+      "errorActivation": "Sitemap not saved as {{hostname}} is not a valid url",
       "successActivation": "Sitemap activated",
       "successSubmitToGoogle": "Sitemap-index submitted",
       "successFlushCache": "Sitemap cache flushed."

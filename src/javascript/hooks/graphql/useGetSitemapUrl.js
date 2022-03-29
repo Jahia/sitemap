@@ -4,7 +4,6 @@ import {GetSitemapUrl} from '../../components/gqlQueries';
 
 const useGetSitemapUrl = siteKey => {
     const [siteUrl, setSiteUrl] = useState(null);
-    const [isSeoRulesEnabled, setSeoRulesEnabled] = useState(true);
 
     const {loading, data, error} = useQuery(GetSitemapUrl, {
         variables: {siteKey}
@@ -16,15 +15,12 @@ const useGetSitemapUrl = siteKey => {
             setSiteUrl(null);
             console.error('Unable to fetch site URL');
         } else if (!loading && data) {
-            const {urlRewriteSeoRulesEnabled, siteUrl} = data.admin?.sitemap;
-            // Default to true if it has no value
-            setSeoRulesEnabled((typeof urlRewriteSeoRulesEnabled === 'boolean') ?
-                urlRewriteSeoRulesEnabled : true);
+            const {siteUrl} = data.admin?.sitemap;
             setSiteUrl(siteUrl);
         }
     }, [loading, data, error]);
 
-    return [siteUrl, isSeoRulesEnabled];
+    return [siteUrl];
 };
 
 export default useGetSitemapUrl;

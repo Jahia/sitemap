@@ -41,6 +41,7 @@
       }
     },
     "snackbar": {
+      "errorActivation": "Le plan de site n'est pas enregistré car {{hostname}} n'est pas une url valide.",
       "successActivation": "Sitemap activé",
       "successSubmitToGoogle": "Sitemap-index envoyé",
       "successFlushCache": "Cache du sitemap vidé."

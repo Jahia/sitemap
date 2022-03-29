@@ -23,21 +23,15 @@
  */
 package org.jahia.modules.sitemap.graphql.api;
 
-import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
 import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.annotations.annotationTypes.GraphQLNonNull;
-import org.jahia.ajax.gwt.client.service.content.JahiaContentManagementService;
-import org.jahia.ajax.gwt.commons.server.JahiaRemoteService;
 import org.jahia.api.Constants;
 import org.jahia.modules.graphql.provider.dxm.DataFetchingException;
-import org.jahia.modules.sitemap.utils.Utils;
-import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.decorator.JCRSiteNode;
-import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
 
 import javax.jcr.RepositoryException;
@@ -58,12 +52,6 @@ public class GqlSitemapQueries {
         } catch (RepositoryException e) {
             throw new DataFetchingException(e);
         }
-    }
-
-    @GraphQLField
-    @GraphQLDescription("Sending sitemap(s) based on either sitemap index XML or sitemap XML URL to search engine URL(s) specified in CFG")
-    public boolean isUrlRewriteSeoRulesEnabled() {
-        return SettingsBean.getInstance().isUrlRewriteSeoRulesEnabled();
     }
 
     private JCRSessionWrapper getLiveSession() throws RepositoryException {

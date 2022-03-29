@@ -14,8 +14,11 @@
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="https://www.w3.org/1999/xhtml">
     <%-- The URL host server name based on the input from sitemap UI panel--%>
-    <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapIndexURL')}"/>
+    <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapHostname')}"/>
     <c:choose>
+        <c:when test="${!empty urlHostServerName}">
+            <c:set var="serverUrl" value="${urlHostServerName}"/>
+        </c:when>
         <c:when test="${((pageContext.request.scheme == 'http') && (pageContext.request.serverPort == 80)) || (pageContext.request.scheme == 'https') && (pageContext.request.serverPort == 443)}">
             <c:set var="serverUrl" value="${pageContext.request.scheme}://${pageContext.request.serverName}"/>
         </c:when>
@@ -28,7 +31,7 @@
                items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
         <url>
             <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
-                <jcr:node var="sitemapEntryNode" path="${sitemapEntry.path}" />
+                <jcr:node var="sitemapEntryNode" path="${sitemapEntry.path}"/>
                 <%-- we add some current node informations for debug --%>
                 <c:set var="nodePath" value="${sitemapEntryNode.path}"/>
                 <c:set var="nodeUrl" value="${sitemapEntryNode.url}"/>

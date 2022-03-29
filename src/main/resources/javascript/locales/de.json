@@ -41,6 +41,7 @@
       }
     },
     "snackbar": {
+      "errorActivation": "Sitemap nicht gespeichert, da {{hostname}} keine gültige URL ist",
       "successActivation": "Sitemap aktiviert",
       "successSubmitToGoogle": "Sitemap-Index übermittelt",
       "successFlushCache": "Sitemap-Cache geleert."

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'clsx';
-import {Check, Chip, Dropdown, Input, Typography} from '@jahia/moonstone';
+import {Check, Chip, Close, Dropdown, Input, Typography} from '@jahia/moonstone';
 
 import styles from './SitemapPanel.scss';
 
@@ -97,27 +97,34 @@ const SitemapPanelApp = ({client, t}) => {
             sitemapCacheDuration: ((sitemapCacheDuration) ? sitemapCacheDuration : dropdownData[0].value)
         },
         enableReinitialize: true,
-        // eslint-disable-next-line no-unused-vars
         onSubmit: values => {
+            // Validate hostname
+            let sitemapHostname;
+            try {
+                sitemapHostname = new URL(values.sitemapIndexURL).origin;
+                console.info(sitemapHostname + 'is set as base URL for sitemap');
+            } catch (_) {
+                // Unable to parse URL, show a snackbar error, then exit
+                setSnackbarInfo({message: t('labels.snackbar.errorActivation', {hostname: values.sitemapIndexURL}), error: true});
+                setSnackbarIsOpen(true);
+                return;
+            }
+
             if (!sitemapMixinEnabled) {
                 gqlMutate(client, gqlMutations.AddMixin, {
                     pathOrId: '/sites/' + currentState.site,
                     mixins: ['jseomix:sitemap']
                 });
                 setSitemapMixinEnabled(prevState => !prevState);
-                setSnackbarInfo(t('labels.snackbar.successActivation'));
+                setSnackbarInfo({message: t('labels.snackbar.successActivation'), error: false});
                 setSnackbarIsOpen(true);
             }
 
-            gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: '/sites/' + currentState.site,
-                propertyName: 'sitemapIndexURL',
-                propertyValue: formik.values.sitemapIndexURL
-            });
-            gqlMutate(client, gqlMutations.mutateProperty, {
-                pathOrId: '/sites/' + currentState.site,
-                propertyName: 'sitemapCacheDuration',
-                propertyValue: formik.values.sitemapCacheDuration
+            gqlMutate(client, gqlMutations.setSitemapProperties, {
+                sitePath: '/sites/' + currentState.site,
+                sitemapIndexURL: formik.values.sitemapIndexURL,
+                sitemapCacheDuration: formik.values.sitemapCacheDuration,
+                sitemapHostname: sitemapHostname
             });
             refetch();
         }
@@ -197,13 +204,14 @@ const SitemapPanelApp = ({client, t}) => {
                     </div>
                 </div>
                 <SnackbarComponent
+                    varia
                     isOpen={snackbarIsOpen}
                     autoHideDuration={2000}
                     message={
                         <div className={styles.snackbarMessageDiv}>
-                            <Check className={styles.snackbarMessageCheckIcon}/>
+                            {snackbarInfo && snackbarInfo.error ? <Close className={styles.snackbarErrorCheckIcon}/> : <Check className={styles.snackbarMessageCheckIcon}/>}
                             <Typography className={styles.snackbarMessageTypography} component="p">
-                                {snackbarInfo}
+                                {snackbarInfo && snackbarInfo.message}
                             </Typography>
                         </div>
                     }

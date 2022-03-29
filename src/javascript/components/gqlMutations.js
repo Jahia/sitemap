@@ -20,17 +20,23 @@ const RemoveMixin = gql`
     }
 `;
 
-const mutateProperty = gql`
-    mutation addProperty($pathOrId: String!, $propertyName: String!, $propertyValue: String!) {
+const setSitemapProperties = gql`
+    mutation setSitemapProperties($sitePath: String!, $sitemapIndexURL: String!, $sitemapHostname: String!, $sitemapCacheDuration: String!) {
         jcr {
-            mutateNode(pathOrId: $pathOrId) {
-                mutateProperty(name: $propertyName) {
-                    setValue(value: $propertyValue)
+            mutateNode(pathOrId: $sitePath) {
+                sitemapIndexURL: mutateProperty(name: "sitemapIndexURL") {
+                    setValue(value: $sitemapIndexURL)
+                }
+                sitemapHostname: mutateProperty(name: "sitemapHostname") {
+                    setValue(value: $sitemapHostname)
+                }
+                sitemapCacheDuration: mutateProperty(name: "sitemapCacheDuration") {
+                    setValue(value: $sitemapCacheDuration)
                 }
             }
         }
     }
 `;
 
-export {AddMixin, RemoveMixin, mutateProperty};
+export {AddMixin, RemoveMixin, setSitemapProperties};
 

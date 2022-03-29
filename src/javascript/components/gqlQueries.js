@@ -35,7 +35,6 @@ const GetSitemapUrl = gql`
         admin {
             sitemap {
               siteUrl(siteKey: $siteKey)
-              urlRewriteSeoRulesEnabled 
             }
         }
     }

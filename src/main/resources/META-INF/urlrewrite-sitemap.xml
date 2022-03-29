@@ -5,14 +5,8 @@
 
     <!-- Inbound rules -->
     <rule>
-        <condition type="attribute" name="jahiaSiteKeyForCurrentServerName" operator="notequal">^$</condition>
-        <from>^/(.*)/sitemap.xml$</from>
-        <to last="true">/cms/render/live/%{attribute:siteDefaultLanguage}/sites/%{attribute:jahiaSiteKeyForCurrentServerName}.sitemap.xml</to>
-    </rule>
-    <rule>
-        <condition type="attribute" name="jahiaSiteKeyForCurrentServerName">^$</condition>
-        <from>^/(.*)/sitemap.xml$</from>
-        <to>/$1.sitemap.xml</to>
+        <from>^.*/sitemap.xml$</from>
+        <to last="true">/cms/render/live/%{attribute:jahiaSitemapSiteLanguage}/sites/%{attribute:jahiaSitemapSiteKey}.sitemap.xml</to>
     </rule>
 
     <rule>
