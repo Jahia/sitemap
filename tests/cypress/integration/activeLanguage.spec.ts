@@ -30,19 +30,35 @@ describe('Testing sitemap only contains language', () => {
             expect(r.mixinTypes[0].name).to.equal('jseomix:sitemap')
             expect(r.name).to.equal(siteKey)
         })
+
+        // Flush the cache to force a refresh
+        deleteSitemapCache(siteKey)
+
+        // Wait until the sitemap contains some URLs
+        waitUntilRefresh(sitemapUrl, [], 150)
     })
 
     // Before removing the language, verify the sitemap does contain
-    // links with language filterLang
-    it(`Verify that the sitemap container pages with language: ${filterLang}`, function () {
+    // links with language corresponding to filterLang
+    it(`Verify that the sitemap contains pages with language: ${filterLang}`, function () {
         cy.task('parseSitemap', { url: sitemapUrl }).then((urls: Array<string>) => {
             cy.log(`Sitemap contains: ${urls.length} URLs in total`)
             expect(urls.length).to.be.greaterThan(0)
 
-            const filteredLang = urls.filter((u) => u.includes(filterPath))
-            cy.log(`Sitemap contains ${filteredLang.length} URLs with path: ${filterPath}`)
-            filteredUrlsforLang = filteredLang.length;
-            expect(filteredLang.length).to.be.greaterThan(0)
+            // If this suite is the first executed, it might happen that not all languages
+            // have been published by the time this test is executed. This will wait until the sitemap
+            // contains pages (at least 10) in the language we are testing
+            // This works in conjunction with the before step that will wait until 150 links are present
+            // The default for two languages is 118
+            const nonLangPages = urls.filter((u) => !u.includes(filterPath))
+            waitUntilRefresh(sitemapUrl, nonLangPages, 10)
+
+            cy.task('parseSitemap', { url: sitemapUrl }).then((urls: Array<string>) => {
+                const filteredLang = urls.filter((u) => u.includes(filterPath))
+                cy.log(`Sitemap contains ${filteredLang.length} URLs with path: ${filterPath}`)
+                filteredUrlsforLang = filteredLang.length;
+                expect(filteredLang.length).to.be.greaterThan(0)
+            })
         })
     })
 
@@ -96,8 +112,8 @@ describe('Testing sitemap only contains language', () => {
             // Flush cache
             deleteSitemapCache(siteKey)
 
-            // Wait until the sitemap is modified
-            waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+            // Wait until the sitemap contains at least 150 urls
+            waitUntilRefresh(sitemapUrl, [], 150)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
