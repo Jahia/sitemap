@@ -95,9 +95,6 @@ public final class Utils {
         // look for other languages
         List<SitemapEntry> linksInOtherLanguages = new ArrayList<>();
         for (Locale otherLocale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
-            if (otherLocale.equals(currentLocale)) {
-                continue;
-            }
             JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, otherLocale, sessionInOtherLocale -> {
                 if (!sessionInOtherLocale.nodeExists(node.getPath())) {
                     return null;
