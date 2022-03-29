@@ -41,7 +41,7 @@ export const SitemapPanelHeaderComponent = ({
         },
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
-            snackBarInfo(t('labels.snackbar.successFlushCache'));
+            snackBarInfo({message: t('labels.snackbar.successFlushCache')});
             openSnackBar(true);
             handleDialogClose();
         },
