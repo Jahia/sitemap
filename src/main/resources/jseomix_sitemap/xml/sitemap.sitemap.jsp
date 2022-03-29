@@ -40,10 +40,10 @@
         <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
         <c:forEach var="lang" items="${languages}">
                 <!-- Dedicated sitemap entries for language: ${lang} -->
-            <c:forEach var="node" items="${sitemap:getSitemapRoots(renderContext, lang.string)}">
+            <c:forEach var="nodePath" items="${sitemap:getSitemapRoots(renderContext, lang.string)}">
                 <sitemap>
-                    <c:set var="nodePath" value="${node.path}/"/>
-                    <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${node.path}/sitemap-lang.xml"
+                    <c:set var="nodePath" value="${nodePath}/"/>
+                    <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${nodePath}/sitemap-lang.xml"
                            var="resolvedLangUrl"/>
                     <loc>${serverUrl}${resolvedLangUrl}</loc>
                 </sitemap>

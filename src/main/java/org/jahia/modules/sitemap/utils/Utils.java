@@ -58,12 +58,12 @@ public final class Utils {
     private Utils() {
     }
 
-    public static Set<JCRNodeWrapper> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
-        Set<JCRNodeWrapper> results = new HashSet<>();
+    public static Set<String> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
+        Set<String> results = new HashSet<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
         // Add site node to results
         if (renderContext.getSite().getActiveLiveLanguages().contains(locale)) {
-            results.add(renderContext.getSite());
+            results.add(renderContext.getSite().getPath());
         }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, Locale.forLanguageTag(locale), session -> {
 
@@ -73,7 +73,7 @@ public final class Utils {
             while (ni.hasNext()) {
                 JCRNodeWrapper n = (JCRNodeWrapper) ni.nextNode();
                 if (isValidEntry(n, renderContext)) {
-                    results.add(n);
+                    results.add(n.getPath());
                 }
             }
             return null;
