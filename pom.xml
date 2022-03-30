@@ -20,8 +20,7 @@
     <properties>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
-        <jahia-module-signature>MCwCFCXSZqhuGpDgkMV4p6sNcCVUBpemAhRP+uORw3Y2tI77AUgUo83wFMQffg==
-        </jahia-module-signature>
+        <jahia-module-signature>MCwCFGsJQvbMhj2gwtqrrPJ848oHZ1WOAhQX0xBe1w67B74zB5ZHZmUzosz74g==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <jahia.modules.importPackage>!com.hazelcast.config,!com.hazelcast.core</jahia.modules.importPackage>
     </properties>
