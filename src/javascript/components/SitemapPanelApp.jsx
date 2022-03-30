@@ -100,10 +100,16 @@ const SitemapPanelApp = ({client, t}) => {
         onSubmit: values => {
             // Validate hostname
             let sitemapHostname;
+            let isValidHostname;
             try {
                 sitemapHostname = new URL(values.sitemapIndexURL).origin;
-                console.info(sitemapHostname + 'is set as base URL for sitemap');
+                console.info(sitemapHostname + 'will be set as base URL for sitemap');
+                isValidHostname = sitemapHostname && sitemapHostname !== "null"
             } catch (_) {
+                isValidHostname = false;
+            }
+
+            if (!isValidHostname) {
                 // Unable to parse URL, show a snackbar error, then exit
                 setSnackbarInfo({message: t('labels.snackbar.errorActivation', {hostname: values.sitemapIndexURL}), error: true});
                 setSnackbarIsOpen(true);
