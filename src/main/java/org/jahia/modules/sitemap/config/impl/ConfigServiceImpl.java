@@ -75,10 +75,4 @@ public class ConfigServiceImpl implements ConfigService {
         return new ArrayList<>(Arrays.asList(searchEnginesStr.split(",")));
     }
 
-    @Override
-    public List<String> getIncludeContentTypes() {
-        final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
-                EMPTY_STRING);
-        return new ArrayList<>(Arrays.asList(includedContentTypes.split(",")));
-    }
 }
