@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: jahia/jahia-modules-action/sonar-analysis@v1
         with:
-          primary_release_branch: master
+          primary_release_branch: 4_0_x
           github_pr_id: ${{github.event.number}}
           sonar_url: ${{ secrets.SONAR_URL }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
           testrail_project: Sitemap Module
           artifact_name: Integration-Tests-Standalone
           tests_manifest: provisioning-manifest-build.yml
-          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
+          jahia_image: jahia/jahia-ee:8.0.3.0
           should_use_build_artifacts: true
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -103,7 +103,7 @@ jobs:
           testrail_project: Sitemap Module
           artifact_name: Integration-Tests-Cluster
           tests_manifest: provisioning-manifest-build.yml
-          jahia_image: jahia/jahia-ee:8
+          jahia_image: jahia/jahia-ee:8.0.3.0
           jahia_cluster_enabled: true
           should_use_build_artifacts: true
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}

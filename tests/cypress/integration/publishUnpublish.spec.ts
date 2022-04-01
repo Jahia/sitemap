@@ -43,7 +43,6 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 pathOrId: homePagePath,
                 languages: languages,
                 publishSubNodes: true,
-                includeSubTree: true,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
@@ -93,7 +92,6 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     pathOrId: testPagePath,
                     languages: languages,
                     publishSubNodes: true,
-                    includeSubTree: true,
                 },
                 mutationFile: 'graphql/jcrPublishNode.graphql',
             })
@@ -184,7 +182,6 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                             pathOrId: testPagePath,
                             languages: languages,
                             publishSubNodes: true,
-                            includeSubTree: true,
                         },
                         mutationFile: 'graphql/jcrPublishNode.graphql',
                     })

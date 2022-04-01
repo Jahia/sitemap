@@ -35,7 +35,7 @@ describe('Testing sitemap only contains language', () => {
         deleteSitemapCache(siteKey)
 
         // Wait until the sitemap contains some URLs
-        waitUntilRefresh(sitemapUrl, [], 150)
+        waitUntilRefresh(sitemapUrl, [], 100)
     })
 
     // Before removing the language, verify the sitemap does contain
@@ -113,7 +113,7 @@ describe('Testing sitemap only contains language', () => {
             deleteSitemapCache(siteKey)
 
             // Wait until the sitemap contains at least 150 urls
-            waitUntilRefresh(sitemapUrl, [], 150)
+            waitUntilRefresh(sitemapUrl, [], 100)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {

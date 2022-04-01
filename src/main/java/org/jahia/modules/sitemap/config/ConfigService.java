@@ -32,5 +32,4 @@ import java.util.Map;
  */
 public interface ConfigService {
     List<String> getSearchEngines();
-    List<String> getIncludeContentTypes();
 }
