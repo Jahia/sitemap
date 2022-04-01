@@ -50,7 +50,6 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                 pathOrId: historyPagePath,
                 languages: languages,
                 publishSubNodes: false,
-                includeSubTree: false,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
@@ -88,7 +87,6 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                 pathOrId: historyPagePath,
                 languages: languages,
                 publishSubNodes: false,
-                includeSubTree: false,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
