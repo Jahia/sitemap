@@ -21,7 +21,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.GH_SSH_PRIVATE_KEY_JAHIACI }}
 
-      - uses: jahia/jahia-modules-action/release-rollback@v1
+      - uses: jahia/jahia-modules-action/release-rollback@v2
         name: Release Module
         with:
           release_id: ${{ github.event.release.id }}

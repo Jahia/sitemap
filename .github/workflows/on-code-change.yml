@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/update-signature@v1
+      - uses: jahia/jahia-modules-action/update-signature@v2
         with:
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: Jahia/jahia-modules-action/static-analysis@v1
+      - uses: Jahia/jahia-modules-action/static-analysis@v2
         with:
           node_version: 12
           auditci_level: critical
@@ -40,7 +40,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/build@v1
+      - uses: jahia/jahia-modules-action/build@v2
         with:
           module_id: sitemap
 
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/sonar-analysis@v1
+      - uses: jahia/jahia-modules-action/sonar-analysis@v2
         with:
           primary_release_branch: master
           github_pr_id: ${{github.event.number}}
@@ -63,16 +63,23 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 45
     steps:
-      - uses: jahia/jahia-modules-action/helper@v1
+      - uses: jahia/jahia-modules-action/helper@v2
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        with:
+          version: '1.29.2'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/integration-tests@v1
+      - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
           module_id: sitmap
           testrail_project: Sitemap Module
-          artifact_name: Integration-Tests-Standalone
           tests_manifest: provisioning-manifest-build.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           should_use_build_artifacts: true
+          should_skip_testrail: false
+          github_artifact_name: sitemap-standalone-artifacts-${{ github.run_number }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -95,17 +102,24 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 45
     steps:
-      - uses: jahia/jahia-modules-action/helper@v1
+      - uses: jahia/jahia-modules-action/helper@v2
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        with:
+          version: '1.29.2'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/integration-tests@v1
+      - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
           module_id: sitmap
           testrail_project: Sitemap Module
-          artifact_name: Integration-Tests-Cluster
           tests_manifest: provisioning-manifest-build.yml
           jahia_image: jahia/jahia-ee:8
           jahia_cluster_enabled: true
           should_use_build_artifacts: true
+          should_skip_testrail: false
+          github_artifact_name: sitemap-cluster-artifacts-${{ github.run_number }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -134,7 +148,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/publish@v1
+      - uses: jahia/jahia-modules-action/publish@v2
         with:
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}

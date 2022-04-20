@@ -14,19 +14,26 @@ jobs:
         jahia_image: ["jahia/jahia-ee:8", "jahia/jahia-ee-dev:8-SNAPSHOT"]
     timeout-minutes: 45
     steps:
-      - uses: jahia/jahia-modules-action/helper@v1
+      - uses: jahia/jahia-modules-action/helper@v2
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        with:
+          version: '1.29.2'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/integration-tests@v1
+      - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
           module_id: sitemap
           testrail_project: Sitemap Module
-          artifact_name: Integration-Tests-Standalone
           tests_manifest: provisioning-manifest-snapshot.yml
           should_use_build_artifacts: false
           should_skip_artifacts: true
           should_skip_notifications: true
           should_skip_testrail: false
           should_skip_zencrepes: true
+          github_artifact_name: sitemap-standalone-artifacts-${{ github.run_number }}
+          bastion_ssh_private_key: ${{ secrets.BASTION_SSH_PRIVATE_KEY_JAHIACI }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -48,13 +55,18 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 45
     steps:
-      - uses: jahia/jahia-modules-action/helper@v1
+      - uses: jahia/jahia-modules-action/helper@v2
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        with:
+          version: '1.29.2'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 'lts/*'
       - uses: actions/checkout@v2
-      - uses: jahia/jahia-modules-action/integration-tests@v1
+      - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
           module_id: sitemap
           testrail_project: Sitemap Module
-          artifact_name: Integration-Tests-Cluster
           tests_manifest: provisioning-manifest-snapshot.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           jahia_cluster_enabled: true
@@ -63,6 +75,8 @@ jobs:
           should_skip_notifications: true
           should_skip_testrail: false
           should_skip_zencrepes: true
+          github_artifact_name: sitemap-cluster-artifacts-${{ github.run_number }}
+          bastion_ssh_private_key: ${{ secrets.BASTION_SSH_PRIVATE_KEY_JAHIACI }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
