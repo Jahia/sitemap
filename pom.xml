@@ -22,6 +22,7 @@
         </require-capability>
         <jahia-module-signature>MCwCFGsJQvbMhj2gwtqrrPJ848oHZ1WOAhQX0xBe1w67B74zB5ZHZmUzosz74g==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
+        <export-package>org.jahia.modules.sitemap.utils</export-package>
         <jahia.modules.importPackage>!com.hazelcast.config,!com.hazelcast.core</jahia.modules.importPackage>
     </properties>
 
