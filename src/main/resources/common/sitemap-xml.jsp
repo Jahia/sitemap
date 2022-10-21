@@ -48,11 +48,13 @@
                 <!-- node type: ${sitemapEntryNode.primaryNodeTypeName} -->
                 <!-- node uuid: ${sitemapEntryNode.identifier} -->
             </c:if>
-            <loc>${serverUrl}<c:url context="/" value="${sitemapEntry.link}"/></loc>
+            <c:url context="/" value="${sitemapEntry.link}" var="link"/>
+            <loc>${serverUrl}${sitemap:encodeSitemapLink(link, true)}</loc>
             <lastmod>${sitemapEntry.lastMod}</lastmod>
             <c:forEach items="${sitemapEntry.linksInOtherLanguages}" var="link">
+                <c:url value="${link.link}" context="/" var="langLink"/>
                 <xhtml:link rel="alternate" hreflang="${link.locale}"
-                            href="${serverUrl}<c:url value="${link.link}" context="/"/>"/>
+                            href="${serverUrl}${sitemap:encodeSitemapLink(langLink, true)}"/>
             </c:forEach>
         </url>
     </c:forEach>
