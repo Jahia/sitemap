@@ -1,0 +1,9 @@
+mutation ($pathOrId: String!, $vanityUrls: [InputVanityUrl] = []) {
+    jcr(workspace: EDIT) {
+        mutateNode(pathOrId: $pathOrId) {
+            addVanityUrl(vanityUrlInputList: $vanityUrls){
+                uuid
+            }
+        }
+    }
+}
