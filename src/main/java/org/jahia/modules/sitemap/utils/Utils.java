@@ -46,6 +46,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,12 +63,12 @@ public final class Utils {
     private Utils() {
     }
 
-    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst) throws URIException {
+    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst) throws URIException, UnsupportedEncodingException {
         String encodedURIPath = URIPath;
         if (shouldBeDecodedFirst) {
             // example: /cms/render/live/fr/sites/digitall/home/test-parent/test2%3c%c3%bc.html
             // First we decode it, since the node.getUrl(); is encoding the path using JackRabbit Text.escapePath();
-            encodedURIPath = URIUtil.decode(URIPath, "UTF-8");
+            encodedURIPath = URLDecoder.decode(encodedURIPath, "UTF-8");
         }
 
         // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2<ü.html

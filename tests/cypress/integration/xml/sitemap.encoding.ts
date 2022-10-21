@@ -65,15 +65,15 @@ describe('Check sitemap links are encoded correctly', () => {
         createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page\'ü', false)
         // create pages with vanity for encoding test: vanities
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü');
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity<ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü');
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity&ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity&ü', 'actual-vanity&');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity&ü', 'actual-vanity&ü');
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity"ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü');
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity\'ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity\'ü', 'actual-vanity\'');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity\'ü', 'actual-vanity\'ü');
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
@@ -112,11 +112,11 @@ describe('Check sitemap links are encoded correctly', () => {
 
     it('Check encoding for sitemap pages with vanities', () => {
         const names = [
-            '/actual-vanity&gt;',
-            '/actual-vanity&lt;',
-            '/actual-vanity&amp;',
-            '/actual-vanity&apos;',
-            '/actual-vanity&quot;',
+            '/actual-vanity&gt;%C3%BC',
+            '/actual-vanity&lt;%C3%BC',
+            '/actual-vanity&amp;%C3%BC',
+            '/actual-vanity&apos;%C3%BC',
+            '/actual-vanity&quot;%C3%BC',
         ]
 
         deleteSitemapCache(siteKey)
