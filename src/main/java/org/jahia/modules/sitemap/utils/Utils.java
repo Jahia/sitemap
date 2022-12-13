@@ -39,6 +39,7 @@ import org.jahia.services.seo.urlrewrite.ServerNameToSiteMapper;
 import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.settings.SettingsBean;
+import org.jahia.utils.LanguageCodeConverters;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -71,16 +72,16 @@ public final class Utils {
             encodedURIPath = URLDecoder.decode(encodedURIPath, "UTF-8");
         }
 
-        // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2<ü.html
+        // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2<Ã¼.html
         // Now we need first to escape XML entities to follow google recommendations -> XML 1.0 is used here
         encodedURIPath = StringEscapeUtils.escapeXml10(encodedURIPath);
 
-        // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;ü.html
+        // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;Ã¼.html
         // Now we just need to re encode into UTF-8
         encodedURIPath = URIUtil.encodePath(encodedURIPath, "UTF-8");
 
         // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;%c3%bc.html
-        // we have correctly encoded XML entity: (> into &lt;) and correctly encoded character: (ü into %c3%bc)
+        // we have correctly encoded XML entity: (> into &lt;) and correctly encoded character: (Ã¼ into %c3%bc)
         return encodedURIPath;
     }
 
@@ -91,7 +92,7 @@ public final class Utils {
         if (renderContext.getSite().getActiveLiveLanguages().contains(locale)) {
             results.add(renderContext.getSite().getPath());
         }
-        JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, Locale.forLanguageTag(locale), session -> {
+        JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, LanguageCodeConverters.languageCodeToLocale(locale), session -> {
 
             String query = String.format("SELECT * FROM [jseomix:sitemapResource] as sel WHERE ISDESCENDANTNODE(sel, '%s')", renderContext.getSite().getPath());
             QueryResult queryResult = getQuery(session, query);
