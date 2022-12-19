@@ -9,7 +9,6 @@ const searchResultsPagePath = homePagePath + '/' + searchResultsPageName
 const sitemapRootPath = sitePath + '/sitemap.xml'
 const dedicatedSitemapMixin = 'jseomix:sitemapResource'
 const siteMapRootUrl = Cypress.config().baseUrl + sitePath
-const langEn = 'en'
 
 describe('Check sitemap.xml root file on digitall', () => {
     beforeEach('Configure sitemap for the test', () => {

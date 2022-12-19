@@ -7,7 +7,7 @@ const parseSitemap = (sitemapUrl: string) => {
         })
         return sitemapper
             .fetch(sitemapUrl)
-            .then(({ url, sites }) => {
+            .then(({ sites }) => {
                 console.log(`Fetched sitemap from: ${sitemapUrl} - Contains: ${sites.length} URLs`)
                 resolve(sites)
             })

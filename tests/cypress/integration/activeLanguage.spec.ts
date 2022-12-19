@@ -23,7 +23,7 @@ describe('Testing sitemap only contains language', () => {
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response: any) => {
+        }).should((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null

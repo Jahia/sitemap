@@ -7,7 +7,7 @@ export const removeSitemapConfiguration = (sitePath: string) => {
             propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
         },
         queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-    }).then((response: any) => {
+    }).then((response) => {
         const r = response?.data?.jcr?.nodeByPath
         cy.log(JSON.stringify(r))
 
@@ -67,7 +67,7 @@ export const removeSitemapConfiguration = (sitePath: string) => {
             propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
         },
         queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-    }).should((response: any) => {
+    }).should((response) => {
         const r = response?.data?.jcr?.nodeByPath
         cy.log(JSON.stringify(r))
         expect(r.mixinTypes.filter((m) => m.name === 'jseomix:sitemap')).to.be.empty

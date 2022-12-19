@@ -32,5 +32,6 @@ export const publishAndWaitJobEnding = (path: string) => {
         },
     )
     // Wait 2 seconds for server sync after publication
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
 }
