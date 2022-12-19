@@ -2,9 +2,9 @@ export const publishAndWaitJobEnding = (path: string) => {
     cy.apollo({
         variables: {
             pathOrId: path,
-            languages: ["en"],
+            languages: ['en'],
             publishSubNodes: true,
-            includeSubTree: true
+            includeSubTree: true,
         },
         mutationFile: 'graphql/jcrPublishNode.graphql',
     })

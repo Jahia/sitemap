@@ -150,10 +150,12 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     cy.log(`The updated sitemap contains ${newSitemapUrls.length} URLs`)
                     const removedUrl = originalSitemapUrls.filter((x) => !newSitemapUrls.includes(x))
 
-                    cy.log(`The following URLs have been removed in the updated sitemap: ${JSON.stringify(removedUrl)}`).then(() => {
+                    cy.log(
+                        `The following URLs have been removed in the updated sitemap: ${JSON.stringify(removedUrl)}`,
+                    ).then(() => {
                         // In that case, the url does not contain the language in the URL
                         expect(removedUrl.length).to.equal(1)
-                    })                    
+                    })
 
                     if (lang === defaultLanguage) {
                         // Find the default language URL by substracting the other languages from the original sitemap

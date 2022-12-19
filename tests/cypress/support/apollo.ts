@@ -54,7 +54,7 @@ export const apolloClient = (authMethod?: authMethod, baseUrl?: string): ApolloC
     // cy.log(`HTTP Headers ${JSON.stringify(authHeaders)}`)
     return new ApolloClient({
         cache: new InMemoryCache(),
-        link: from([(authLink as unknown) as ApolloLink, errorLink, httpLink]),
+        link: from([authLink as unknown as ApolloLink, errorLink, httpLink]),
         defaultOptions: {
             query: {
                 errorPolicy: 'ignore',

@@ -1,11 +1,11 @@
-import {configureSitemap} from "../../utils/configureSitemap";
-import {removeSitemapConfiguration} from "../../utils/removeSitemapConfiguration";
-import {publishAndWaitJobEnding} from "../../utils/publishAndWaitJobEnding";
-import {deleteSitemapCache} from "../../utils/deleteSitemapCache";
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
+import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
 
-const siteKey = 'digitall';
-const sitePath = '/sites/' + siteKey;
-const homePath = sitePath + '/home';
+const siteKey = 'digitall'
+const sitePath = '/sites/' + siteKey
+const homePath = sitePath + '/home'
 
 const createPage = (parent, name, dedicatedSiteMap = undefined) => {
     cy.apollo({
@@ -16,28 +16,30 @@ const createPage = (parent, name, dedicatedSiteMap = undefined) => {
             language: 'en',
         },
         mutationFile: 'graphql/jcrAddPage.graphql',
-    });
+    })
     if (dedicatedSiteMap) {
         cy.apollo({
             variables: {
                 pathOrId: parent + '/' + name,
-                mixinsToAdd: 'jseomix:sitemapResource'
+                mixinsToAdd: 'jseomix:sitemapResource',
             },
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
     }
-};
+}
 
 const addVanityUrl = (path, vanity) => {
     cy.apollo({
         variables: {
             pathOrId: path,
-            vanityUrls: [{
-                active: true,
-                defaultMapping: true,
-                language: 'en',
-                url: vanity
-            }]
+            vanityUrls: [
+                {
+                    active: true,
+                    defaultMapping: true,
+                    language: 'en',
+                    url: vanity,
+                },
+            ],
         },
         mutationFile: 'graphql/addVanityUrl.graphql',
     })
@@ -46,7 +48,7 @@ const addVanityUrl = (path, vanity) => {
 describe('Check sitemap links are encoded correctly', () => {
     before('Configure sitemap for the tests', () => {
         // create pages
-        createPage(homePath, 'encoding-sitemap-test');
+        createPage(homePath, 'encoding-sitemap-test')
         createPage(homePath + '/encoding-sitemap-test', 'sitemap-roots')
         createPage(homePath + '/encoding-sitemap-test', 'sitemap-pages')
         createPage(homePath + '/encoding-sitemap-test', 'sitemap-vanities')
@@ -56,24 +58,24 @@ describe('Check sitemap links are encoded correctly', () => {
         createPage(homePath + '/encoding-sitemap-test/sitemap-roots', 'root<ü', true)
         createPage(homePath + '/encoding-sitemap-test/sitemap-roots', 'root&ü', true)
         createPage(homePath + '/encoding-sitemap-test/sitemap-roots', 'root"ü', true)
-        createPage(homePath + '/encoding-sitemap-test/sitemap-roots', 'root\'ü', true)
+        createPage(homePath + '/encoding-sitemap-test/sitemap-roots', "root'ü", true)
         // create pages for encoding test: pages
         createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page>ü', false)
         createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page<ü', false)
         createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page&ü', false)
         createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page"ü', false)
-        createPage(homePath + '/encoding-sitemap-test/sitemap-pages', 'page\'ü', false)
+        createPage(homePath + '/encoding-sitemap-test/sitemap-pages', "page'ü", false)
         // create pages with vanity for encoding test: vanities
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity<ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity&ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity&ü', 'actual-vanity&ü');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity&ü', 'actual-vanity&ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity"ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü');
-        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity\'ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity\'ü', 'actual-vanity\'ü');
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü')
+        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', "vanity'ü", false)
+        addVanityUrl(homePath + "/encoding-sitemap-test/sitemap-vanities/vanity'ü", "actual-vanity'ü")
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
@@ -83,7 +85,7 @@ describe('Check sitemap links are encoded correctly', () => {
     after('Remove sitemap configuration via GraphQL', () => {
         cy.apollo({
             variables: {
-                pathOrId: homePath + '/encoding-sitemap-test'
+                pathOrId: homePath + '/encoding-sitemap-test',
             },
             mutationFile: 'graphql/jcrDeleteNode.graphql',
         })
@@ -102,12 +104,11 @@ describe('Check sitemap links are encoded correctly', () => {
 
         deleteSitemapCache(siteKey)
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
-
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
                 expect(response.body).to.contains(name + '"/>') // alternate link
             }
-        });
+        })
     })
 
     it('Check encoding for sitemap pages with vanities', () => {
@@ -121,12 +122,11 @@ describe('Check sitemap links are encoded correctly', () => {
 
         deleteSitemapCache(siteKey)
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
-
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
                 expect(response.body).to.contains(name + '"/>') // alternate link
             }
-        });
+        })
     })
 
     it('Check encoding for sitemap roots', () => {
@@ -143,6 +143,6 @@ describe('Check sitemap links are encoded correctly', () => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '/sitemap-lang.xml</loc>')
             }
-        });
+        })
     })
 })
