@@ -1,6 +1,6 @@
-export const deleteSitemapCache = (siteKey: string) => {
+export const deleteSitemapCache = (siteKey: string): void => {
     cy.log(`Delete sitemap cache for siteKey: ${siteKey}`)
-    return cy.apollo({
+    cy.apollo({
         variables: {
             siteKey: siteKey,
         },

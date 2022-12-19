@@ -1,4 +1,4 @@
-export const publishAndWaitJobEnding = (path: string) => {
+export const publishAndWaitJobEnding = (path: string): void => {
     cy.apollo({
         variables: {
             pathOrId: path,

@@ -1,4 +1,4 @@
-export const removeSitemapConfiguration = (sitePath: string) => {
+export const removeSitemapConfiguration = (sitePath: string): void => {
     cy.log(`Removing sitemap configuration: Verifying if a configuration is present for ${sitePath}`)
     cy.apollo({
         variables: {
