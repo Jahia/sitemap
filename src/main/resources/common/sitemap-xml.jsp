@@ -53,7 +53,8 @@
             <lastmod>${sitemapEntry.lastMod}</lastmod>
             <c:forEach items="${sitemapEntry.linksInOtherLanguages}" var="link">
                 <c:url value="${link.link}" context="/" var="langLink"/>
-                <xhtml:link rel="alternate" hreflang="${link.locale}"
+                <c:set var="hreflangValue" value="${fn:replace(link.locale, \"_\", \"-\")}"/>
+                <xhtml:link rel="alternate" hreflang="${hreflangValue}"
                             href="${serverUrl}${sitemap:encodeSitemapLink(langLink, true)}"/>
             </c:forEach>
         </url>
