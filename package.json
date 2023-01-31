@@ -43,7 +43,7 @@
     "@material-ui/lab": "^3.0.0-alpha.16 ",
     "classnames": "^2.2.5",
     "clsx": "^1.1.0",
-    "formik": "^2.2.6",
+    "formik": "^2.2.9",
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
     "i18next": "^19.0.3",
