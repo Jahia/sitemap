@@ -7,9 +7,13 @@ updates:
       interval: "daily"
     allow:
       - dependency-type: "production"
+    # Prevent dependabot from opening PRs
+    open-pull-requests-limit: 0      
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
+    # Prevent dependabot from opening PRs
+    open-pull-requests-limit: 0      
     allow:
       - dependency-type: "production"
