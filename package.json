@@ -46,7 +46,7 @@
     "formik": "^2.2.6",
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
-    "i18next": "^19.0.3",
+    "i18next": "^22.4.9",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-apollo": "^3.1.3",
