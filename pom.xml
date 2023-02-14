@@ -20,6 +20,7 @@
     <properties>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
+        <jahia-depends>site-settings-seo=[3.0,99],graphql-dxm-provider</jahia-depends>
         <jahia-module-signature>MCwCFHNKhiN5m9lI/J+5y3m/tK+4ZEe1AhQ7Y1KtEGwKEKxpYXigF9J3E0pBmQ==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
@@ -105,7 +106,6 @@
                 <configuration>
                     <instructions>
                         <_dsannotations>*</_dsannotations>
-                        <Jahia-Depends>site-settings-seo=[3.0.0,99]</Jahia-Depends>
                         <DynamicImport-Package>com.hazelcast.config;version="[3.7,4)",com.hazelcast.core;version="[3.7,4)"</DynamicImport-Package>
                     </instructions>
                 </configuration>
