@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - uses: actions/checkout@v3
-      - uses: jahia/jahia-modules-action/integration-tests@v2
+      - uses: jahia/jahia-modules-action/integration-tests@add-shutdown
         with:
           module_id: sitemap
           testrail_project: Sitemap Module
