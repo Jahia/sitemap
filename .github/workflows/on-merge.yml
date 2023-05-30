@@ -6,7 +6,7 @@ name: On merge to 4_2_x
 on:
   push:
     branches:
-      - 'master'
+      - '4_2_x'
     tags-ignore:
       - '**'
 
