@@ -7,7 +7,7 @@
         <version>8.1.0.0</version>
     </parent>
     <artifactId>sitemap</artifactId>
-    <version>4.2.0</version>
+    <version>4.2.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Sitemap</name>
     <description>These are the custom module (Jahia Sitemap) for running on a Jahia server.</description>
