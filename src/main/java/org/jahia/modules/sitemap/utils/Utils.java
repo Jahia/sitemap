@@ -118,7 +118,9 @@ public final class Utils {
         // look for other languages
         List<SitemapEntry> linksInOtherLanguages = new ArrayList<>();
         for (Locale otherLocale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
-            JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, otherLocale, sessionInOtherLocale -> {
+            // The "main" node existing, we use doExecuteWithSystemSessionAsUser to retrieve the I18n nodes to prevent map explosion (cf https://jira.jahia.org/browse/QA-14850 )
+            // The "main" node being restrieved by a guest session, we have no security issue when retrieving i18ns nodes with system session
+            JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(guestUser, Constants.LIVE_WORKSPACE, otherLocale, sessionInOtherLocale -> {
                 if (!sessionInOtherLocale.nodeExists(node.getPath())) {
                     return null;
                 }
