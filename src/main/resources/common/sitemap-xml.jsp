@@ -31,7 +31,7 @@
         </c:otherwise>
     </c:choose>
     <c:forEach var="sitemapEntry"
-               items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
+               items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page'], renderContext.mainResourceLocale)}">
         <url>
             <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
                 <jcr:node var="sitemapEntryNode" path="${sitemapEntry.path}"/>
