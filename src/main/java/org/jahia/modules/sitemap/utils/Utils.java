@@ -34,17 +34,22 @@ import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.query.ScrollableQuery;
+import org.jahia.services.query.ScrollableQueryCallback;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.seo.urlrewrite.ServerNameToSiteMapper;
 import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.jcr.query.RowIterator;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -57,6 +62,8 @@ import java.util.stream.Collectors;
  * Utility helper class for Sitemap
  */
 public final class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
@@ -123,17 +130,38 @@ public final class Utils {
             }
             // look for sub nodes
             for (String nodeType : nodeTypes) {
-                String query = String.format("SELECT * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
-                QueryResult queryResult = getQuery(session, query);
-                for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
-                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
-                    if (node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
-                        excludedPath.add(node.getPath());
-                    } else if (isValidEntry(node, renderContext)) {
-                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
-                    }
+                String queryFrom = String.format("FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+                long itemsCount = session.getWorkspace().getQueryManager().createQuery("Select count as [rep:count()] " + queryFrom, Query.JCR_SQL2).execute().getRows().nextRow().getValue("count").getLong();
+                new ScrollableQuery(500, session.getWorkspace().getQueryManager()
+                        .createQuery("select * " + queryFrom, Query.JCR_SQL2)).execute(
+                        new ScrollableQueryCallback<ScrollableQuery>() {
+                            int rowCount = 0;
+                            @Override
+                            public boolean scroll() throws RepositoryException {
+                                for (RowIterator iter = stepResult.getRows(); iter.hasNext(); ) {
+                                    rowCount++;
+                                    JCRNodeWrapper node = null;
+                                    try {
+                                        node = (JCRNodeWrapper) iter.nextRow().getNode();
+                                    } catch (Throwable e) {
+                                        // Ignore error (node missing in language)
+                                    }
+                                    if (node != null && node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
+                                        excludedPath.add(node.getPath());
+                                    } else if (node != null && isValidEntry(node, renderContext)) {
+                                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
+                                    }
+                                }
+                                logger.info("{} items parsed from sitemap query out of {}",rowCount, itemsCount);
+                                return true;
+                            }
 
-                }
+                            @Override
+                            protected ScrollableQuery getResult() {
+                                return null;
+                            }
+                        }
+                );
             }
             return null;
         });
