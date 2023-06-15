@@ -34,12 +34,16 @@ import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.query.ScrollableQuery;
+import org.jahia.services.query.ScrollableQueryCallback;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.seo.urlrewrite.ServerNameToSiteMapper;
 import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -57,6 +61,8 @@ import java.util.stream.Collectors;
  * Utility helper class for Sitemap
  */
 public final class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
@@ -117,24 +123,38 @@ public final class Utils {
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             // add root node into results
+            logger.info("Sitemap build started for node {}", rootPath);
             JCRNodeWrapper rootNode = session.getNode(rootPath);
             if (isValidEntry(rootNode, renderContext)) {
                 result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
             }
             // look for sub nodes
             for (String nodeType : nodeTypes) {
-                String query = String.format("SELECT * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
-                QueryResult queryResult = getQuery(session, query);
-                for (NodeIterator iter = queryResult.getNodes(); iter.hasNext(); ) {
-                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
-                    if (node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
-                        excludedPath.add(node.getPath());
-                    } else if (isValidEntry(node, renderContext)) {
-                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
-                    }
+                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+                new ScrollableQuery(500, session.getWorkspace().getQueryManager()
+                        .createQuery(queryFrom, Query.JCR_SQL2)).execute(
+                        new ScrollableQueryCallback<ScrollableQuery>() {
+                            @Override
+                            public boolean scroll() throws RepositoryException {
+                                for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
+                                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
+                                    if (node != null && node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
+                                        excludedPath.add(node.getPath());
+                                    } else if (node != null && isValidEntry(node, renderContext)) {
+                                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
+                                    }
+                                }
+                                return true;
+                            }
 
-                }
+                            @Override
+                            protected ScrollableQuery getResult() {
+                                return null;
+                            }
+                        }
+                );
             }
+            logger.info("Sitemap build ended for node {} ({} entries added)", rootPath, result.size());
             return null;
         });
         // Filter out excluded path
