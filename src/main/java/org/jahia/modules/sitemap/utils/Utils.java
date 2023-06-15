@@ -51,7 +51,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.RowIterator;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -131,6 +130,7 @@ public final class Utils {
         }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             // add root node into results
+            logger.info("Sitemap build started for node {}", rootPath);
             JCRNodeWrapper rootNode = session.getNode(rootPath);
             if (isValidEntry(rootNode, renderContext)) {
                 result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
