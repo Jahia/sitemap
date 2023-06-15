@@ -11,14 +11,18 @@ public class SitemapEntry {
     final private String link;
     final private String lastMod;
     final private Locale locale;
+    final private String primaryNodetype;
+    final private String identifier;
     final private List<SitemapEntry> linksInOtherLanguages;
 
-    public SitemapEntry(String path, String link, String lastMod, Locale locale, List<SitemapEntry> linksInOtherLanguages) {
+    public SitemapEntry(String path, String link, String lastMod, Locale locale, List<SitemapEntry> linksInOtherLanguages, String primaryNodetype, String identifier) {
         this.path = path;
         this.link = link;
         this.lastMod = lastMod;
         this.locale = locale;
         this.linksInOtherLanguages = linksInOtherLanguages;
+        this.primaryNodetype = primaryNodetype;
+        this.identifier = identifier;
     }
 
     public String getPath() {
@@ -39,5 +43,13 @@ public class SitemapEntry {
 
     public List<SitemapEntry> getLinksInOtherLanguages() {
         return linksInOtherLanguages;
+    }
+
+    public String getPrimaryNodetype() {
+        return primaryNodetype;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 }

@@ -30,9 +30,9 @@
     "dialog": {
         "buttonCancel": "cancel",
         "flushCache": {
-          "title": "Flush sitemap cache",
-          "description": "If you recently published a lot of changes on your site, you may want to manually flush the sitemap cache.",
-          "buttonFlushCacheText": "flush cache"
+          "title": "Generate sitemap",
+          "description": "If you recently published a lot of changes on your site, you may want to manually generate a new sitemap file.",
+          "buttonFlushCacheText": "Generate sitemap"
         },
         "submitToGoogle": {
           "title": "Submit to search engines",
@@ -44,7 +44,7 @@
       "errorActivation": "Sitemap not saved as {{hostname}} is not a valid url",
       "successActivation": "Sitemap activated",
       "successSubmitToGoogle": "Sitemap-index submitted",
-      "successFlushCache": "Sitemap cache flushed."
+      "successFlushCache": "Sitemap generation started."
     }
   }
 }

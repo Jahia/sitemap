@@ -34,6 +34,16 @@
 [jnt:sitemap] > jnt:content, jmix:siteComponent, jmix:hiddenType
  - base (weakreference)
 
+[jnt:sitemapSettings] > nt:base
+ + sitemapCache (jnt:sitemapRootCacheEntries)
+
+[jnt:sitemapRootCacheEntries] > nt:base
+ + * (jnt:sitemapEntry)
+
+[jnt:sitemapEntry] > nt:base
+ - siteKey (string) indexed=no hidden
+ - sitemap (string) indexed=no hidden
+
 // Deprecated use mixin instead
 [jseont:sitemap] > nt:base
  + * (jnt:file)

@@ -42,7 +42,7 @@
                 <!-- Dedicated sitemap entries for language: ${lang} -->
             <c:forEach var="nodePath" items="${sitemap:getSitemapRoots(renderContext, lang.string)}">
                 <sitemap>
-                    <c:set value="${renderContext.request.contextPath}/cms/render/live/${lang}${nodePath}/sitemap-lang.xml"
+                    <c:set value="/cms/render/live/${lang}${nodePath}/sitemap-lang.xml"
                            var="resolvedLangUrl"/>
                     <loc>${serverUrl}${sitemap:encodeSitemapLink(resolvedLangUrl, false)}</loc>
                 </sitemap>
