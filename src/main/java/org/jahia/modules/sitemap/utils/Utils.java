@@ -49,7 +49,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.RowIterator;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -124,35 +123,27 @@ public final class Utils {
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             // add root node into results
+            logger.info("Sitemap build started for node {}", rootPath);
             JCRNodeWrapper rootNode = session.getNode(rootPath);
             if (isValidEntry(rootNode, renderContext)) {
                 result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
             }
             // look for sub nodes
             for (String nodeType : nodeTypes) {
-                String queryFrom = String.format("FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
-                long itemsCount = session.getWorkspace().getQueryManager().createQuery("Select count as [rep:count()] " + queryFrom, Query.JCR_SQL2).execute().getRows().nextRow().getValue("count").getLong();
+                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
                 new ScrollableQuery(500, session.getWorkspace().getQueryManager()
-                        .createQuery("select * " + queryFrom, Query.JCR_SQL2)).execute(
+                        .createQuery(queryFrom, Query.JCR_SQL2)).execute(
                         new ScrollableQueryCallback<ScrollableQuery>() {
-                            int rowCount = 0;
                             @Override
                             public boolean scroll() throws RepositoryException {
-                                for (RowIterator iter = stepResult.getRows(); iter.hasNext(); ) {
-                                    rowCount++;
-                                    JCRNodeWrapper node = null;
-                                    try {
-                                        node = (JCRNodeWrapper) iter.nextRow().getNode();
-                                    } catch (Throwable e) {
-                                        // Ignore error (node missing in language)
-                                    }
+                                for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
+                                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
                                     if (node != null && node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
                                         excludedPath.add(node.getPath());
                                     } else if (node != null && isValidEntry(node, renderContext)) {
                                         result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
                                     }
                                 }
-                                logger.info("{} items parsed from sitemap query out of {}",rowCount, itemsCount);
                                 return true;
                             }
 
@@ -163,6 +154,7 @@ public final class Utils {
                         }
                 );
             }
+            logger.info("Sitemap build ended for node {} ({} entries added)", rootPath, result.size());
             return null;
         });
         // Filter out excluded path
