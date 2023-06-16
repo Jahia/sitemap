@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import {waitUntilRefresh} from '../../utils/waitUntilRefresh'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -14,13 +14,13 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
     it(`Apply sitemap configuration for site ${sitePath}`, function () {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
-                propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
+                propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration', 'sitemapHostname'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
         }).should((response) => {

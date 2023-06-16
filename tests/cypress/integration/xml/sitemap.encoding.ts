@@ -1,7 +1,7 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {publishAndWaitJobEnding} from '../../utils/publishAndWaitJobEnding'
+import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -71,7 +71,7 @@ describe('Check sitemap links are encoded correctly', () => {
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
-        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath)
+        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath, Cypress.config().baseUrl)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {

@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../utils/waitUntilRefresh'
-import { configureSitemap } from '../utils/configureSitemap'
-import { deleteSitemapCache } from '../utils/deleteSitemapCache'
+import {waitUntilRefresh} from '../utils/waitUntilRefresh'
+import {configureSitemap} from '../utils/configureSitemap'
+import {deleteSitemapCache} from '../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -14,7 +14,7 @@ const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         // Creates the test page with content in all 3 languages
         cy.apollo({

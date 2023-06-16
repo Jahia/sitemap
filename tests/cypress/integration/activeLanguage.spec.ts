@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../utils/waitUntilRefresh'
-import { configureSitemap } from '../utils/configureSitemap'
-import { deleteSitemapCache } from '../utils/deleteSitemapCache'
+import {waitUntilRefresh} from '../utils/waitUntilRefresh'
+import {configureSitemap} from '../utils/configureSitemap'
+import {deleteSitemapCache} from '../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -13,7 +13,7 @@ const filterPath = `/${filterLang}${sitePath}/`
 describe('Testing sitemap only contains language', () => {
     let filteredUrlsforLang = 0
     before('Configure sitemap', () => {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         cy.log(`Verify sitemap is configured properly for site: ${sitePath}`)
         cy.apollo({

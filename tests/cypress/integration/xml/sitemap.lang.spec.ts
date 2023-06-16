@@ -1,6 +1,6 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -18,7 +18,7 @@ const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap-lang.xml file on digitall', () => {
     beforeEach('Configure sitemap for the test', () => {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
     })
 
     afterEach('Remove sitemap configuration via GraphQL', () => {

@@ -1,5 +1,5 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -12,7 +12,7 @@ const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap.xml root file on digitall', () => {
     beforeEach('Configure sitemap for the test', () => {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
     })
 
     afterEach('Cleanup test data', () => {
