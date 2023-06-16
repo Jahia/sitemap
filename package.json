@@ -17,7 +17,8 @@
     "lint:scss": "stylelint './src/**/*.scss' --allow-empty-input",
     "lint:scss:fix": "yarn lint:scss --fix",
     "lint": "yarn lint:js && yarn lint:scss",
-    "lint:fix": "yarn lint:js:fix && yarn lint:scss:fix"
+    "lint:fix": "yarn lint:js:fix && yarn lint:scss:fix",
+    "sync-pom": "sync-pom-version --use-yarn"
   },
   "description": "Sitemap for Jahia",
   "main": "index.js",
@@ -98,6 +99,7 @@
     "sass-loader": "^8.0.2",
     "style-loader": "^0.23.1",
     "stylelint": "^13.2.0",
+    "sync-pom-version-to-package": "^1.6.1",
     "trim-newlines": "^3.0.1",
     "webpack": "^5.10.0",
     "webpack-bundle-analyzer": "^4.5.0",
