@@ -68,7 +68,8 @@ public class SitemapCreationJob extends BackgroundJob {
                 // trim context from hostname
                 hostName = StringUtils.substringBeforeLast(hostName, serverUrl.getPath());
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                logger.warn("{} is not a valid url for site {} , update your settings , Sitemap generation won't happen", hostName, siteKey);
+                return null;
             }
             if (StringUtils.isEmpty(hostName)) {
                 logger.warn("Unable to trigger Sitemap job without sitemap hostname set");

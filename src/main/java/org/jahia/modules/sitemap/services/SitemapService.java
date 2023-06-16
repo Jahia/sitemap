@@ -64,10 +64,11 @@ public interface SitemapService {
     /**
      * remove sitemap job generation for all or one given site
      * @param siteKey siteKey of the site, if null unSchedule all sitemaps generation
+     * @return true if a job has been deleted
      * @throws RepositoryException
      * @throws SchedulerException
      */
-    void deleteSitemapJob(String siteKey);
+    boolean deleteSitemapJob(String siteKey);
 
 
 }

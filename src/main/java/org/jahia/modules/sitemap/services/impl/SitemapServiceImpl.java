@@ -114,15 +114,16 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     @Override
-    public void deleteSitemapJob(String siteKey) {
+    public boolean deleteSitemapJob(String siteKey) {
         try {
-            schedulerService.getScheduler().deleteJob(siteKey, JOB_GROUP_NAME);
+            boolean isdeleted = schedulerService.getScheduler().deleteJob(siteKey, JOB_GROUP_NAME);
 
             removeSitemap(siteKey);
+            return isdeleted;
         } catch (SchedulerException e) {
             logger.error("An error happen while trying to unSchedule job for siteKey {}", siteKey, e);
         }
-
+        return false;
     }
 
     private void deleteSitemapJobs() {
@@ -244,7 +245,7 @@ public class SitemapServiceImpl implements SitemapService {
      * @return int expiration date in seconds (default value 144000 seconds = 4h).
      */
     private long getSitemapCacheExpirationInSeconds(String sitemapCacheDurationPropertyValue) {
-        if (sitemapCacheDurationPropertyValue != null) {
+        if (StringUtils.isNotEmpty(sitemapCacheDurationPropertyValue)) {
             // to retro compatibility with older version of sitemap
             if (sitemapCacheDurationPropertyValue.endsWith("h")) {
                 sitemapCacheDurationPropertyValue = sitemapCacheDurationPropertyValue.replace("h", "");
