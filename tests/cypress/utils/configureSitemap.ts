@@ -1,3 +1,5 @@
+import {waitForSitemap} from './deleteSitemapCache'
+
 export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitemapHostname: string): void => {
     cy.log(`Configuring sitemap: Verifying if a configuration is present for ${sitePath}`)
     cy.apollo({
@@ -48,5 +50,9 @@ export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitem
             },
             mutationFile: 'graphql/jcrAddProperty.graphql',
         })
+        // Wait 0.5 seconds for server sync after publication
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(1000)
+        waitForSitemap()
     })
 }

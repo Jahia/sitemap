@@ -1,11 +1,4 @@
-export const deleteSitemapCache = (siteKey: string): void => {
-    cy.log(`Delete sitemap cache for siteKey: ${siteKey}`)
-    cy.apollo({
-        variables: {
-            siteKey: siteKey,
-        },
-        mutationFile: 'graphql/deleteSitemapCache.graphql',
-    })
+export const waitForSitemap = () => {
     cy.waitUntil(
         () =>
             cy
@@ -28,5 +21,16 @@ export const deleteSitemapCache = (siteKey: string): void => {
     )
     // Wait 0.5 seconds for server sync after publication
     // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(500)
+    cy.wait(1000)
+}
+
+export const deleteSitemapCache = (siteKey: string): void => {
+    cy.log(`Delete sitemap cache for siteKey: ${siteKey}`)
+    cy.apollo({
+        variables: {
+            siteKey: siteKey,
+        },
+        mutationFile: 'graphql/deleteSitemapCache.graphql',
+    })
+    waitForSitemap()
 }

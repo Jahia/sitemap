@@ -95,6 +95,17 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     })
 
     it('Exclude page from sitemap', function () {
+        // Clean up any mixin
+        cy.apollo({
+            variables: {
+                pathOrId: searchResultsPagePath,
+                mixinsToRemove: noIndexSitemapMixin,
+                workspace: 'LIVE',
+            },
+            mutationFile: 'graphql/jcrUpdateNode.graphql',
+        })
+        deleteSitemapCache(siteKey)
+
         // check that the page we want to exclude currently exists in the sitemap
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
             let isTestPassed = false
