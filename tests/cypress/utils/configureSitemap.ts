@@ -1,4 +1,4 @@
-import {waitForSitemap} from './deleteSitemapCache'
+import { waitForSitemap } from './deleteSitemapCache'
 
 export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitemapHostname: string): void => {
     cy.log(`Configuring sitemap: Verifying if a configuration is present for ${sitePath}`)

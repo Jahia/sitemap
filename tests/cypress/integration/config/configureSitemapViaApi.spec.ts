@@ -1,6 +1,6 @@
-import {waitUntilRefresh} from '../../utils/waitUntilRefresh'
-import {configureSitemap} from '../../utils/configureSitemap'
-import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
