@@ -136,7 +136,7 @@ public final class Utils {
             }
             // look for sub nodes
             for (String nodeType : config.getIncludeContentTypes()) {
-                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, StringUtils.replace(rootPath, "'", "''"));
                 new ScrollableQuery(500, session.getWorkspace().getQueryManager()
                         .createQuery(queryFrom, Query.JCR_SQL2)).execute(
                         new ScrollableQueryCallback<ScrollableQuery>() {

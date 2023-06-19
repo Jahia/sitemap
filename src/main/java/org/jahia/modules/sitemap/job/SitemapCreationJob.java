@@ -1,5 +1,7 @@
 package org.jahia.modules.sitemap.job;
 
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -39,6 +42,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.*;
 
@@ -85,11 +89,12 @@ public class SitemapCreationJob extends BackgroundJob {
                 RenderContext customRenderContext = new RenderContext(null, null, guestUser);
                 customRenderContext.setSite(siteNode);
                 for (String sitemapRoot : Utils.getSitemapRoots(customRenderContext, currentLocale.toString())) {
-                    Set<SitemapEntry> entries = Utils.getSitemapEntries(customRenderContext, sitemapRoot, Arrays.asList("jnt:page", "jmix:mainResource"), currentLocale);
-                    String targetSitemapCacheKey = JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale;
-                    // Build node settings
-
-                    try {
+                    final ClassLoader initialClassLoader = Thread.currentThread().getContextClassLoader();
+                    try (StringWriter output = new StringWriter()) {
+                        Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                        Set<SitemapEntry> entries = Utils.getSitemapEntries(customRenderContext, sitemapRoot, currentLocale);
+                        String targetSitemapCacheKey = JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale;
+                        // Build node settings
                         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                         Document doc = docBuilder.newDocument();
@@ -112,17 +117,18 @@ public class SitemapCreationJob extends BackgroundJob {
                             }
                             Element url = doc.createElement("url");
                             rootSitemap.appendChild(url);
-                            Element loc = doc.createElement("loc");
-                            loc.appendChild(doc.createTextNode(hostName + urlRewriteService.rewriteOutbound(entry.getLink(), request, response)));
-                            url.appendChild(loc);
                             Element lastmod = doc.createElement("lastmod");
                             lastmod.appendChild(doc.createTextNode(entry.getLastMod()));
                             url.appendChild(lastmod);
+                            Element loc = doc.createElement("loc");
+                            final Text locText = doc.createTextNode(hostName + encodeURI(urlRewriteService.rewriteOutbound(entry.getLink(), request, response)));
+                            loc.appendChild(locText);
+                            url.appendChild(loc);
                             for (SitemapEntry langEntry : entry.getLinksInOtherLanguages()) {
                                 Element langLink = doc.createElement("xhtml:link");
                                 langLink.setAttribute("rel", "alternate");
                                 langLink.setAttribute("hreflang", langEntry.getLocale().toString().replace("_", "-"));
-                                langLink.setAttribute("href", hostName + urlRewriteService.rewriteOutbound(langEntry.getLink(), request, response));
+                                langLink.setAttribute("href", hostName + encodeURI(urlRewriteService.rewriteOutbound(langEntry.getLink(), request, response)));
                                 url.appendChild(langLink);
                             }
                         }
@@ -130,19 +136,32 @@ public class SitemapCreationJob extends BackgroundJob {
                         TransformerFactory tf = TransformerFactory.newInstance();
                         Transformer t = tf.newTransformer();
                         t.setOutputProperty(OutputKeys.INDENT, "yes");
-                        StringWriter output = new StringWriter();
                         t.transform(new DOMSource(doc), new StreamResult(output));
-                        sitemapService.addSitemap(siteKey, targetSitemapCacheKey, output.getBuffer().toString());
+                        sitemapService.addSitemap(siteKey, targetSitemapCacheKey, decodeURI(output.getBuffer().toString()));
 
                     } catch (ParserConfigurationException | TransformerException | ServletException | IOException |
                              InvocationTargetException e) {
                         throw new RuntimeException(e);
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(initialClassLoader);
                     }
                 }
                 logger.info("Sitemap generation End for siteKey {} and locale {}", siteKey, currentLocale);
             }
             return null;
         });
+    }
+
+    private static String encodeURI(String uri) throws UnsupportedEncodingException, URIException {
+        String encodedUri = URLDecoder.decode(uri, "UTF-8");
+        // Encode quote (') and double-quote (") - Force encoding of all entities
+        encodedUri = StringUtils.replaceEach(encodedUri, new String[] {"\"", "'"} , new String[] {"-;quot-;", "-;apos-;"} );
+        // URI Encode
+        return URIUtil.encodePath(encodedUri, "UTF-8");
+    }
+
+    private static String decodeURI(String xml) {
+        return StringUtils.replaceEach(xml, new String[] {"-;quot-;", "-;apos-;"} , new String[] {"&quot;", "&apos;"} );
     }
 
     private static class HttpServletRequestMock implements HttpServletRequest {

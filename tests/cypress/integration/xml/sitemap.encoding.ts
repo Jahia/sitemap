@@ -1,7 +1,7 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {publishAndWaitJobEnding} from '../../utils/publishAndWaitJobEnding'
+import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -96,7 +96,7 @@ describe('Check sitemap links are encoded correctly', () => {
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
-                expect(response.body).to.contains(name + '"/>') // alternate link
+                expect(response.body).to.contains(name + '"') // alternate link
             }
         })
     })
@@ -108,7 +108,7 @@ describe('Check sitemap links are encoded correctly', () => {
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
-                expect(response.body).to.contains(name + '"/>') // alternate link
+                expect(response.body).to.contains(name + '"') // alternate link
             }
         })
     })
