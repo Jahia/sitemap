@@ -23,18 +23,14 @@
  */
 package org.jahia.modules.sitemap.config.impl;
 
-import org.apache.commons.collections4.map.HashedMap;
-import org.jahia.modules.sitemap.config.ConfigService;
+import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jahia.modules.sitemap.constant.SitemapConstant.*;
@@ -44,15 +40,15 @@ import static org.jahia.modules.sitemap.constant.SitemapConstant.*;
  *
  * @author nonico
  */
-@Component(service = ConfigService.class)
-public class ConfigServiceImpl implements ConfigService {
+@Component(service = SitemapConfigService.class)
+public class ConfigServiceImpl implements SitemapConfigService {
     private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
     private static final String PROP_FORMAT="%s%s%s";
     private static final String EMPTY_STRING="";
     private Map<String, String> properties;
 
     public ConfigServiceImpl() {
-        properties = new HashedMap<>();
+        properties = new HashMap<>();
     }
 
     @Activate
@@ -75,4 +71,10 @@ public class ConfigServiceImpl implements ConfigService {
         return new ArrayList<>(Arrays.asList(searchEnginesStr.split(",")));
     }
 
+    @Override
+    public List<String> getIncludeContentTypes() {
+        final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
+                EMPTY_STRING);
+        return new ArrayList<>(Arrays.asList(includedContentTypes.split(",")));
+    }
 }

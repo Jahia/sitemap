@@ -26,7 +26,7 @@ package org.jahia.modules.sitemap.services.impl;
 import net.htmlparser.jericho.Source;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.jahia.modules.sitemap.config.ConfigService;
+import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.services.SimpleNotificationService;
 import org.jahia.modules.sitemap.services.SitemapService;
@@ -54,7 +54,7 @@ public class SitemapServiceImpl implements SitemapService {
     private static final int SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
 
     private Ehcache sitemapCache;
-    private ConfigService configService;
+    private SitemapConfigService configService;
     private SimpleNotificationService simpleEventService;
     private boolean isClusterActivated;
 
@@ -72,8 +72,8 @@ public class SitemapServiceImpl implements SitemapService {
         flush();
     }
 
-    @Reference(service = ConfigService.class)
-    public void setConfigService(ConfigService configService) {
+    @Reference(service = SitemapConfigService.class)
+    public void setConfigService(SitemapConfigService configService) {
         this.configService = configService;
     }
 

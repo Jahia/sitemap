@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
+import org.jahia.modules.sitemap.config.SitemapConfigService;
+import org.jahia.osgi.BundleUtils;
 import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
@@ -117,10 +119,15 @@ public final class Utils {
     /**
      * @return sitemap entries that are publicly accessible
      */
-    public static Set<SitemapEntry> getSitemapEntries(RenderContext renderContext, String rootPath, List<String> nodeTypes, Locale locale) throws RepositoryException {
+    public static Set<SitemapEntry> getSitemapEntries(RenderContext renderContext, String rootPath, Locale locale) throws RepositoryException {
         final Set<SitemapEntry> result = new LinkedHashSet<>();
         List<String> excludedPath = new ArrayList<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
+        SitemapConfigService config = BundleUtils.getOsgiService(SitemapConfigService.class, null);
+        if (config == null) {
+            logger.error("Configuration service SitemapConfigService not revolved, check OSGi services status");
+            return Collections.EMPTY_SET;
+        }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             // add root node into results
             logger.info("Sitemap build started for node {}", rootPath);
@@ -129,7 +136,7 @@ public final class Utils {
                 result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
             }
             // look for sub nodes
-            for (String nodeType : nodeTypes) {
+            for (String nodeType : config.getIncludeContentTypes()) {
                 String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
                 new ScrollableQuery(500, session.getWorkspace().getQueryManager()
                         .createQuery(queryFrom, Query.JCR_SQL2)).execute(
