@@ -33,4 +33,5 @@ public final class SitemapConstant {
     public static final String DOT=".";
     public static final String SEARCH_ENGINES="search-engines";
     public static final String SITEMAP_CACHE_DURATION = "sitemapCacheDuration";
+    public static final String INCLUDED_CONTENT_TYPES = "included-content-types";
 }

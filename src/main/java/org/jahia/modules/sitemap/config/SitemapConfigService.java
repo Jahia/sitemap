@@ -23,13 +23,13 @@ package org.jahia.modules.sitemap.config;/*
  */
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * An osgi service
  *
  * @author nonico
  */
-public interface ConfigService {
+public interface SitemapConfigService {
     List<String> getSearchEngines();
+    List<String> getIncludeContentTypes();
 }

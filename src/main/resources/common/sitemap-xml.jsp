@@ -13,7 +13,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.w3.org/1999/xhtml http://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <%-- The URL host server name based on the input from sitemap UI panel--%>
@@ -31,7 +31,7 @@
         </c:otherwise>
     </c:choose>
     <c:forEach var="sitemapEntry"
-               items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, ['jnt:page', 'jmix:mainResource'], renderContext.mainResourceLocale)}">
+               items="${sitemap:getSitemapEntries(renderContext, param.entryNodePath, renderContext.mainResourceLocale)}">
         <url>
             <c:if test="${param[\"sitemap_debug\"] eq \"true\"}">
                 <jcr:node var="sitemapEntryNode" path="${sitemapEntry.path}"/>
