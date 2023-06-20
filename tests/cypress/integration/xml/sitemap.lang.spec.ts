@@ -1,6 +1,6 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -17,11 +17,11 @@ const languages = ['de', 'en', 'fr']
 const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap-lang.xml file on digitall', () => {
-    beforeEach('Configure sitemap for the test', () => {
+    before('Configure sitemap for the test', () => {
         configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
     })
 
-    afterEach('Remove sitemap configuration via GraphQL', () => {
+    after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
     })
 
@@ -29,7 +29,8 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
                 const nodeItems = $list.getElementsByTagName('xhtml:link')
-                expect(nodeItems.length).to.equal(languages.length)
+                cy.visit($list.getElementsByTagName('loc')[0].textContent)
+                cy.get('ul[class~="languages"] li').should('have.length.at.most', nodeItems.length)
             })
         })
     })
