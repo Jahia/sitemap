@@ -1,6 +1,6 @@
-import {configureSitemap} from '../../utils/configureSitemap'
-import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
-import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
