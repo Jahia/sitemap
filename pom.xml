@@ -21,7 +21,7 @@
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
         <jahia-depends>site-settings-seo=[3.0,99],graphql-dxm-provider</jahia-depends>
-        <jahia-module-signature>MCwCFHNKhiN5m9lI/J+5y3m/tK+4ZEe1AhQ7Y1KtEGwKEKxpYXigF9J3E0pBmQ==</jahia-module-signature>
+        <jahia-module-signature>MC0CFQCOvglKEReKatNottjYlTYh6rAWgAIUP4HVr2p2D66+CqUeLCGxqJbUeKs=</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
         <jahia.modules.importPackage>!com.hazelcast.config,!com.hazelcast.core</jahia.modules.importPackage>
