@@ -7,7 +7,7 @@
         <version>8.1.0.0</version>
     </parent>
     <artifactId>sitemap</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.3.0</version>
     <packaging>bundle</packaging>
     <name>Jahia Sitemap</name>
     <description>These are the custom module (Jahia Sitemap) for running on a Jahia server.</description>
@@ -15,7 +15,7 @@
         <connection>scm:git:git@github.com:Jahia/sitemap.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/sitemap.git</developerConnection>
         <url>scm:git:git@github.com:Jahia/sitemap.git</url>
-        <tag>HEAD</tag>
+        <tag>4_3_0</tag>
     </scm>
     <properties>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
