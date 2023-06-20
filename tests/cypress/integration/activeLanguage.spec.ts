@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../utils/waitUntilRefresh'
-import { configureSitemap } from '../utils/configureSitemap'
-import { deleteSitemapCache } from '../utils/deleteSitemapCache'
+import {waitUntilRefresh} from '../utils/waitUntilRefresh'
+import {configureSitemap} from '../utils/configureSitemap'
+import {deleteSitemapCache} from '../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -33,9 +33,6 @@ describe('Testing sitemap only contains language', () => {
 
         // Flush the cache to force a refresh
         deleteSitemapCache(siteKey)
-
-        // Wait until the sitemap contains some URLs
-        waitUntilRefresh(sitemapUrl, [], 150)
     })
 
     // Before removing the language, verify the sitemap does contain
@@ -76,12 +73,12 @@ describe('Testing sitemap only contains language', () => {
                 },
                 mutationFile: 'graphql/jcrMutateProperties.graphql',
             })
+            // Wait for cluster sync
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(1000)
 
             // Flush cache
             deleteSitemapCache(siteKey)
-
-            // Wait until the sitemap is modified
-            waitUntilRefresh(sitemapUrl, originalSitemapUrls)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
@@ -108,12 +105,12 @@ describe('Testing sitemap only contains language', () => {
                 },
                 mutationFile: 'graphql/jcrMutateProperties.graphql',
             })
+            // Wait for cluster sync
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(1000)
 
             // Flush cache
             deleteSitemapCache(siteKey)
-
-            // Wait until the sitemap contains at least 150 urls
-            waitUntilRefresh(sitemapUrl, [], 150)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
