@@ -23,6 +23,7 @@
  */
 package org.jahia.modules.sitemap.config.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,8 +44,8 @@ import static org.jahia.modules.sitemap.constant.SitemapConstant.*;
 @Component(service = SitemapConfigService.class)
 public class ConfigServiceImpl implements SitemapConfigService {
     private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
-    private static final String PROP_FORMAT="%s%s%s";
-    private static final String EMPTY_STRING="";
+    private static final String PROP_FORMAT = "%s%s%s";
+    private static final String EMPTY_STRING = "";
     private Map<String, String> properties;
 
     public ConfigServiceImpl() {
@@ -75,6 +76,10 @@ public class ConfigServiceImpl implements SitemapConfigService {
     public List<String> getIncludeContentTypes() {
         final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
                 EMPTY_STRING);
+        if (StringUtils.isEmpty(includedContentTypes)) {
+            // Set default values if no config defined.
+            return Arrays.asList("jnt:page", "jmix:mainResource");
+        }
         return new ArrayList<>(Arrays.asList(includedContentTypes.split(",")));
     }
 }
