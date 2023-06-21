@@ -1,7 +1,7 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {publishAndWaitJobEnding} from '../../utils/publishAndWaitJobEnding'
+import {deleteSitemapCache} from '../../utils/deleteSitemapCache'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -68,6 +68,10 @@ describe('Check sitemap links are encoded correctly', () => {
         addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', "vanity'ü", false)
         addVanityUrl(homePath + "/encoding-sitemap-test/sitemap-vanities/vanity'ü", "actual-vanity'ü")
+        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü')
+        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity<ü', false)
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü')
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
