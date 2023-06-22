@@ -19,9 +19,9 @@ export const waitForSitemap = () => {
             interval: 500,
         },
     )
-    // Wait 1 second for server sync after publication
+    // Wait 2 second for server sync after publication
     // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
+    cy.wait(2000)
 }
 
 export const generateSitemap = (siteKey: string): void => {
