@@ -48,6 +48,9 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 },
                 mutationFile: 'graphql/enabledDebug.graphql',
             })
+            // wait for sync of config
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(5000)
             generateSitemap(siteKey)
             cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                 if (debug === 'true') {
