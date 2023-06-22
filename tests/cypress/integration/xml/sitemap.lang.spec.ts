@@ -1,6 +1,6 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {generateSitemap} from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -56,7 +56,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             mutationFile: 'graphql/jcrPublishNode.graphql',
         })
 
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
 
         cy.requestFindXMLElementByTagName(langFr + sitemapLangFilePath, 'url').then((urls) => {
             Cypress.$(urls).each(($idx, $list) => {
@@ -105,7 +105,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             },
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
 
         // check that the page we want to exclude currently exists in the sitemap
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
@@ -130,7 +130,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             mutationFile: 'graphql/jcrUpdateNode.graphql',
         })
 
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
 
         // check that the page we want to exclude no longer exist in the sitemap
         cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {

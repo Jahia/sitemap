@@ -1,0 +1,11 @@
+mutation setDebug($debug: String!) {
+  admin {
+    jahia {
+      configuration(pid: "org.jahia.modules.sitemap.config.impl.ConfigServiceImpl") {
+        mutateObject(name: "sitemap") {
+          value(name: "debug", value: $debug)
+        }
+      }
+    }
+  }
+}

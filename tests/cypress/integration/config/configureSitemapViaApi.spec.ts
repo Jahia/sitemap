@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {generateSitemap} from "../../utils/generateSitemap";
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -19,7 +19,7 @@ describe('Testing sitemap configuration via GraphQL API', () => {
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
-                mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
+                mixinsFilter: {filters: [{fieldName: 'name', value: 'jseomix:sitemap'}]},
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration', 'sitemapHostname'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
@@ -34,12 +34,28 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     // By default, digitall should have some URLs
     it('Verify that the sitemap does contain some pages', function () {
-        // Wait for the sitemap to be initialized with some urls
-        waitUntilRefresh(sitemapUrl, [])
-
-        cy.task('parseSitemap', { url: sitemapUrl }).then((urls: Array<string>) => {
+        cy.task('parseSitemap', {url: sitemapUrl}).then((urls: Array<string>) => {
             cy.log(`Sitemap contains: ${urls.length} URLs`)
             expect(urls.length).to.be.greaterThan(20)
+        })
+    })
+
+    it('Should display debug info in XML when debug enabled', function () {
+        ['true', 'false'].forEach( debug => {
+            cy.apollo({
+                variables: {
+                    debug,
+                },
+                mutationFile: 'graphql/enabledDebug.graphql',
+            })
+            generateSitemap(siteKey)
+            cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
+                if (debug === 'true') {
+                    expect(response.body).to.contains('<!-- nodePath:')
+                } else {
+                    expect(response.body).not.to.contains('<!-- nodePath:')
+                }
+            })
         })
     })
 })

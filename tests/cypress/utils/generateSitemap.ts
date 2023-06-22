@@ -24,7 +24,7 @@ export const waitForSitemap = () => {
     cy.wait(1000)
 }
 
-export const deleteSitemapCache = (siteKey: string): void => {
+export const generateSitemap = (siteKey: string): void => {
     cy.log(`Delete sitemap cache for siteKey: ${siteKey}`)
     cy.apollo({
         variables: {
@@ -32,5 +32,6 @@ export const deleteSitemapCache = (siteKey: string): void => {
         },
         mutationFile: 'graphql/deleteSitemapCache.graphql',
     })
+    // Wait for cluster sync
     waitForSitemap()
 }

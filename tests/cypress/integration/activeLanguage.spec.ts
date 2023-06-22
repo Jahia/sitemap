@@ -1,6 +1,6 @@
-import { waitUntilRefresh } from '../utils/waitUntilRefresh'
-import { configureSitemap } from '../utils/configureSitemap'
-import { deleteSitemapCache } from '../utils/deleteSitemapCache'
+import {waitUntilRefresh} from '../utils/waitUntilRefresh'
+import {configureSitemap} from '../utils/configureSitemap'
+import {generateSitemap} from '../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -32,7 +32,7 @@ describe('Testing sitemap only contains language', () => {
         })
 
         // Flush the cache to force a refresh
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
     })
 
     // Before removing the language, verify the sitemap does contain
@@ -78,7 +78,7 @@ describe('Testing sitemap only contains language', () => {
             cy.wait(1000)
 
             // Flush cache
-            deleteSitemapCache(siteKey)
+            generateSitemap(siteKey)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
@@ -110,7 +110,7 @@ describe('Testing sitemap only contains language', () => {
             cy.wait(1000)
 
             // Flush cache
-            deleteSitemapCache(siteKey)
+            generateSitemap(siteKey)
 
             // Fetch the new sitemaps again and test the result
             cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
