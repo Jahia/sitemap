@@ -1,6 +1,6 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { generateSitemap } from '../../utils/generateSitemap'
+import { waitForSitemap } from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -51,8 +51,8 @@ describe('Testing sitemap configuration via GraphQL API', () => {
             })
             // wait for sync of config
             // eslint-disable-next-line cypress/no-unnecessary-waiting
-            cy.wait(5000)
-            generateSitemap(siteKey)
+            cy.wait(1000)
+            waitForSitemap()
             cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                 if (debug === 'true') {
                     expect(response.body).to.contains('<!-- nodePath:')

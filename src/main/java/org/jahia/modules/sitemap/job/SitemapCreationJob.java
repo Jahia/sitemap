@@ -101,6 +101,7 @@ public class SitemapCreationJob extends BackgroundJob {
                         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                         Document doc = docBuilder.newDocument();
+                        doc.setXmlStandalone(true);
                         Element rootSitemap = doc.createElement("urlset");
                         rootSitemap.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
                         rootSitemap.setAttribute("xsi:schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.w3.org/1999/xhtml http://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd");
