@@ -16,8 +16,8 @@
 // Import commands.js using ES2015 syntax:
 
 import 'cypress-wait-until'
-import "./commands";
-import "@cypress/code-coverage/support";
+import './commands'
+import '@cypress/code-coverage/support'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('cypress-terminal-report/src/installLogsCollector')()
 require('@jahia/cypress/dist/support/registerSupport').registerSupport()
@@ -31,3 +31,24 @@ const optionsCollector = {
 }
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('cypress-terminal-report/src/installLogsCollector')(optionsCollector)
+
+before(() => {
+    debugger
+    cy.executeGroovy('logger.groovy', { MESSAGE: `############# ${Cypress.spec.name} ############# ` })
+})
+
+beforeEach(() => {
+    cy.executeGroovy('logger.groovy', {
+        MESSAGE: `========== Starting test ${Cypress.mocha.getRunner().suite.ctx.currentTest.title} ==========`,
+    })
+})
+
+afterEach(() => {
+    cy.executeGroovy('logger.groovy', {
+        MESSAGE: `========== End test ${Cypress.mocha.getRunner().suite.ctx.currentTest.title}) ==========`,
+    })
+})
+
+after(() => {
+    cy.executeGroovy('logger.groovy', { MESSAGE: `############# End suite ${Cypress.spec.name} ############# ` })
+})

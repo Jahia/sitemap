@@ -1,4 +1,4 @@
-import {waitForSitemap} from './generateSitemap'
+import { waitForSitemap } from './generateSitemap'
 
 export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitemapHostname: string): void => {
     cy.log(`Configuring sitemap: Verifying if a configuration is present for ${sitePath}`)

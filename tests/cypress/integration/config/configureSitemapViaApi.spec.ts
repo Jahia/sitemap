@@ -1,6 +1,6 @@
-import {configureSitemap} from '../../utils/configureSitemap'
-import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
-import {generateSitemap} from '../../utils/generateSitemap'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { generateSitemap } from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -14,6 +14,7 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
     it(`Apply sitemap configuration for site ${sitePath}`, function () {
+        debugger
         configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         cy.apollo({
