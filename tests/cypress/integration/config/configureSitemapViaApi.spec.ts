@@ -1,6 +1,6 @@
-import {configureSitemap} from '../../utils/configureSitemap'
-import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
-import {waitForSitemap} from '../../utils/generateSitemap'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { waitForSitemap } from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
