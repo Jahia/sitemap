@@ -1,6 +1,6 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { waitForSitemap } from '../../utils/generateSitemap'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {waitForSitemap} from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -8,6 +8,10 @@ const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
 const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing sitemap configuration via GraphQL API', () => {
+    before(() => {
+        waitForSitemap()
+    })
+
     after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
     })
