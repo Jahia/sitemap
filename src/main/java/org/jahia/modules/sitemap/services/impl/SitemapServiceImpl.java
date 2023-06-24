@@ -24,14 +24,11 @@
 package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
-import net.sf.ehcache.Ehcache;
-import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.apache.commons.lang.StringUtils;
+import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.job.SitemapCreationJob;
 import org.jahia.modules.sitemap.services.SitemapService;
-import org.jahia.services.SpringContextSingleton;
-import org.jahia.services.cache.ehcache.EhCacheProvider;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionFactory;
@@ -71,17 +68,12 @@ public class SitemapServiceImpl implements SitemapService {
     private static final String JOB_GROUP_NAME = BackgroundJob.getGroupName(SitemapCreationJob.class);
     private static final JahiaUser ROOT_USER = JahiaUserManagerService.getInstance().lookupRootUser().getJahiaUser();
 
-
-
-    private Ehcache sitemapCache;
     private SitemapConfigService configService;
     private SchedulerService schedulerService;
 
     @Activate
     public void activate() throws RepositoryException {
-        logger.info("Sitemap service started");
-        EhCacheProvider cacheService = (EhCacheProvider) SpringContextSingleton.getBean("ehCacheProvider");
-        sitemapCache = cacheService.getCacheManager().addCacheIfAbsent(SITEMAP_CACHE_NAME);
+        logger.info("Sitemap service started (debug {})", configService != null && configService.isDebug() ? "ENABLED" : "DISABLED");
         JCRSessionFactory.getInstance().setCurrentUser(ROOT_USER);
         // Set up job to trigger cache
         JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
@@ -256,12 +248,6 @@ public class SitemapServiceImpl implements SitemapService {
 
         return SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS;
     }
-
-    private void flush() {
-        logger.info("a flush of sitemap cache was triggered");
-        sitemapCache.flush();
-    }
-
 
     @Reference
     public void setSchedulerService(SchedulerService schedulerService) {
