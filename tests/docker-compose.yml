@@ -45,6 +45,8 @@ services:
     image: '${JAHIA_IMAGE}'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia
+    depends_on:
+      - mariadb
     networks:
       jahia-net:
         ipv4_address: 172.24.24.50
@@ -76,6 +78,8 @@ services:
     networks:
       jahia-net:
         ipv4_address: 172.24.24.51
+    depends_on:
+      - jahia
     extra_hosts:
       - jahia:127.0.0.1
     environment:
@@ -101,6 +105,8 @@ services:
     networks:
       jahia-net:
         ipv4_address: 172.24.24.52
+    depends_on:
+      - jahia
     extra_hosts:
       - jahia:127.0.0.1
     environment:
