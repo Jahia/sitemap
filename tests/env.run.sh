@@ -18,6 +18,7 @@ while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${JAHIA_URL}/cms/login)" !=
   if [ $SECONDS -gt $end ]; then
     echo "JAHIA NOT RESPONDING FAILURE - EXITING SCRIPT, NOT RUNNING THE TESTS"
     echo "failure" > ./results/test_failure
+    mkdir -p results/xml_reports
     exit 1
   fi
   sleep 5;
