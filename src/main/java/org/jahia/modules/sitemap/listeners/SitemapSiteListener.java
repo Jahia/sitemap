@@ -53,24 +53,26 @@ public class SitemapSiteListener extends DefaultEventListener {
                 if (siteKey == null) {
                     siteKey = StringUtils.substringAfter(eventPath, "/sites/");
                 }
-                SitemapJobBuilder jobBuilder = jobsToBuild.getOrDefault(siteKey, new SitemapJobBuilder());
                 // Create job only if the "sitemapCacheDuration" property is set.
                 final JCRSessionWrapper session = ((JCREventIterator) events).getSession();
                 if (eventPath.equals("/sites/" + siteKey + "/sitemapCacheDuration") && session.nodeExists(eventPath)) {
                     JCRPropertyWrapper prop = (JCRPropertyWrapper) session.getItem(eventPath);
                     final String sitemapCacheDuration = prop.getParent().getPropertyAsString("sitemapCacheDuration");
                     // add a job in case the sitemap mixin is set and the job to create is new (or set as create already)
-                    final boolean createJob = jobBuilder.createJob == null || jobBuilder.createJob;
+                    SitemapJobBuilder jobBuilder = jobsToBuild.get(siteKey);
+                    final boolean createJob = jobBuilder == null || jobBuilder.createJob;
                     if (prop.getParent().isNodeType("jseomix:sitemap") && createJob && StringUtils.isNotEmpty(sitemapCacheDuration)) {
-                        jobBuilder.createJob = Boolean.TRUE;
-                        jobBuilder.cacheDuration = sitemapCacheDuration;
-                        jobsToBuild.put(siteKey, jobBuilder);
+                        SitemapJobBuilder builder = jobBuilder == null ? new SitemapJobBuilder() : jobBuilder;
+                        builder.createJob = true;
+                        builder.cacheDuration = sitemapCacheDuration;
+                        jobsToBuild.put(siteKey, builder);
                     }
                 }
                 // Site node removed
                 if (event.getType() == Event.NODE_REMOVED && event.getPath().equals("/sites/" + siteKey)) {
-                    jobBuilder.createJob = Boolean.FALSE;
-                    jobsToBuild.put(siteKey, jobBuilder);
+                    SitemapJobBuilder builder = new SitemapJobBuilder();
+                    builder.createJob = false;
+                    jobsToBuild.put(siteKey, builder);
                 }
                 // Mixin removed on site node
                 if (event.getPath().equals("/sites/" + siteKey + "/" + Constants.JCR_MIXINTYPES)) {
@@ -83,8 +85,9 @@ public class SitemapSiteListener extends DefaultEventListener {
                             throw new RuntimeException(e);
                         }
                     })) {
-                        jobBuilder.createJob = Boolean.FALSE;
-                        jobsToBuild.put(siteKey, jobBuilder);
+                        SitemapJobBuilder builder = new SitemapJobBuilder();
+                        builder.createJob = false;
+                        jobsToBuild.put(siteKey, builder);
                     };
                 }
             } catch (RepositoryException e) {
@@ -97,7 +100,7 @@ public class SitemapSiteListener extends DefaultEventListener {
 
     private static class SitemapJobBuilder {
         String cacheDuration;
-        Boolean createJob;
+        boolean createJob;
 
         void build(String siteKey, SitemapService sitemapService) {
             try {

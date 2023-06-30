@@ -82,15 +82,17 @@ public class SitemapCreationJob extends BackgroundJob {
                 logger.warn("Unable to trigger Sitemap job without sitemap hostname set");
                 return null;
             }
+            // Mocked Objects
+            final JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
+            RenderContext customRenderContext = new RenderContext(null, null, guestUser);
+            customRenderContext.setSite(siteNode);
+
             final HttpServletRequestMock request = new HttpServletRequestMock(new HashMap<>(), serverUrl.getHost(), serverUrl.getPath());
             final HttpServletResponseMock response = new HttpServletResponseMock(new StringWriter());
             // For each activated language for each site
             for (Locale currentLocale : siteNode.getActiveLiveLanguagesAsLocales()) {
                 // Get all sitemaps to generate
                 logger.info("Sitemap generation started for siteKey {} and locale {}", siteKey, currentLocale);
-                final JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
-                RenderContext customRenderContext = new RenderContext(null, null, guestUser);
-                customRenderContext.setSite(siteNode);
                 for (String sitemapRoot : Utils.getSitemapRoots(customRenderContext, currentLocale.toString())) {
                     final ClassLoader initialClassLoader = Thread.currentThread().getContextClassLoader();
                     try (StringWriter output = new StringWriter()) {
