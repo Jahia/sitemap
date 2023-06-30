@@ -130,14 +130,13 @@ public final class Utils {
         }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
             // add root node into results
-            logger.info("Sitemap build started for node {}", rootPath);
             JCRNodeWrapper rootNode = session.getNode(rootPath);
             if (isValidEntry(rootNode, renderContext)) {
                 result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
             }
             // look for sub nodes
             for (String nodeType : config.getIncludeContentTypes()) {
-                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, rootPath);
+                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, StringUtils.replace(rootPath, "'", "''"));
                 new ScrollableQuery(500, session.getWorkspace().getQueryManager()
                         .createQuery(queryFrom, Query.JCR_SQL2)).execute(
                         new ScrollableQueryCallback<ScrollableQuery>() {
@@ -180,12 +179,12 @@ public final class Utils {
                 }
                 JCRNodeWrapper nodeInOtherLocale = sessionInOtherLocale.getNode(node.getPath());
                 if (nodeInOtherLocale != null && isValidEntry(nodeInOtherLocale, renderContext)) {
-                    linksInOtherLanguages.add(new SitemapEntry(nodeInOtherLocale.getPath(), nodeInOtherLocale.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), otherLocale, null));
+                    linksInOtherLanguages.add(new SitemapEntry(nodeInOtherLocale.getPath(), nodeInOtherLocale.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), otherLocale, null, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier()));
                 }
                 return null;
             });
         }
-        return new SitemapEntry(node.getPath(), node.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), currentLocale, linksInOtherLanguages);
+        return new SitemapEntry(node.getPath(), node.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), currentLocale, linksInOtherLanguages, node.getPrimaryNodeTypeName(), node.getIdentifier());
     }
 
     private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) throws RepositoryException {

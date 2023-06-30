@@ -24,24 +24,26 @@
 package org.jahia.modules.sitemap.services;
 
 import org.jahia.modules.sitemap.exceptions.SitemapException;
+import org.quartz.SchedulerException;
+
+import javax.jcr.RepositoryException;
 
 public interface SitemapService {
 
     Boolean sendSitemapXMLUrlPathToSearchEngines(String sitemapIndexXMLUrlPath) throws SitemapException;
 
     /**
-     * In cluster : Send a notification to flush all cluster nodes
-     * In standalone : do flush
+     * Generate the sitemap for the given siteKey
+     * @param siteKey
      */
-    void askForFlush();
+    void generateSitemap(String siteKey);
 
     /**
      * Adds sitemap cache entry
      * @param key (mandatory)
      * @param sitemap (mandatory)
-     * @param expiration (mandatory)
      */
-    void addSitemap(String key, String sitemap, String expiration);
+    void addSitemap(String siteKey, String key, String sitemap)  throws RepositoryException;
 
     /**
      * Gets sitemap entry cache value for a giving sitemap cache key.
@@ -49,5 +51,24 @@ public interface SitemapService {
      * @return sitemap cache content as String.
      */
     String getSitemap(String key);
+
+    /**
+     * Set up sitemap job generation for the given site
+     * @param siteKey targeted site
+     * @param repeatInterval String representation in hours of time between each job execution in ms.
+     * @throws RepositoryException
+     * @throws SchedulerException
+     */
+    void scheduleSitemapJob(String siteKey, String repeatInterval) throws SchedulerException;
+
+    /**
+     * remove sitemap job generation for all or one given site
+     * @param siteKey siteKey of the site, if null unSchedule all sitemaps generation
+     * @return true if a job has been deleted
+     * @throws RepositoryException
+     * @throws SchedulerException
+     */
+    boolean deleteSitemapJob(String siteKey);
+
 
 }

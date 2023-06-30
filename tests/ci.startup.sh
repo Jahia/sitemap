@@ -23,7 +23,7 @@ if [[ -z ${JAHIA_LICENSE} ]]; then
     fi
 fi
 
-docker-compose up -d --renew-anon-volumes --remove-orphans --force-recreate mariadb jahia
+docker-compose up -d mariadb jahia
 
 if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
     echo "$(date +'%d %B %Y - %k:%M') [JAHIA_CLUSTER_ENABLED] == Starting a cluster of one processing and two browsing =="

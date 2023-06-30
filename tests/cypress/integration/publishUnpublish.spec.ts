@@ -1,6 +1,6 @@
 import { waitUntilRefresh } from '../utils/waitUntilRefresh'
 import { configureSitemap } from '../utils/configureSitemap'
-import { deleteSitemapCache } from '../utils/deleteSitemapCache'
+import { generateSitemap } from '../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -14,7 +14,7 @@ const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
-        configureSitemap(sitePath, siteMapRootUrl)
+        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         // Creates the test page with content in all 3 languages
         cy.apollo({
@@ -99,7 +99,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
             })
 
             // Flush the cache to force a refresh
-            deleteSitemapCache(siteKey)
+            generateSitemap(siteKey)
 
             // Wait until the sitemap is modified
             waitUntilRefresh(sitemapUrl, originalSitemapUrls, 3)
@@ -140,7 +140,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 })
 
                 // Flush the cache to force a refresh
-                deleteSitemapCache(siteKey)
+                generateSitemap(siteKey)
 
                 // Wait until the sitemap is modified
                 waitUntilRefresh(sitemapUrl, originalSitemapUrls)
@@ -192,7 +192,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                     })
 
                     // Flush the cache to force a refresh
-                    deleteSitemapCache(siteKey)
+                    generateSitemap(siteKey)
 
                     // Wait until the sitemap is modified
                     waitUntilRefresh(sitemapUrl, originalSitemapUrls)
@@ -219,7 +219,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
             })
 
             // Flush the cache to force a refresh
-            deleteSitemapCache(siteKey)
+            generateSitemap(siteKey)
 
             // Wait until the sitemap is modified
             waitUntilRefresh(sitemapUrl, originalSitemapUrls)

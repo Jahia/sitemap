@@ -11,10 +11,19 @@ START_TIME=$SECONDS
 echo " == Using MANIFEST: ${MANIFEST}"
 echo " == Using JAHIA_URL= ${JAHIA_URL}"
 
+# Wait for 5 minutes max for jahia to be alive
+end=$((SECONDS+300))
 echo " == Waiting for Jahia to startup"
-while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${JAHIA_URL}/cms/login)" != "200" ]];
-  do sleep 5;
+while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${JAHIA_URL}/cms/login)" != "200" ]]; do
+  if [ $SECONDS -gt $end ]; then
+    echo "JAHIA NOT RESPONDING FAILURE - EXITING SCRIPT, NOT RUNNING THE TESTS"
+    echo "failure" > ./results/test_failure
+    mkdir -p results/xml_reports
+    exit 1
+  fi
+  sleep 5;
 done
+
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo " == Jahia became alive in ${ELAPSED_TIME} seconds"
 

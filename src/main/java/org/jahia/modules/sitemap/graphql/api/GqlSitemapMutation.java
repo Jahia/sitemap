@@ -27,6 +27,7 @@ import graphql.annotations.annotationTypes.GraphQLDescription;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.annotations.annotationTypes.GraphQLNonNull;
+import graphql.schema.DataFetchingEnvironment;
 import org.jahia.modules.graphql.provider.dxm.DataFetchingException;
 import org.jahia.modules.graphql.provider.dxm.osgi.annotations.GraphQLOsgiService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
@@ -55,9 +56,10 @@ public class GqlSitemapMutation {
     @GraphQLField
     @GraphQLDescription("Delete existing sitemap cache if exists before expiration time difference")
     public Boolean deleteSitemapCache(
-            @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey
+            @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey,
+            DataFetchingEnvironment environment
     ){
-        sitemapService.askForFlush();
+        sitemapService.generateSitemap(siteKey);
         return true;
     }
 }

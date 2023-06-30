@@ -32,4 +32,5 @@ import java.util.List;
 public interface SitemapConfigService {
     List<String> getSearchEngines();
     List<String> getIncludeContentTypes();
+    boolean isDebug();
 }

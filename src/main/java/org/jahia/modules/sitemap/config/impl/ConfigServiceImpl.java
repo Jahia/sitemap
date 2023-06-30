@@ -73,6 +73,13 @@ public class ConfigServiceImpl implements SitemapConfigService {
     }
 
     @Override
+    public boolean isDebug() {
+        final String debug = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, DEBUG),
+                "false");
+        return Boolean.parseBoolean(debug);
+    }
+
+    @Override
     public List<String> getIncludeContentTypes() {
         final String includedContentTypes = properties.getOrDefault(String.format(PROP_FORMAT, SITEMAP_PARENT_PROPERTY, DOT, INCLUDED_CONTENT_TYPES),
                 EMPTY_STRING);

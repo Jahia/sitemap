@@ -1,7 +1,7 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
-import { deleteSitemapCache } from '../../utils/deleteSitemapCache'
+import { generateSitemap } from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -68,10 +68,14 @@ describe('Check sitemap links are encoded correctly', () => {
         addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', "vanity'ü", false)
         addVanityUrl(homePath + "/encoding-sitemap-test/sitemap-vanities/vanity'ü", "actual-vanity'ü")
+        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü')
+        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity<ü', false)
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü')
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
-        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath)
+        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath, Cypress.config().baseUrl)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {
@@ -92,11 +96,11 @@ describe('Check sitemap links are encoded correctly', () => {
             '/encoding-sitemap-test/sitemap-pages/page&quot;%C3%BC.html',
         ]
 
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
-                expect(response.body).to.contains(name + '"/>') // alternate link
+                expect(response.body).to.contains(name + '"') // alternate link
             }
         })
     })
@@ -104,11 +108,11 @@ describe('Check sitemap links are encoded correctly', () => {
     it('Check encoding for sitemap pages with vanities', () => {
         const names = ['/actual-vanity&amp;%C3%BC', '/actual-vanity&apos;%C3%BC', '/actual-vanity&quot;%C3%BC']
 
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '</loc>') // loc
-                expect(response.body).to.contains(name + '"/>') // alternate link
+                expect(response.body).to.contains(name + '"') // alternate link
             }
         })
     })
@@ -120,7 +124,7 @@ describe('Check sitemap links are encoded correctly', () => {
             '/encoding-sitemap-test/sitemap-roots/root&quot;%C3%BC',
         ]
 
-        deleteSitemapCache(siteKey)
+        generateSitemap(siteKey)
         cy.request('/sites/digitall/sitemap.xml').then((response) => {
             for (const name of names) {
                 expect(response.body).to.contains(name + '/sitemap-lang.xml</loc>')
