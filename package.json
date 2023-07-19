@@ -1,6 +1,6 @@
 {
   "name": "@jahia/sitemap",
-  "version": "4.0.0",
+  "version": "4.4.0-SNAPSHOT",
   "scripts": {
     "build": "yarn lint && yarn test && yarn webpack",
     "webpack": "node --max_old_space_size=2048 ./node_modules/webpack/bin/webpack.js",
@@ -72,6 +72,7 @@
     "@babel/plugin-transform-runtime": "^7.3.4",
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
+    "@cyclonedx/webpack-plugin": "^3.6.1",
     "@jahia/eslint-config": "^1.1.0",
     "@jahia/stylelint-config": "^0.0.3",
     "@jahia/test-framework": "^1.2.0",
@@ -101,7 +102,7 @@
     "stylelint": "^13.2.0",
     "sync-pom-version-to-package": "^1.6.1",
     "trim-newlines": "^3.0.1",
-    "webpack": "^5.10.0",
+    "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.2.0",
     "webpack-node-externals": "^1.7.2"
