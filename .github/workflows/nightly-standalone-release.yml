@@ -1,4 +1,4 @@
-name: Nightly Test run
+name: Nightly (Jahia Release)
 
 on:
   workflow_dispatch:
@@ -7,12 +7,10 @@ on:
 
 jobs:
   integration-tests-standalone:
-    name: Integration Tests (Standalone)
+    name: Integration Tests (Standalone - Release)
     runs-on: self-hosted
     strategy:
       fail-fast: false
-      matrix:
-        jahia_image: ["jahia/jahia-ee:8", "jahia/jahia-ee-dev:8-SNAPSHOT"]
     timeout-minutes: 45
     steps:
       - uses: jahia/jahia-modules-action/helper@v2
@@ -28,12 +26,13 @@ jobs:
           module_id: sitemap
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-snapshot.yml
+          jahia_image: jahia/jahia-ee:8
           should_use_build_artifacts: false
           should_skip_artifacts: true
           should_skip_notifications: true
           should_skip_testrail: false
           should_skip_zencrepes: true
-          github_artifact_name: sitemap-artifacts-${{ matrix.jahia_image }}-${{ github.run_number }}
+          github_artifact_name: sitemap-standalone-release-artifacts-${{ github.run_number }}
           bastion_ssh_private_key: ${{ secrets.BASTION_SSH_PRIVATE_KEY_JAHIACI }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
