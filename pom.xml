@@ -26,6 +26,8 @@
         <export-package>org.jahia.modules.sitemap.utils</export-package>
         <sonar.sources>src/javascript</sonar.sources>
         <import-package>
+            graphql.annotations.annotationTypes;version="[7.2,99)",
+            graphql.annotations.connection;version="[7.2,99)",
             graphql.schema;version="[13.0,99)"
         </import-package>
     </properties>
