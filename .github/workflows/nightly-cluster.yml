@@ -22,7 +22,8 @@ jobs:
       - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
           module_id: sitemap
-          incident_service: sitemap-cluster
+          incident_service: sitemap-cluster-JahiaSN
+          timeout_minutes: 20
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-snapshot.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
@@ -32,7 +33,8 @@ jobs:
           should_skip_notifications: true
           should_skip_testrail: false
           should_skip_zencrepes: true
-          github_artifact_name: sitemap-cluster-artifacts-${{ github.run_number }}
+          github_artifact_name: sitemap-cluster-sn-artifacts-${{ github.run_number }}
+          jahia_artifact_name: sitemap-cluster-sn-artifacts-${{ github.run_number }}
           bastion_ssh_private_key: ${{ secrets.BASTION_SSH_PRIVATE_KEY_JAHIACI }}
           jahia_license: ${{ secrets.JAHIA_LICENSE_8X_FULL }}
           docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
