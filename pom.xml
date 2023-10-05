@@ -7,7 +7,7 @@
         <version>8.1.0.0</version>
     </parent>
     <artifactId>sitemap</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Sitemap</name>
     <description>These are the custom module (Jahia Sitemap) for running on a Jahia server.</description>
@@ -21,7 +21,7 @@
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
         <jahia-depends>site-settings-seo=[3.0,99],graphql-dxm-provider</jahia-depends>
-        <jahia-module-signature>MC0CFQCOvglKEReKatNottjYlTYh6rAWgAIUP4HVr2p2D66+CqUeLCGxqJbUeKs=</jahia-module-signature>
+        <jahia-module-signature>MCwCFA8mIQkUfH0hHWkqsEuMA1LWaWhYAhRoNUCxJznNeUn0LeXX1vz3/FOuYg==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
         <sonar.sources>src/javascript</sonar.sources>
