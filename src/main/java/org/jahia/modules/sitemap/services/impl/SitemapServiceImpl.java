@@ -164,10 +164,20 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     @Override
-    public String getSitemap(String key) {
+    public String getSitemap(String siteKey, String key) {
         try {
-            return JCRTemplate.getInstance().doExecuteWithSystemSession( session -> session.getNode("/settings/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
+            return JCRTemplate.getInstance().doExecuteWithSystemSession(session -> session.getNode("/settings/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
         } catch (Exception e) {
+            try {
+                JobDetail jobDetail = schedulerService.getScheduler().getJobDetail(siteKey, JOB_GROUP_NAME);
+                if (jobDetail != null) {
+                    logger.warn("Sitemap generation in progress - No entry found for site {} and key {}", siteKey, key, e);
+                } else {
+                    logger.error("Sitemap generation job is not running, the sitemap will not be available", e);
+                }
+            } catch (SchedulerException ex) {
+                logger.error("Error while getting jobDetail for job name {} and group {}", siteKey, JOB_GROUP_NAME, ex);
+            }
             return null;
         }
     }
