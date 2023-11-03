@@ -76,7 +76,7 @@ public class SitemapServiceImpl implements SitemapService {
         logger.info("Sitemap service started (debug {})", configService != null && configService.isDebug() ? "ENABLED" : "DISABLED");
         JCRSessionFactory.getInstance().setCurrentUser(ROOT_USER);
         // Set up job to trigger cache
-        JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
+        JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
             try {
                 for (JCRSiteNode siteNode : JahiaSitesService.getInstance().getSitesNodeList(session)) {
                     if (siteNode.getInstalledModules().contains("sitemap")) {
@@ -108,10 +108,7 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public boolean deleteSitemapJob(String siteKey) {
         try {
-            boolean isdeleted = schedulerService.getScheduler().deleteJob(siteKey, JOB_GROUP_NAME);
-
-            removeSitemap(siteKey);
-            return isdeleted;
+            return schedulerService.getScheduler().deleteJob(siteKey, JOB_GROUP_NAME);
         } catch (SchedulerException e) {
             logger.error("An error happen while trying to unSchedule job for siteKey {}", siteKey, e);
         }
@@ -166,7 +163,7 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public String getSitemap(String siteKey, String key) {
         try {
-            return JCRTemplate.getInstance().doExecuteWithSystemSession(session -> session.getNode("/settings/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
+            return JCRTemplate.getInstance().doExecuteWithSystemSession(session -> session.getNode("/sites/" + siteKey + "/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
         } catch (Exception e) {
             try {
                 JobDetail jobDetail = schedulerService.getScheduler().getJobDetail(siteKey, JOB_GROUP_NAME);
@@ -184,41 +181,24 @@ public class SitemapServiceImpl implements SitemapService {
 
     @Override
     public void addSitemap(String siteKey, String key, String sitemap) throws RepositoryException {
-        JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
-            JCRNodeWrapper settingsNode = JCRContentUtils.getOrAddPath(session, session.getNode("/settings"), "sitemapSettings", "jnt:sitemapSettings");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
+            JCRNodeWrapper settingsNode = JCRContentUtils.getOrAddPath(session, session.getNode("/sites/" + siteKey), "sitemapSettings", "jnt:sitemapSettings");
             JCRNodeWrapper cacheRoot = JCRContentUtils.getOrAddPath(session, settingsNode, "sitemapCache", "jnt:sitemapRootCacheEntries");
             JCRNodeWrapper cacheNode = JCRContentUtils.getOrAddPath(session, cacheRoot, key, "jnt:sitemapEntry");
             cacheNode.setProperty("sitemap", sitemap);
-            cacheNode.setProperty("siteKey", siteKey);
             session.save();
             return null;
         });
     }
 
-    private void removeSitemaps() {
-        // Clean up cache
-        try {
-            JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
-                if (session.nodeExists("/settings/sitemapSettings/sitemapCache")) {
-                    session.getNode("/settings/sitemapSettings/sitemapCache").remove();
-                    session.save();
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void removeSitemap(String siteKey) {
         // Clean up cache
+        String sitemapCachePath = "/sites/" + siteKey + "/sitemapSettings/sitemapCache";
         try {
-            JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
-                if (session.nodeExists("/settings/sitemapSettings/sitemapCache")) {
-                    for (JCRNodeWrapper sitemapCacheNode : session.getNode("/settings/sitemapSettings/sitemapCache").getNodes()) {
-                        if (sitemapCacheNode.hasProperty("siteKey") && StringUtils.equals(siteKey, sitemapCacheNode.getPropertyAsString("siteKey"))) {
-                            sitemapCacheNode.remove();
-                        }
+            JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
+                if (session.nodeExists(sitemapCachePath)) {
+                    for (JCRNodeWrapper sitemapCacheNode : session.getNode(sitemapCachePath).getNodes()) {
+                        sitemapCacheNode.remove();
                     }
                     session.save();
                 }
@@ -234,7 +214,6 @@ public class SitemapServiceImpl implements SitemapService {
         // Clean all jobs
         try {
             deleteSitemapJobs();
-            removeSitemaps();
         } catch (Exception e) {
             logger.error("An error happen while trying to unSchedule jobs or remove cached sitemaps", e);
         }
