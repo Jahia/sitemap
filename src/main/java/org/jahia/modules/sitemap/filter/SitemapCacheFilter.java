@@ -72,7 +72,7 @@ public class SitemapCacheFilter extends AbstractFilter {
             Resource resource,
             RenderChain chain
     ) throws Exception {
-        String sitemap = sitemapService.getSitemap(JCRContentUtils.escapeLocalNodeName(resource.getNodePath()) + "#" + resource.getNode().getLanguage());
+        String sitemap = sitemapService.getSitemap(resource.getNode().getResolveSite().getSiteKey(), JCRContentUtils.escapeLocalNodeName(resource.getNodePath()) + "#" + resource.getNode().getLanguage());
         if (sitemap == null) {
             // no sitemap available yet
             renderContext.getResponse().setStatus(HttpServletResponse.SC_CONFLICT);

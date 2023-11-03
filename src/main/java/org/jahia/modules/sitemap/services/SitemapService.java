@@ -47,10 +47,11 @@ public interface SitemapService {
 
     /**
      * Gets sitemap entry cache value for a giving sitemap cache key.
+     * @param siteKey (mandatory)
      * @param key (mandatory)
      * @return sitemap cache content as String.
      */
-    String getSitemap(String key);
+    String getSitemap(String siteKey, String key);
 
     /**
      * Set up sitemap job generation for the given site
