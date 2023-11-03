@@ -168,6 +168,7 @@ public class SitemapServiceImpl implements SitemapService {
         try {
             return JCRTemplate.getInstance().doExecuteWithSystemSession( session -> session.getNode("/settings/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
         } catch (Exception e) {
+            logger.error("An error happened while trying to get sitemap entry for key {}", key, e);
             return null;
         }
     }
