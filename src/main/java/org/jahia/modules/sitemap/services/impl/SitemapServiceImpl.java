@@ -191,15 +191,14 @@ public class SitemapServiceImpl implements SitemapService {
         });
     }
 
-    private void removeSitemap(String siteKey) {
+    @Override
+    public void removeSitemap(String siteKey) {
         // Clean up cache
-        String sitemapCachePath = "/sites/" + siteKey + "/sitemapSettings/sitemapCache";
+        String sitemapSettingsPath = "/sites/" + siteKey + "/sitemapSettings";
         try {
             JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
-                if (session.nodeExists(sitemapCachePath)) {
-                    for (JCRNodeWrapper sitemapCacheNode : session.getNode(sitemapCachePath).getNodes()) {
-                        sitemapCacheNode.remove();
-                    }
+                if (session.nodeExists(sitemapSettingsPath)) {
+                    session.removeItem(sitemapSettingsPath);
                     session.save();
                 }
                 return null;

@@ -71,5 +71,10 @@ public interface SitemapService {
      */
     boolean deleteSitemapJob(String siteKey);
 
+    /**
+     * remove sitemap for one given site
+     * @param siteKey siteKey of the site
+     */
+    void removeSitemap(String siteKey);
 
 }

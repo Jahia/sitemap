@@ -70,8 +70,28 @@ public class SitemapSiteListener extends DefaultEventListener {
                 }
                 // Site node removed
                 if (event.getType() == Event.NODE_REMOVED && event.getPath().equals("/sites/" + siteKey)) {
+
                     SitemapJobBuilder builder = new SitemapJobBuilder();
                     builder.createJob = false;
+                    jobsToBuild.put(siteKey, builder);
+                }
+                if (event.getType() == Event.PROPERTY_CHANGED && event.getPath().equals("/sites/" + siteKey + "/j:installedModules")) {
+
+                    JCRPropertyWrapper prop = (JCRPropertyWrapper) session.getItem(eventPath);
+                   boolean siteMapNotInstalled = Arrays.stream(prop.getValues()).noneMatch(value -> {
+                        try {
+                            return value.getString().equals("sitemap");
+                        } catch (RepositoryException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    SitemapJobBuilder builder = new SitemapJobBuilder();
+                    if (siteMapNotInstalled) {
+                        builder.createJob = false;
+                       builder.deleteSitemap = true;
+                    } else {
+                        builder.createJob = true;
+                    }
                     jobsToBuild.put(siteKey, builder);
                 }
                 // Mixin removed on site node
@@ -102,6 +122,8 @@ public class SitemapSiteListener extends DefaultEventListener {
         String cacheDuration;
         boolean createJob;
 
+        boolean deleteSitemap;
+
         void build(String siteKey, SitemapService sitemapService) {
             try {
                 if (createJob) {
@@ -111,6 +133,10 @@ public class SitemapSiteListener extends DefaultEventListener {
                     if (sitemapService.deleteSitemapJob(siteKey)) {
                         logger.info("Sitemap job for site {} has been removed", siteKey);
                     }
+                }
+                if (deleteSitemap) {
+                    logger.info("Sitemap for site {} has been removed", siteKey);
+                    sitemapService.removeSitemap(siteKey);
                 }
             } catch (SchedulerException e) {
                 logger.error("Unable to set sitemap job for site {}", siteKey);
