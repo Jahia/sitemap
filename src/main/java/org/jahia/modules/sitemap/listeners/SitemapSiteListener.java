@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.touk.throwing.ThrowingPredicate;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.observation.Event;
@@ -78,21 +79,15 @@ public class SitemapSiteListener extends DefaultEventListener {
                 if (event.getType() == Event.PROPERTY_CHANGED && event.getPath().equals("/sites/" + siteKey + "/j:installedModules")) {
 
                     JCRPropertyWrapper prop = (JCRPropertyWrapper) session.getItem(eventPath);
-                   boolean siteMapNotInstalled = Arrays.stream(prop.getValues()).noneMatch(value -> {
-                        try {
-                            return value.getString().equals("sitemap");
-                        } catch (RepositoryException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    SitemapJobBuilder builder = new SitemapJobBuilder();
+
+                    boolean siteMapNotInstalled = Arrays.stream(prop.getValues())
+                            .noneMatch(ThrowingPredicate.unchecked(value -> "sitemap".equals(value.getString())));
                     if (siteMapNotInstalled) {
+                        SitemapJobBuilder builder = new SitemapJobBuilder();
                         builder.createJob = false;
-                       builder.deleteSitemap = true;
-                    } else {
-                        builder.createJob = true;
+                        builder.deleteSitemap = true;
+                        jobsToBuild.put(siteKey, builder);
                     }
-                    jobsToBuild.put(siteKey, builder);
                 }
                 // Mixin removed on site node
                 if (event.getPath().equals("/sites/" + siteKey + "/" + Constants.JCR_MIXINTYPES)) {

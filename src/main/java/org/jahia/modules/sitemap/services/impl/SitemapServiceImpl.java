@@ -63,7 +63,6 @@ public class SitemapServiceImpl implements SitemapService {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
-    private static final String SITEMAP_CACHE_NAME = "sitemapCache";
     private static final long SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
     private static final String JOB_GROUP_NAME = BackgroundJob.getGroupName(SitemapCreationJob.class);
     private static final JahiaUser ROOT_USER = JahiaUserManagerService.getInstance().lookupRootUser().getJahiaUser();

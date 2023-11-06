@@ -142,8 +142,7 @@ public class SitemapCreationJob extends BackgroundJob {
                         Transformer t = tf.newTransformer();
                         t.setOutputProperty(OutputKeys.INDENT, "yes");
                         t.transform(new DOMSource(doc), new StreamResult(output));
-                        // The locale is the key of the sitemap
-                        sitemapService.addSitemap(siteKey, currentLocale.toString(), decode(output.getBuffer().toString()));
+                        sitemapService.addSitemap(siteKey, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, decode(output.getBuffer().toString()));
 
                     } catch (ParserConfigurationException | TransformerException | ServletException | IOException |
                              InvocationTargetException e) {
