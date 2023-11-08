@@ -169,7 +169,7 @@ public class SitemapCreationJob extends BackgroundJob {
                                 t.setOutputProperty(OutputKeys.INDENT, "yes");
                                 t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                                 t.transform(new DOMSource(doc), new StreamResult(output));
-                                sitemapService.addSitemap(sitemapRoot, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, tmpFile);
+                                sitemapService.addSitemap(siteKey, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, tmpFile);
 
                             } catch (Throwable e) {
                                 throw new RuntimeException(e);
