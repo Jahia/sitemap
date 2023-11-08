@@ -142,7 +142,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                     isTestPassed = false
                 }
             })
-            expect(isTestPassed).to.be.equal(false)
+            expect(isTestPassed).to.be.equal(true)
         })
 
         cy.apollo({
