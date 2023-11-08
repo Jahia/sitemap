@@ -29,6 +29,7 @@ import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.job.SitemapCreationJob;
 import org.jahia.modules.sitemap.services.SitemapService;
+import org.jahia.modules.sitemap.utils.Utils;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionFactory;
@@ -51,10 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.quartz.SimpleTrigger.REPEAT_INDEFINITELY;
 
@@ -63,6 +67,7 @@ public class SitemapServiceImpl implements SitemapService {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapServiceImpl.class);
     private static final String ERROR_IO_EXCEPTION_WHEN_SENDING_URL_PATH = "Error IO exception when sending url path";
+    private static final String SITEMAP_CACHE_NAME = "sitemapCache";
     private static final long SITEMAP_DEFAULT_CACHE_DURATION_IN_SECONDS = 14400;
     private static final String JOB_GROUP_NAME = BackgroundJob.getGroupName(SitemapCreationJob.class);
     private static final JahiaUser ROOT_USER = JahiaUserManagerService.getInstance().lookupRootUser().getJahiaUser();
@@ -162,7 +167,19 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public String getSitemap(String siteKey, String key) {
         try {
-            return JCRTemplate.getInstance().doExecuteWithSystemSession(session -> session.getNode("/sites/" + siteKey + "/sitemapSettings/sitemapCache/" + key).getProperty("sitemap").getString());
+            return JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
+                try(InputStream is = session.getNode("/sites/" + siteKey + "/sitemapSettings/sitemapCache/" + key).getProperty("sitemapFile").getBinary().getStream()) {
+                    // String transformation
+                    return new BufferedReader(
+                            new InputStreamReader(is, StandardCharsets.UTF_8))
+                            .lines()
+                            .map(Utils::decode)
+                            .collect(Collectors.joining("\n"));
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
         } catch (Exception e) {
             try {
                 JobDetail jobDetail = schedulerService.getScheduler().getJobDetail(siteKey, JOB_GROUP_NAME);
@@ -179,15 +196,34 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     @Override
-    public void addSitemap(String siteKey, String key, String sitemap) throws RepositoryException {
-        JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
+    public void addSitemap(String siteKey, String key, Path sitemap) throws RepositoryException {
+        JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
             JCRNodeWrapper settingsNode = JCRContentUtils.getOrAddPath(session, session.getNode("/sites/" + siteKey), "sitemapSettings", "jnt:sitemapSettings");
             JCRNodeWrapper cacheRoot = JCRContentUtils.getOrAddPath(session, settingsNode, "sitemapCache", "jnt:sitemapRootCacheEntries");
             JCRNodeWrapper cacheNode = JCRContentUtils.getOrAddPath(session, cacheRoot, key, "jnt:sitemapEntry");
-            cacheNode.setProperty("sitemap", sitemap);
+            try(FileInputStream stream = new FileInputStream(sitemap.toFile())) {
+                cacheNode.setProperty("sitemapFile", session.getValueFactory().createBinary(stream));
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
             session.save();
             return null;
         });
+    }
+
+    private void removeSitemaps() {
+        // Clean up cache
+        try {
+            JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
+                if (session.nodeExists("/settings/sitemapSettings/sitemapCache")) {
+                    session.getNode("/settings/sitemapSettings/sitemapCache").remove();
+                    session.save();
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -212,6 +248,7 @@ public class SitemapServiceImpl implements SitemapService {
         // Clean all jobs
         try {
             deleteSitemapJobs();
+            removeSitemaps();
         } catch (Exception e) {
             logger.error("An error happen while trying to unSchedule jobs or remove cached sitemaps", e);
         }

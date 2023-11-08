@@ -33,7 +33,6 @@ const optionsCollector = {
 require('cypress-terminal-report/src/installLogsCollector')(optionsCollector)
 
 before(() => {
-    debugger
     cy.executeGroovy('logger.groovy', { MESSAGE: `############# ${Cypress.spec.name} ############# ` })
 })
 

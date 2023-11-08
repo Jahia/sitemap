@@ -40,6 +40,7 @@ import org.jahia.services.query.ScrollableQuery;
 import org.jahia.services.query.ScrollableQueryCallback;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.seo.urlrewrite.ServerNameToSiteMapper;
+import org.jahia.services.seo.urlrewrite.UrlRewriteService;
 import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.settings.SettingsBean;
@@ -57,7 +58,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Utility helper class for Sitemap
@@ -68,6 +68,11 @@ public final class Utils {
 
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
+    private static final String[] ENTITIES = new String[]{"&amp;", "&apos;", "&quot;", "&gt;", "&lt;"};
+    private static final String[] ENCODED_ENTITIES = new String[]{"_-amp-_", "_-apos-_", "_-quot-_", "_-gt-_", "_-lt-_"};
+
+    private static final UrlRewriteService urlRewriteService = BundleUtils.getOsgiService(UrlRewriteService.class, null);
+
 
     private Utils() {
     }
@@ -96,20 +101,15 @@ public final class Utils {
     public static Set<String> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
         Set<String> results = new HashSet<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
-        // Add site node to results
-        if (renderContext.getSite().getActiveLiveLanguages().contains(locale)) {
-            results.add(renderContext.getSite().getPath());
-        }
         JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, LanguageCodeConverters.languageCodeToLocale(locale), session -> {
-
+            // Add site node to results
+            results.add(renderContext.getSite().getPath());
             String query = String.format("SELECT * FROM [jseomix:sitemapResource] as sel WHERE ISDESCENDANTNODE(sel, '%s')", renderContext.getSite().getPath());
             QueryResult queryResult = getQuery(session, query);
             NodeIterator ni = queryResult.getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper n = (JCRNodeWrapper) ni.nextNode();
-                if (isValidEntry(n, renderContext)) {
-                    results.add(n.getPath());
-                }
+                results.add(n.getPath());
             }
             return null;
         });
@@ -119,72 +119,92 @@ public final class Utils {
     /**
      * @return sitemap entries that are publicly accessible
      */
-    public static Set<SitemapEntry> getSitemapEntries(RenderContext renderContext, String rootPath, Locale locale) throws RepositoryException {
-        final Set<SitemapEntry> result = new LinkedHashSet<>();
+    public static void getSitemapEntries(Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, String rootPath, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
         List<String> excludedPath = new ArrayList<>();
         JahiaUser guestUser = ServicesRegistry.getInstance().getJahiaUserManagerService().lookupUser(Constants.GUEST_USERNAME).getJahiaUser();
         SitemapConfigService config = BundleUtils.getOsgiService(SitemapConfigService.class, null);
         if (config == null) {
             logger.error("Configuration service SitemapConfigService not revolved, check OSGi services status");
-            return Collections.EMPTY_SET;
+            return;
         }
-        JCRTemplate.getInstance().doExecute(guestUser, Constants.LIVE_WORKSPACE, locale, session -> {
-            // add root node into results
-            JCRNodeWrapper rootNode = session.getNode(rootPath);
-            if (isValidEntry(rootNode, renderContext)) {
-                result.add(buildSiteMapEntry(rootNode, locale, guestUser, renderContext));
-            }
-            // look for sub nodes
-            for (String nodeType : config.getIncludeContentTypes()) {
-                String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, StringUtils.replace(rootPath, "'", "''"));
-                new ScrollableQuery(500, session.getWorkspace().getQueryManager()
-                        .createQuery(queryFrom, Query.JCR_SQL2)).execute(
-                        new ScrollableQueryCallback<ScrollableQuery>() {
-                            @Override
-                            public boolean scroll() throws RepositoryException {
-                                for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
-                                    JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
-                                    if (node != null && node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
-                                        excludedPath.add(node.getPath());
-                                    } else if (node != null && isValidEntry(node, renderContext)) {
-                                        result.add(buildSiteMapEntry(node, locale, guestUser, renderContext));
-                                    }
-                                }
-                                return true;
-                            }
 
-                            @Override
-                            protected ScrollableQuery getResult() {
-                                return null;
+        JCRSessionWrapper session = sessionPerLocale.get(null);
+        // add root node into results
+        JCRNodeWrapper rootNode = session.getNode(rootPath);
+        if (isValidEntry(rootNode, renderContext)) {
+            buildSiteMapEntriesForNode(rootNode, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
+        }
+        // look for sub nodes
+        for (String nodeType : config.getIncludeContentTypes()) {
+            String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, StringUtils.replace(rootPath, "'", "''"));
+            new ScrollableQuery(500, session.getWorkspace().getQueryManager()
+                    .createQuery(queryFrom, Query.JCR_SQL2)).execute(
+                    new ScrollableQueryCallback<ScrollableQuery>() {
+                        @Override
+                        public boolean scroll() throws RepositoryException {
+                            for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
+                                JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
+                                if (node != null && node.isNodeType(DEDICATED_SITEMAP_MIXIN) && !node.getPath().equals(rootPath)) {
+                                    excludedPath.add(node.getPath());
+                                } else if (node != null && isValidEntry(node, renderContext)) {
+                                    buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
+                                }
                             }
+                            return true;
                         }
-                );
-            }
-            logger.info("Sitemap build ended for node {} ({} entries added)", rootPath, result.size());
-            return null;
-        });
+
+                        @Override
+                        protected ScrollableQuery getResult() {
+                            return null;
+                        }
+                    }
+            );
+        }
+        logger.info("Sitemap build ended for node {} ({} entries added)", rootPath, entriesByPath.size());
         // Filter out excluded path
-        return result.stream().filter(sitemapEntry -> excludedPath.stream().noneMatch(path -> sitemapEntry.getPath().startsWith(path + "/") || sitemapEntry.getPath().equals(path))).collect(Collectors.toSet());
+        for (String path : entriesByPath.keySet()) {
+            if (excludedPath.stream().anyMatch(excludedPathEntry -> path.startsWith(excludedPathEntry + "/") || path.equals(excludedPathEntry))) {
+                entriesByPath.remove(path);
+            }
+        }
+        for (Set<SitemapEntry> sitemapEntries : entriesByLocale.values()) {
+            Set<SitemapEntry> entriesToRemove = new HashSet<>();
+            for (SitemapEntry sitemapEntry : sitemapEntries) {
+                if (excludedPath.stream().anyMatch(excludedPathEntry -> sitemapEntry.getPath().startsWith(excludedPathEntry + "/") || sitemapEntry.getPath().equals(excludedPathEntry))) {
+                    entriesToRemove.add(sitemapEntry);
+                }
+            }
+            sitemapEntries.removeAll(entriesToRemove);
+        }
     }
 
-    private static SitemapEntry buildSiteMapEntry(JCRNodeWrapper node, Locale currentLocale, JahiaUser guestUser, RenderContext renderContext) throws RepositoryException {
+    private static void buildSiteMapEntriesForNode(JCRNodeWrapper node, Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
+
         // look for other languages
-        List<SitemapEntry> linksInOtherLanguages = new ArrayList<>();
-        for (Locale otherLocale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
+        Set<SitemapEntry> sitemapEntries = new HashSet<>();
+        for (Locale locale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
             // The "main" node existing, we use doExecuteWithSystemSessionAsUser to retrieve the I18n nodes to prevent map explosion (cf https://jira.jahia.org/browse/QA-14850 )
             // The "main" node being restrieved by a guest session, we have no security issue when retrieving i18ns nodes with system session
-            JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(guestUser, Constants.LIVE_WORKSPACE, otherLocale, sessionInOtherLocale -> {
-                if (!sessionInOtherLocale.nodeExists(node.getPath())) {
-                    return null;
+            JCRSessionWrapper localizedSession = sessionPerLocale.get(locale);
+            if (!localizedSession.nodeExists(node.getPath())) {
+                continue;
+            }
+            JCRNodeWrapper nodeInOtherLocale = localizedSession.getNode(node.getPath());
+            if (nodeInOtherLocale != null && isValidEntry(nodeInOtherLocale, renderContext)) {
+                String link = null;
+                try {
+                    link = renderContext.getRequest().getAttribute("jahiaHostname") + encode(urlRewriteService.rewriteOutbound(nodeInOtherLocale.getUrl(), renderContext.getRequest(), renderContext.getResponse()));
+                } catch (Throwable e) {
+                    logger.warn("Unable to rewrite link for url {}", nodeInOtherLocale.getUrl());
                 }
-                JCRNodeWrapper nodeInOtherLocale = sessionInOtherLocale.getNode(node.getPath());
-                if (nodeInOtherLocale != null && isValidEntry(nodeInOtherLocale, renderContext)) {
-                    linksInOtherLanguages.add(new SitemapEntry(nodeInOtherLocale.getPath(), nodeInOtherLocale.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), otherLocale, null, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier()));
-                }
-                return null;
-            });
+                final SitemapEntry sitemapEntry = new SitemapEntry(nodeInOtherLocale.getPath(), link, new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), locale, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier());
+                sitemapEntries.add(sitemapEntry);
+                final Set<SitemapEntry> entries = entriesByLocale.getOrDefault(locale, new HashSet<>());
+                entries.add(sitemapEntry);
+                entriesByLocale.put(locale, entries);
+            }
         }
-        return new SitemapEntry(node.getPath(), node.getUrl(), new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), currentLocale, linksInOtherLanguages, node.getPrimaryNodeTypeName(), node.getIdentifier());
+        entriesByPath.put(node.getPath(), sitemapEntries);
     }
 
     private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) throws RepositoryException {
@@ -226,6 +246,29 @@ public final class Utils {
         }
         request.setAttribute("jahiaSitemapSiteKey", siteKey);
         request.setAttribute("jahiaSitemapSiteLanguage", siteDefaultLanguage);
+    }
+
+    /**
+     * Simple encoding function that encodes xml entities.
+     *
+     * @param uri to encode
+     * @return an encoded uri
+     * @throws UnsupportedEncodingException
+     * @throws URIException
+     */
+    public static String encode(String uri) throws UnsupportedEncodingException, URIException {
+        return org.apache.commons.lang.StringUtils.replaceEach(Utils.encodeSitemapLink(uri, true), ENTITIES, ENCODED_ENTITIES);
+    }
+
+
+    /**
+     * Same as encode, but the way around
+     *
+     * @param xml to decode
+     * @return a decoded xml
+     */
+    public static String decode(String xml) {
+        return org.apache.commons.lang.StringUtils.replaceEach(xml, ENCODED_ENTITIES, ENTITIES);
     }
 
 }

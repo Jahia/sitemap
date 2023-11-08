@@ -42,7 +42,7 @@
 
 [jnt:sitemapEntry] > nt:base, jmix:noImportExport
  - siteKey (string) indexed=no hidden
- - sitemap (string) indexed=no hidden
+ - sitemapFile (binary) indexed=no hidden
 
 // Deprecated use mixin instead
 [jseont:sitemap] > nt:base

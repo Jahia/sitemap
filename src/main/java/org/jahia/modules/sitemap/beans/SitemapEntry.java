@@ -1,6 +1,5 @@
 package org.jahia.modules.sitemap.beans;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -13,14 +12,12 @@ public class SitemapEntry {
     final private Locale locale;
     final private String primaryNodetype;
     final private String identifier;
-    final private List<SitemapEntry> linksInOtherLanguages;
 
-    public SitemapEntry(String path, String link, String lastMod, Locale locale, List<SitemapEntry> linksInOtherLanguages, String primaryNodetype, String identifier) {
+    public SitemapEntry(String path, String link, String lastMod, Locale locale, String primaryNodetype, String identifier) {
         this.path = path;
         this.link = link;
         this.lastMod = lastMod;
         this.locale = locale;
-        this.linksInOtherLanguages = linksInOtherLanguages;
         this.primaryNodetype = primaryNodetype;
         this.identifier = identifier;
     }
@@ -39,10 +36,6 @@ public class SitemapEntry {
 
     public Locale getLocale() {
         return locale;
-    }
-
-    public List<SitemapEntry> getLinksInOtherLanguages() {
-        return linksInOtherLanguages;
     }
 
     public String getPrimaryNodetype() {
