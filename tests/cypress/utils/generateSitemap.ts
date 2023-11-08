@@ -1,4 +1,4 @@
-export const waitForSitemap = () => {
+export const waitForSitemap = (): void => {
     cy.waitUntil(
         () =>
             cy
