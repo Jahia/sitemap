@@ -1,0 +1,9 @@
+mutation removeProperty($pathOrId: String!, $propertyName: String!, $propertyValue: String!) {
+    jcr {
+        mutateNode(pathOrId: $pathOrId) {
+            mutateProperty(name: $propertyName) {
+                removeValue(value: $propertyValue)
+            }
+        }
+    }
+}

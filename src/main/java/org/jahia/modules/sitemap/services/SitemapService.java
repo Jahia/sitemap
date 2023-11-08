@@ -34,14 +34,16 @@ public interface SitemapService {
 
     /**
      * Generate the sitemap for the given siteKey
-     * @param siteKey
+     * @param siteKey site key
      */
     void generateSitemap(String siteKey);
 
     /**
-     * Adds sitemap cache entry
+     * Adds sitemap cache entry.
+     * @param siteKey (mandatory)
      * @param key (mandatory)
      * @param sitemap (mandatory)
+     * @throws RepositoryException
      */
     void addSitemap(String siteKey, String key, String sitemap)  throws RepositoryException;
 
@@ -57,7 +59,6 @@ public interface SitemapService {
      * Set up sitemap job generation for the given site
      * @param siteKey targeted site
      * @param repeatInterval String representation in hours of time between each job execution in ms.
-     * @throws RepositoryException
      * @throws SchedulerException
      */
     void scheduleSitemapJob(String siteKey, String repeatInterval) throws SchedulerException;
@@ -66,10 +67,13 @@ public interface SitemapService {
      * remove sitemap job generation for all or one given site
      * @param siteKey siteKey of the site, if null unSchedule all sitemaps generation
      * @return true if a job has been deleted
-     * @throws RepositoryException
-     * @throws SchedulerException
      */
     boolean deleteSitemapJob(String siteKey);
 
+    /**
+     * remove sitemap for one given site
+     * @param siteKey siteKey of the site
+     */
+    void removeSitemap(String siteKey);
 
 }

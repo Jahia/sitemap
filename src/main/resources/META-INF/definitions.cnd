@@ -34,13 +34,13 @@
 [jnt:sitemap] > jnt:content, jmix:siteComponent, jmix:hiddenType
  - base (weakreference)
 
-[jnt:sitemapSettings] > nt:base
+[jnt:sitemapSettings] > nt:base, jmix:noImportExport
  + sitemapCache (jnt:sitemapRootCacheEntries)
 
-[jnt:sitemapRootCacheEntries] > nt:base
+[jnt:sitemapRootCacheEntries] > nt:base, jmix:noImportExport
  + * (jnt:sitemapEntry)
 
-[jnt:sitemapEntry] > nt:base
+[jnt:sitemapEntry] > nt:base, jmix:noImportExport
  - siteKey (string) indexed=no hidden
  - sitemap (string) indexed=no hidden
 

@@ -98,7 +98,6 @@ public class SitemapCreationJob extends BackgroundJob {
                     try (StringWriter output = new StringWriter()) {
                         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                         Set<SitemapEntry> entries = Utils.getSitemapEntries(customRenderContext, sitemapRoot, currentLocale);
-                        String targetSitemapCacheKey = JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale;
                         // Build node settings
                         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -143,7 +142,7 @@ public class SitemapCreationJob extends BackgroundJob {
                         Transformer t = tf.newTransformer();
                         t.setOutputProperty(OutputKeys.INDENT, "yes");
                         t.transform(new DOMSource(doc), new StreamResult(output));
-                        sitemapService.addSitemap(siteKey, targetSitemapCacheKey, decode(output.getBuffer().toString()));
+                        sitemapService.addSitemap(siteKey, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, decode(output.getBuffer().toString()));
 
                     } catch (ParserConfigurationException | TransformerException | ServletException | IOException |
                              InvocationTargetException e) {

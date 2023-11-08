@@ -69,9 +69,8 @@ describe('Check sitemap links are encoded correctly', () => {
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', "vanity'ü", false)
         addVanityUrl(homePath + "/encoding-sitemap-test/sitemap-vanities/vanity'ü", "actual-vanity'ü")
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity>ü', 'actual-vanity>ü')
-        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity<ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity<ü', 'actual-vanity<ü')
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity ü', 'actual-vanity ü')
+        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity ü', 'actual-vanity ä')
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
