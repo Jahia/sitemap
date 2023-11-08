@@ -32,10 +32,7 @@ import org.jahia.modules.sitemap.beans.SitemapEntry;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.osgi.BundleUtils;
 import org.jahia.registries.ServicesRegistry;
-import org.jahia.services.content.JCRContentUtils;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.content.*;
 import org.jahia.services.query.ScrollableQuery;
 import org.jahia.services.query.ScrollableQueryCallback;
 import org.jahia.services.render.RenderContext;
@@ -47,6 +44,7 @@ import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.touk.throwing.ThrowingConsumer;
 import pl.touk.throwing.ThrowingPredicate;
 
 import javax.jcr.NodeIterator;
@@ -157,6 +155,8 @@ public final class Utils {
                                     buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
                                 }
                             }
+                            // Clean cache of all sessions
+                            JCRSessionFactory.getInstance().getAllOpenUserSessions().forEach(ThrowingConsumer.unchecked(s -> s.refresh(false)));
                             return true;
                         }
 

@@ -25,7 +25,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-import javax.jcr.Session;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -184,10 +183,7 @@ public class SitemapCreationJob extends BackgroundJob {
                 return null;
             });
         } finally {
-            // Close all open session
-            for (Session session : sessionPerLocale.values()) {
-                session.logout();
-            }
+            // No need to close sessions as it's automatically done at the end of the job
             Thread.currentThread().setContextClassLoader(initialClassLoader);
         }
     }
