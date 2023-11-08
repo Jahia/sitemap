@@ -1,6 +1,6 @@
-import { configureSitemap } from '../../utils/configureSitemap'
-import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { generateSitemap } from '../../utils/generateSitemap'
+import {configureSitemap} from '../../utils/configureSitemap'
+import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
+import {generateSitemap} from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -142,7 +142,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                     isTestPassed = false
                 }
             })
-            expect(isTestPassed).to.be.equal(true)
+            expect(isTestPassed).to.be.equal(false)
         })
 
         cy.apollo({

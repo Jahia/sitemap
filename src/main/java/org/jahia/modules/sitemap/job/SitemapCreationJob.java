@@ -103,19 +103,19 @@ public class SitemapCreationJob extends BackgroundJob {
                 // Build sitemap entries
                 long startTime = System.currentTimeMillis();
                 logger.info("Start generating sitemap entries for {} languages", locales.size() - 1);
-                Map<Locale, Set<SitemapEntry>> entriesByLocale = new HashMap<>();
-                Map<String, Set<SitemapEntry>> entriesByPath = new HashMap<>();
-                for (String sitemapRoot : Utils.getSitemapRoots(customRenderContext, null)) {
-                    Utils.getSitemapEntries(sessionPerLocale, customRenderContext, sitemapRoot, entriesByLocale, entriesByPath);
-                }
-                final long endTime = System.currentTimeMillis();
-                logger.info(entriesByPath.size() + " sitemap entries generated in " + (endTime - startTime) / 1000 + "s");
+                final Set<String> sitemapRoots = Utils.getSitemapRoots(customRenderContext, null);
+                for (String sitemapRoot : sitemapRoots) {
+                    Map<Locale, Set<SitemapEntry>> entriesByLocale = new HashMap<>();
+                    Map<String, Set<SitemapEntry>> entriesByPath = new HashMap<>();
+                    Utils.generateSitemapEntries(sessionPerLocale, customRenderContext, sitemapRoot, sitemapRoots, entriesByLocale, entriesByPath);
 
-                for (Locale currentLocale : siteNode.getActiveLiveLanguagesAsLocales()) {
-                    // Get all sitemaps to generate
-                    startTime = System.currentTimeMillis();
-                    logger.info("Sitemap generation started for siteKey {} and locale {}", siteKey, currentLocale);
-                    for (String sitemapRoot : Utils.getSitemapRoots(customRenderContext, currentLocale.toString())) {
+                    final long endTime = System.currentTimeMillis();
+                    logger.info("End generating entries: {} path added in {}s", entriesByPath.size(), (endTime - startTime) / 1000);
+
+                    for (Locale currentLocale : siteNode.getActiveLiveLanguagesAsLocales()) {
+                        // Get all sitemaps to generate
+                        startTime = System.currentTimeMillis();
+                        logger.info("Sitemap generation started for sitemap ROOT {} and locale {}", sitemapRoot, currentLocale);
                         try {
                             Path tmpFile = Files.createTempFile(siteKey + "-" + currentLocale.toLanguageTag(), ".xml");
                             try (FileWriter output = new FileWriter(tmpFile.toFile())) {
@@ -170,7 +170,7 @@ public class SitemapCreationJob extends BackgroundJob {
                                 t.setOutputProperty(OutputKeys.INDENT, "yes");
                                 t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                                 t.transform(new DOMSource(doc), new StreamResult(output));
-                                sitemapService.addSitemap(siteKey, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, tmpFile);
+                                sitemapService.addSitemap(sitemapRoot, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, tmpFile);
 
                             } catch (Throwable e) {
                                 throw new RuntimeException(e);
@@ -178,9 +178,8 @@ public class SitemapCreationJob extends BackgroundJob {
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
-
+                        logger.info("Sitemap generation End for sitemap ROOT {} and locale {} in {}s", sitemapRoot, currentLocale, (System.currentTimeMillis() - startTime) / 1000);
                     }
-                    logger.info("Sitemap generation End for siteKey {} and locale {} in {}s", siteKey, currentLocale, (System.currentTimeMillis() - startTime) / 1000);
                 }
                 return null;
             });
