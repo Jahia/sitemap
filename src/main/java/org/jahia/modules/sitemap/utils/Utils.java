@@ -130,9 +130,6 @@ public final class Utils {
         }
 
         JCRSessionWrapper session = sessionPerLocale.get(null);
-        // Get excluded path
-        String queryFromRootPath = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", DEDICATED_SITEMAP_MIXIN, StringUtils.replace(rootPath, "'", "''"));
-        QueryResult results = session.getWorkspace().getQueryManager().createQuery(queryFromRootPath, Query.JCR_SQL2).execute();
         // add root node into results
         JCRNodeWrapper rootNode = session.getNode(rootPath);
         if (isValidEntry(rootNode, renderContext)) {

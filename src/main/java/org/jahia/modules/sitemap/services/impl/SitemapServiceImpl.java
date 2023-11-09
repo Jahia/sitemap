@@ -211,21 +211,6 @@ public class SitemapServiceImpl implements SitemapService {
         });
     }
 
-    private void removeSitemaps() {
-        // Clean up cache
-        try {
-            JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
-                if (session.nodeExists("/settings/sitemapSettings/sitemapCache")) {
-                    session.getNode("/settings/sitemapSettings/sitemapCache").remove();
-                    session.save();
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void removeSitemap(String siteKey) {
         // Clean up cache
@@ -248,7 +233,6 @@ public class SitemapServiceImpl implements SitemapService {
         // Clean all jobs
         try {
             deleteSitemapJobs();
-            removeSitemaps();
         } catch (Exception e) {
             logger.error("An error happen while trying to unSchedule jobs or remove cached sitemaps", e);
         }
