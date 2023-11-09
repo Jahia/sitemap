@@ -27,6 +27,7 @@ import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.quartz.SchedulerException;
 
 import javax.jcr.RepositoryException;
+import java.nio.file.Path;
 
 public interface SitemapService {
 
@@ -45,7 +46,7 @@ public interface SitemapService {
      * @param sitemap (mandatory)
      * @throws RepositoryException
      */
-    void addSitemap(String siteKey, String key, String sitemap)  throws RepositoryException;
+    void addSitemap(String siteKey, String key, Path sitemap)  throws RepositoryException;
 
     /**
      * Gets sitemap entry cache value for a giving sitemap cache key.
