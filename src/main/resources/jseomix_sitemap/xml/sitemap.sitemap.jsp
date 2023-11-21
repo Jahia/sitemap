@@ -37,14 +37,13 @@
                        value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}"/>
             </c:otherwise>
         </c:choose>
-        <jcr:nodeProperty node="${renderContext.site}" name="j:languages" var="languages"/>
-        <c:forEach var="lang" items="${languages}">
+        <c:forEach var="lang" items="${renderContext.site.activeLiveLanguages}">
                 <!-- Dedicated sitemap entries for language: ${lang} -->
-            <c:forEach var="nodePath" items="${sitemap:getSitemapRoots(renderContext, lang.string)}">
+            <c:forEach var="nodePath" items="${sitemap:getSitemapRoots(renderContext, lang)}">
                 <sitemap>
                     <c:set value="/cms/render/live/${lang}${nodePath}/sitemap-lang.xml"
                            var="resolvedLangUrl"/>
-                    <loc>${serverUrl}${sitemap:encodeSitemapLink(resolvedLangUrl, false)}</loc>
+                    <loc>${serverUrl}${sitemap:encodeSitemapLink(resolvedLangUrl, false, renderContext, true)}</loc>
                 </sitemap>
             </c:forEach>
         </c:forEach>

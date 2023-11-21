@@ -19,6 +19,6 @@
     <function>
         <name>encodeSitemapLink</name>
         <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
-        <function-signature>java.lang.String encodeSitemapLink(java.lang.String,boolean)</function-signature>
+        <function-signature>java.lang.String encodeSitemapLink(java.lang.String,boolean,org.jahia.services.render.RenderContext,boolean)</function-signature>
     </function>
 </taglib>

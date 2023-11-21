@@ -25,6 +25,7 @@ package org.jahia.modules.sitemap.utils;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jahia.api.Constants;
@@ -51,9 +52,12 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -80,8 +84,13 @@ public final class Utils {
     private Utils() {
     }
 
-    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst) throws URIException, UnsupportedEncodingException {
-        String encodedURIPath = URIPath;
+    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst,RenderContext renderContext,  boolean removeContextPath) throws IOException, ServletException, InvocationTargetException {
+        String encodedURIPath = urlRewriteService.rewriteOutbound(URIPath, renderContext.getRequest(), renderContext.getResponse());
+
+        if (removeContextPath) {
+            encodedURIPath =  RegExUtils.replaceFirst(encodedURIPath, renderContext.getRequest().getContextPath(), "");
+        }
+
         if (shouldBeDecodedFirst) {
             // example: /cms/render/live/fr/sites/digitall/home/test-parent/test2%3c%c3%bc.html
             // First we decode it, since the node.getUrl(); is encoding the path using JackRabbit Text.escapePath();
@@ -98,7 +107,7 @@ public final class Utils {
 
         // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;%c3%bc.html
         // we have correctly encoded XML entity: (> into &lt;) and correctly encoded character: (Ã¼ into %c3%bc)
-        return encodedURIPath;
+        return  encodedURIPath;
     }
 
     public static Set<String> getSitemapRoots(RenderContext renderContext, String locale) throws RepositoryException {
@@ -181,7 +190,7 @@ public final class Utils {
             if (nodeInOtherLocale != null && isValidEntry(nodeInOtherLocale, renderContext)) {
                 String link = null;
                 try {
-                    link = renderContext.getRequest().getAttribute("jahiaHostname") + encode(urlRewriteService.rewriteOutbound(nodeInOtherLocale.getUrl(), renderContext.getRequest(), renderContext.getResponse()));
+                    link = renderContext.getRequest().getAttribute("jahiaHostname") + encode(nodeInOtherLocale.getUrl(), renderContext);
                 } catch (Throwable e) {
                     logger.warn("Unable to rewrite link for url {}", nodeInOtherLocale.getUrl());
                 }
@@ -244,8 +253,8 @@ public final class Utils {
      * @throws UnsupportedEncodingException
      * @throws URIException
      */
-    public static String encode(String uri) throws UnsupportedEncodingException, URIException {
-        return org.apache.commons.lang.StringUtils.replaceEach(Utils.encodeSitemapLink(uri, true), ENTITIES, ENCODED_ENTITIES);
+    public static String encode(String uri, RenderContext renderContext) throws IOException, ServletException, InvocationTargetException {
+        return org.apache.commons.lang.StringUtils.replaceEach(Utils.encodeSitemapLink(uri, true, renderContext, false), ENTITIES, ENCODED_ENTITIES);
     }
 
 
