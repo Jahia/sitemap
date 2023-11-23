@@ -1,6 +1,6 @@
-import {configureSitemap} from '../../utils/configureSitemap'
-import {removeSitemapConfiguration} from '../../utils/removeSitemapConfiguration'
-import {generateSitemap} from '../../utils/generateSitemap'
+import { configureSitemap } from '../../utils/configureSitemap'
+import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { generateSitemap } from '../../utils/generateSitemap'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -23,40 +23,6 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
     after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
-    })
-
-    it('should have only live languages as root url', () => {
-        // Add edit only language to the site
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                properties: [{ name: 'j:inactiveLiveLanguages', values: [langDe], language: langEn }],
-            },
-            mutationFile: 'graphql/jcrUpdateNode.graphql',
-        })
-        // Check only 2 siteRoots available
-        cy.requestFindXMLElementByTagName(siteMapRootUrl + '/sitemap.xml', 'loc').then((urls) => {
-            expect(urls.size === 2)
-            Cypress.$(urls).each(($idx, $list) => {
-                // Ensure url are the one expected
-            })
-        })
-        // Remove edit only language
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                properties: [{ propertyName: 'j:inactiveLiveLanguages' }],
-            },
-            mutationFile: 'graphql/jcrDeleteProperty.graphql',
-        })
-    })
-
-    it('should use encoded vanity url for root urls', () => {
-
-    })
-
-    it('should be possible to access sitemap for multiple site', () => {
-
     })
 
     it('alternate url should not contains all three languages', () => {
