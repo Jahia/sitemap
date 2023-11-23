@@ -130,4 +130,10 @@ describe('Check sitemap links are encoded correctly', () => {
             }
         })
     })
+
+    it('should use vanity url for sitemap roots', () => {
+        cy.request(Cypress.config().baseUrl + '/sitemap.xml')
+            .its('body')
+            .should('include', Cypress.config().baseUrl + '/sites/digitall/sitemap-lang.xml')
+    })
 })
