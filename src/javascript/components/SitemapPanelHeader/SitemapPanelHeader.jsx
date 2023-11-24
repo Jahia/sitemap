@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import {Book, Button, Delete, Header, Save, Upload} from '@jahia/moonstone';
+import {Book, Button, Sitemap, Header, Save, Upload} from '@jahia/moonstone';
 import styles from './SitemapPanelHeader.scss';
 import {DialogComponent} from '../Dialog/Dialog';
 import {useTranslation} from 'react-i18next';
@@ -99,7 +99,7 @@ export const SitemapPanelHeaderComponent = ({
                             data-sel-role="sitemapFlushCacheButton"
                             variant="ghost"
                             label={t('labels.header.flushCacheButtonLabel')}
-                            icon={<Delete/>}
+                            icon={<Sitemap/>}
                             disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
                             onClick={() => handleDialogOpen('flushCache', t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
                     <Button key="submitToGoogleButton"
