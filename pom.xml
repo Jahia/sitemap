@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jahia.modules</groupId>
@@ -15,11 +16,12 @@
         <connection>scm:git:git@github.com:Jahia/sitemap.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/sitemap.git</developerConnection>
         <url>scm:git:git@github.com:Jahia/sitemap.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <properties>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
-        <jahia-module-signature>MCwCFCqldpe7u3Igm+Y+iuPr3fFtpJG0AhRktbOL7DjdU0pSLne54devt62mCw==</jahia-module-signature>
+        <jahia-module-signature>MCwCFCqldpe7u3Igm+Y+iuPr3fFtpJG0AhRktbOL7DjdU0pSLne54devt62mCw==
+        </jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
@@ -67,16 +69,6 @@
             <version>${graphql-java-annotations.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.10.0</version>
-        </dependency>
     </dependencies>
     <repositories>
         <repository>
@@ -93,6 +85,15 @@
         </repository>
     </repositories>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jahia.server</groupId>
+                    <artifactId>jahia-maven-plugin</artifactId>
+                    <version>6.9</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>

@@ -23,8 +23,6 @@
  */
 package org.jahia.modules.sitemap.utils;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -58,12 +56,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +81,7 @@ public final class Utils {
     private Utils() {
     }
 
-    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst,RenderContext renderContext,  boolean removeContextPath) throws IOException, ServletException, InvocationTargetException {
+    public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst,RenderContext renderContext,  boolean removeContextPath) throws IOException, ServletException, InvocationTargetException, URISyntaxException {
         String encodedURIPath = urlRewriteService.rewriteOutbound(URIPath, renderContext.getRequest(), renderContext.getResponse());
 
         if (removeContextPath) {
@@ -103,7 +100,7 @@ public final class Utils {
 
         // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;Ã¼.html
         // Now we just need to re encode into UTF-8
-        encodedURIPath = URIUtil.encodePath(encodedURIPath, "UTF-8");
+        encodedURIPath = new URI(null, null, encodedURIPath, null).toASCIIString();;
 
         // example is now: /cms/render/live/fr/sites/digitall/home/test-parent/test2&lt;%c3%bc.html
         // we have correctly encoded XML entity: (> into &lt;) and correctly encoded character: (Ã¼ into %c3%bc)
@@ -251,9 +248,8 @@ public final class Utils {
      * @param uri to encode
      * @return an encoded uri
      * @throws UnsupportedEncodingException
-     * @throws URIException
      */
-    public static String encode(String uri, RenderContext renderContext) throws IOException, ServletException, InvocationTargetException {
+    public static String encode(String uri, RenderContext renderContext) throws IOException, ServletException, InvocationTargetException, URISyntaxException {
         return org.apache.commons.lang.StringUtils.replaceEach(Utils.encodeSitemapLink(uri, true, renderContext, false), ENTITIES, ENCODED_ENTITIES);
     }
 
