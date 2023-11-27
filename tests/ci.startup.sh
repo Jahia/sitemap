@@ -23,21 +23,16 @@ if [[ -z ${JAHIA_LICENSE} ]]; then
     fi
 fi
 
-docker-compose up -d mariadb jahia
+docker-compose up -d mariadb haproxy jahia
 
 if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
     echo "$(date +'%d %B %Y - %k:%M') [JAHIA_CLUSTER_ENABLED] == Starting a cluster of one processing and two browsing =="
-    docker-compose up -d haproxy jahia-browsing-a jahia-browsing-b 
+    docker-compose up -d jahia-browsing-a jahia-browsing-b
 fi
 
 if [[ $1 != "notests" ]]; then
-    if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then
-        export JAHIA_URL=http://haproxy:8080
-        export JAHIA_PROCESSING_URL=http://jahia:8080
-    else
-        export JAHIA_URL=http://jahia:8080
-        export JAHIA_PROCESSING_URL=http://jahia:8080
-    fi
+    export JAHIA_URL=http://haproxy:8080
+    export JAHIA_PROCESSING_URL=http://jahia:8080
     echo "$(date +'%d %B %Y - %k:%M') [TESTS] == Starting cypress tests =="
     docker-compose up --abort-on-container-exit --renew-anon-volumes cypress
 fi
