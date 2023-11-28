@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Mock http request use to do url rewrite in a job
  */
-class HttpServletRequestMock implements HttpServletRequest {
+public class HttpServletRequestMock implements HttpServletRequest {
     private final Map<String, Object> attributes;
     private final String servername;
     private final String context;

@@ -29,9 +29,12 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
+import org.jahia.modules.sitemap.job.HttpServletRequestMock;
+import org.jahia.modules.sitemap.job.HttpServletResponseMock;
 import org.jahia.osgi.BundleUtils;
 import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.*;
+import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.query.ScrollableQuery;
 import org.jahia.services.query.ScrollableQueryCallback;
 import org.jahia.services.render.RenderContext;
@@ -54,10 +57,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -79,6 +84,30 @@ public final class Utils {
 
 
     private Utils() {
+    }
+
+    /**
+     * Try to encode and rewrite the provided path, return the initial path if anything wrong happen
+     * @param URIPath path to transform
+     * @return the encoded path
+     */
+    public static String encodeSitemapLink(String URIPath) {
+        try {
+            final JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(StringUtils.substringBetween(URIPath, "/sites/", "/"), JCRSessionFactory.getInstance().getCurrentSystemSession(Constants.LIVE_WORKSPACE, Locale.ENGLISH, Locale.ENGLISH));
+            String hostName = siteNode.getProperty("sitemapHostname").getString();
+            URL serverUrl = new URL(hostName);
+            hostName = org.apache.commons.lang.StringUtils.substringBeforeLast(hostName, serverUrl.getPath());
+            final HttpServletRequestMock request = new HttpServletRequestMock(new HashMap<>(), serverUrl.getHost(), serverUrl.getPath());
+            final HttpServletResponseMock response = new HttpServletResponseMock(new StringWriter());
+            request.setAttribute("jahiaHostname", hostName);
+            RenderContext customRenderContext = new RenderContext(request, response, JCRSessionFactory.getInstance().getCurrentUser());
+            customRenderContext.setSite(siteNode);
+            return encodeSitemapLink(URIPath, false, customRenderContext, true);
+        } catch (Exception e) {
+            logger.error("Something wrong happen while encoding the following Path {}", URIPath);
+            logger.debug("Detailed message", e);
+        }
+        return URIPath;
     }
 
     public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst,RenderContext renderContext,  boolean removeContextPath) throws IOException, ServletException, InvocationTargetException, URISyntaxException {
