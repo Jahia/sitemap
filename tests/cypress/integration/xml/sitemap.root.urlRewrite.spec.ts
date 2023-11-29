@@ -5,16 +5,17 @@ const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
 const langDe = 'de'
 const langEn = 'en'
-const siteMapRootUrl = Cypress.config().baseUrl + sitePath
+const siteMapRootUrl = Cypress.config().baseUrl
 
 describe('Check sitemap-lang.xml file on digitall', () => {
     before('Configure sitemap for the test', () => {
-        // Set jahia as digitall j:serverName
+        // Set current server name as digitall j:serverName
+        const host = new URL(Cypress.config().baseUrl).host
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
                 propertyName: 'j:serverName',
-                propertyValue: 'haproxy',
+                propertyValue: host.includes(':') ? host.substring(0, host.indexOf(':')) : host,
             },
             mutationFile: 'graphql/jcrAddProperty.graphql',
         })
@@ -23,7 +24,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
     after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
-        // Set localhost as digitall j:serverName
+        // Set back localhost as Digitall j:serverName
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
@@ -66,5 +67,13 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             .should('include', Cypress.config().baseUrl + '/sitemap-lang.xml')
             .should('include', Cypress.config().baseUrl + '/fr/sitemap-lang.xml')
             .should('not.include', Cypress.config().baseUrl + '/de/sitemap-lang.xml')
+    })
+
+    it('Should generate valid links', () => {
+        cy.requestFindXMLElementByTagName(Cypress.config().baseUrl + '/sitemap.xml', 'sitemap').then((urls) => {
+            Cypress.$(urls).each(($idx, $list) => {
+                cy.request($list.getElementsByTagName('loc')[0].textContent)
+            })
+        })
     })
 })

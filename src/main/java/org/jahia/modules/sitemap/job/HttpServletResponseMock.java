@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * Mock http response use to do url rewrite in a job
  */
-class HttpServletResponseMock implements HttpServletResponse {
+public class HttpServletResponseMock implements HttpServletResponse {
     private final StringWriter out;
 
     @Override
