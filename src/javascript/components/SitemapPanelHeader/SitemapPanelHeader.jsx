@@ -4,9 +4,10 @@ import {Book, Button, Sitemap, Header, Save, Upload} from '@jahia/moonstone';
 import styles from './SitemapPanelHeader.scss';
 import {DialogComponent} from '../Dialog/Dialog';
 import {useTranslation} from 'react-i18next';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
+import {getJobsStatus} from './gqlQueries';
 
 export const SitemapPanelHeaderComponent = ({
     formik,
@@ -19,6 +20,10 @@ export const SitemapPanelHeaderComponent = ({
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const [dialogInfo, setDialogInfo] = useState(null);
 
+    const jobsStatus = useQuery(getJobsStatus, {
+        pollInterval: 1000
+    });
+
     const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
         variables: {
             sitemapURL: formik.values.sitemapIndexURL
@@ -29,13 +34,13 @@ export const SitemapPanelHeaderComponent = ({
             openSnackBar(true);
             handleDialogClose();
         },
-        // eslint-disable-next-line no-unused-vars
+
         onError: error => {
-            handleDialogClose();
+            console.error(error);
         }
     });
 
-    const [deleteSitemapCacheMutation] = useMutation(gqlMutations.deleteSitemapCache, {
+    const [triggerSitemapJobMutation] = useMutation(gqlMutations.triggerSitemapJob, {
         variables: {
             siteKey: siteKey
         },
@@ -45,16 +50,16 @@ export const SitemapPanelHeaderComponent = ({
             openSnackBar(true);
             handleDialogClose();
         },
-        // eslint-disable-next-line no-unused-vars
+
         onError: error => {
-            handleDialogClose();
+            console.error(error);
         }
     });
 
     const handleDialogOpen = (id, title, text, submitText) => {
         let submitFunc = () => {};
         if (id === 'flushCache') {
-            submitFunc = deleteSitemapCacheMutation;
+            submitFunc = triggerSitemapJobMutation;
         } else if (id === 'submitToGoogle') {
             submitFunc = submitToGoogleMutation;
         }
@@ -77,6 +82,7 @@ export const SitemapPanelHeaderComponent = ({
         window.open('https://academy.jahia.com/documentation/enduser/jahia/8/advanced-authoring/seo/sitemap', '_blank');
     };
 
+    const jobStatus = jobsStatus?.data?.admin?.jahia?.scheduler.jobs.filter(job => job.group === 'SitemapCreationJob' && job.name === siteKey)[0].jobStatus;
     return (
         <>
             <Header
@@ -100,7 +106,8 @@ export const SitemapPanelHeaderComponent = ({
                             variant="ghost"
                             label={t('labels.header.flushCacheButtonLabel')}
                             icon={<Sitemap/>}
-                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled}
+                            isLoading={jobStatus === 'EXECUTING' || jobStatus === 'SCHEDULED'}
+                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled || jobStatus === 'EXECUTING' || jobStatus === 'SCHEDULED'}
                             onClick={() => handleDialogOpen('flushCache', t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
                     <Button key="submitToGoogleButton"
                             data-sel-role="sitemapSubmitToGoogleButton"

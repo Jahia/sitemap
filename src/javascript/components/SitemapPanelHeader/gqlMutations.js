@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 
-const deleteSitemapCache = gql`
-    mutation deleteSitemapCache($siteKey: String) {
+const triggerSitemapJob = gql`
+    mutation triggerSitemapJob($siteKey: String) {
         admin {
             sitemap {
-                deleteSitemapCache(siteKey: $siteKey)
+                triggerSitemapJob(siteKey: $siteKey)
             }
         }
     }
@@ -20,4 +20,4 @@ const sendSitemapToSearchEngine = gql`
     }
 `;
 
-export {deleteSitemapCache, sendSitemapToSearchEngine};
+export {triggerSitemapJob, sendSitemapToSearchEngine};
