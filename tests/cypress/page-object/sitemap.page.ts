@@ -2,8 +2,8 @@ export class SitemapPage {
     elements = {
         saveButton: "button[data-sel-role='sitemapSubmitButton']",
         sitemapRootUrlInput: "input[data-sel-role='sitemapIndexURL']",
-        headerFlushCacheSpan: "button[data-sel-role='sitemapFlushCacheButton']",
-        dialogFlushCacheSpan: "button[data-sel-role='sitemapDialogSubmitButton']",
+        headerTriggerSitemapJobSpan: "button[data-sel-role='sitemapTriggerSitemapJobButton']",
+        dialogTriggerSitemapJobSpan: "button[data-sel-role='sitemapDialogSubmitButton']",
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -24,8 +24,8 @@ export class SitemapPage {
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    clickFlushCache() {
-        cy.get(this.elements.headerFlushCacheSpan, { timeout: 10000 }).click()
-        cy.get(this.elements.dialogFlushCacheSpan, { timeout: 10000 }).click()
+    clickTriggerSitemapJob() {
+        cy.get(this.elements.headerTriggerSitemapJobSpan, { timeout: 10000 }).click()
+        cy.get(this.elements.dialogTriggerSitemapJobSpan, { timeout: 10000 }).click()
     }
 }

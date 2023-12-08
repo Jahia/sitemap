@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {Book, Button, Sitemap, Header, Save, Upload} from '@jahia/moonstone';
 import styles from './SitemapPanelHeader.scss';
@@ -18,11 +18,19 @@ export const SitemapPanelHeaderComponent = ({
 }) => {
     const {t} = useTranslation('sitemap');
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
+    const [isTriggered, setTriggered] = useState(false);
     const [dialogInfo, setDialogInfo] = useState(null);
-
-    const jobsStatus = useQuery(getJobsStatus, {
-        pollInterval: 1000
+    const jobsStatusResult = useQuery(getJobsStatus, {
+        variables: {
+            path: '/sites/' + siteKey
+        },
+        pollInterval: 1000,
+        fetchPolicy: 'no-cache'
     });
+    useEffect(() => {
+        const jobStatus = jobsStatusResult?.data?.admin?.jahia?.scheduler.jobs.find(job => job.group === 'SitemapCreationJob' && job.name === siteKey)?.jobStatus;
+        setTriggered(jobStatus === 'EXECUTING' || jobsStatusResult?.data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
+    }, [jobsStatusResult, siteKey]);
 
     const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
         variables: {
@@ -42,11 +50,12 @@ export const SitemapPanelHeaderComponent = ({
 
     const [triggerSitemapJobMutation] = useMutation(gqlMutations.triggerSitemapJob, {
         variables: {
-            siteKey: siteKey
+            siteKey
         },
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
-            snackBarInfo({message: t('labels.snackbar.successFlushCache')});
+            setTriggered(true);
+            snackBarInfo({message: t('labels.snackbar.triggerSitemapJob')});
             openSnackBar(true);
             handleDialogClose();
         },
@@ -58,7 +67,7 @@ export const SitemapPanelHeaderComponent = ({
 
     const handleDialogOpen = (id, title, text, submitText) => {
         let submitFunc = () => {};
-        if (id === 'flushCache') {
+        if (id === 'triggerSitemapJob') {
             submitFunc = triggerSitemapJobMutation;
         } else if (id === 'submitToGoogle') {
             submitFunc = submitToGoogleMutation;
@@ -82,7 +91,6 @@ export const SitemapPanelHeaderComponent = ({
         window.open('https://academy.jahia.com/documentation/enduser/jahia/8/advanced-authoring/seo/sitemap', '_blank');
     };
 
-    const jobStatus = jobsStatus?.data?.admin?.jahia?.scheduler.jobs.filter(job => job.group === 'SitemapCreationJob' && job.name === siteKey)[0].jobStatus;
     return (
         <>
             <Header
@@ -101,14 +109,14 @@ export const SitemapPanelHeaderComponent = ({
                     />
                 ]}
                 toolbarLeft={[
-                    <Button key="flushCacheButton"
-                            data-sel-role="sitemapFlushCacheButton"
+                    <Button key="triggerSitemapJobButton"
+                            data-sel-role="sitemapTriggerSitemapJobButton"
                             variant="ghost"
-                            label={t('labels.header.flushCacheButtonLabel')}
+                            label={t('labels.header.triggerSitemapJobButtonLabel')}
                             icon={<Sitemap/>}
-                            isLoading={jobStatus === 'EXECUTING' || jobStatus === 'SCHEDULED'}
-                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled || jobStatus === 'EXECUTING' || jobStatus === 'SCHEDULED'}
-                            onClick={() => handleDialogOpen('flushCache', t('labels.dialog.flushCache.title'), t('labels.dialog.flushCache.description'), t('labels.dialog.flushCache.buttonFlushCacheText'))}/>,
+                            isLoading={isTriggered}
+                            disabled={formik.values.sitemapIndexURL === '' || !isSitemapMixinEnabled || isTriggered}
+                            onClick={() => handleDialogOpen('triggerSitemapJob', t('labels.dialog.triggerSitemapJob.title'), t('labels.dialog.triggerSitemapJob.description'), t('labels.dialog.triggerSitemapJob.buttonTriggerSitemapJobText'))}/>,
                     <Button key="submitToGoogleButton"
                             data-sel-role="sitemapSubmitToGoogleButton"
                             variant="ghost"

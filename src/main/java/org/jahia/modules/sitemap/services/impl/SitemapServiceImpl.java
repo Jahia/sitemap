@@ -25,6 +25,7 @@ package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
 import org.apache.commons.lang.StringUtils;
+import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.job.SitemapCreationJob;
@@ -158,8 +159,13 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public void generateSitemap(String siteKey) {
         try {
+            JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
+                JahiaSitesService.getInstance().getSiteByKey(siteKey, session).setProperty("isSitemapJobTriggered", true);
+                session.save();
+                return null;
+            });
             schedulerService.getScheduler().triggerJob(siteKey, JOB_GROUP_NAME);
-        } catch (SchedulerException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

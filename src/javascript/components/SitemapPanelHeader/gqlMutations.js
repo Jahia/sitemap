@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 const triggerSitemapJob = gql`
-    mutation triggerSitemapJob($siteKey: String) {
+    mutation triggerSitemapJob($siteKey: String!) {
         admin {
             sitemap {
                 triggerSitemapJob(siteKey: $siteKey)

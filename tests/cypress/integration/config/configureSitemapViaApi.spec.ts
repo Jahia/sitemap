@@ -18,7 +18,6 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
     it(`Apply sitemap configuration for site ${sitePath}`, function () {
-        debugger
         configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
 
         cy.apollo({

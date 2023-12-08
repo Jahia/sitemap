@@ -20,7 +20,7 @@ describe('Testing sitemap configuration via Jahia Admin UI', () => {
         const siteMapPage = SitemapPage.visit(siteKey, langEn)
         siteMapPage.inputSitemapRootURL(siteMapRootUrl)
         siteMapPage.clickOnSave()
-        siteMapPage.clickFlushCache()
+        siteMapPage.clickTriggerSitemapJob()
 
         cy.apollo({
             variables: {

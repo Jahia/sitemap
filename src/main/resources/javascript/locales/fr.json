@@ -5,7 +5,7 @@
     "header": {
       "title": "Sitemap - {{siteName}}",
       "academy": "Academy",
-      "flushCacheButtonLabel": "Générer le sitemap",
+      "triggerSitemapJobButtonLabel": "Générer le sitemap",
       "submitToGoogleButtonLabel": "Envoyer à Google",
       "save": "Enregistrer",
       "activate": "Activer"
@@ -29,10 +29,10 @@
     },
     "dialog": {
       "buttonCancel": "Annuler",
-      "flushCache": {
+      "triggerSitemapJob": {
         "title": "Fichier sitemap principal",
         "description": "Le fichier sitemap principal référence tous les autres fichiers sitemap: sitemap par langue et sitemap dédié.",
-        "buttonFlushCacheText": "Générer le sitemap"
+        "buttonTriggerSitemapJobText": "Générer le sitemap"
       },
       "submitToGoogle": {
         "title": "Envoyer à Google",
@@ -44,7 +44,7 @@
       "errorActivation": "Le plan de site n'est pas enregistré car {{hostname}} n'est pas une url valide.",
       "successActivation": "Sitemap activé",
       "successSubmitToGoogle": "Sitemap-index envoyé",
-      "successFlushCache": "Génération du sitemap démarrée."
+      "triggerSitemapJob": "Génération du sitemap démarrée."
     }
   }
 }

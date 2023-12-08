@@ -5,7 +5,7 @@
     "header": {
       "title": "Sitemap - {{siteName}}",
       "academy": "Academy",
-      "flushCacheButtonLabel": "Cache leeren",
+      "triggerSitemapJobButtonLabel": "Sitemap generieren",
       "submitToGoogleButtonLabel": "An Google übermitteln",
       "save": "Speichern",
       "activate": "Aktivieren"
@@ -29,10 +29,10 @@
     },
     "dialog": {
       "buttonCancel": "Abbrechen",
-      "flushCache": {
+      "triggerSitemapJob": {
         "title": "Haupt-Sitemap",
         "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps.",
-        "buttonFlushCacheText": "Cache leeren"
+        "buttonTriggerSitemapJobText": "Sitemap generieren"
       },
       "submitToGoogle": {
         "title": "An Google übermitteln",
@@ -44,7 +44,7 @@
       "errorActivation": "Sitemap nicht gespeichert, da {{hostname}} keine gültige URL ist",
       "successActivation": "Sitemap aktiviert",
       "successSubmitToGoogle": "Sitemap-Index übermittelt",
-      "successFlushCache": "Sitemap-Cache geleert."
+      "triggerSitemapJob": "Die Erstellung der Sitemap wurde ausgelöst."
     }
   }
 }
