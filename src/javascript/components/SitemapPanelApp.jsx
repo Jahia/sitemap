@@ -155,6 +155,7 @@ const SitemapPanelApp = ({client, t}) => {
     }
 
     return (
+
         <MuiThemeProvider theme={theme}>
             <form onSubmit={formik.handleSubmit}>
                 <main className={classnames(styles.main, 'flexCol')}>
