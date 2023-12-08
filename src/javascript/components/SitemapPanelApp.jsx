@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import classnames from 'clsx';
 import {Check, Chip, Close, Dropdown, Input, Typography} from '@jahia/moonstone';
 
+import {dsGenericTheme as theme} from '@jahia/design-system-kit';
+
 import styles from './SitemapPanel.scss';
 
 import {withApollo} from 'react-apollo';
@@ -18,6 +20,7 @@ import {SnackbarComponent} from './Snackbar/Snackbar';
 import {SitemapPanelHeaderComponent} from './SitemapPanelHeader/SitemapPanelHeader';
 import {SitemapIndexLink} from './panelSections';
 import {useFormik} from 'formik';
+import {MuiThemeProvider} from '@material-ui/core';
 
 const SitemapPanelApp = ({client, t}) => {
     const [sitemapMixinEnabled, setSitemapMixinEnabled] = useState(false);
@@ -111,7 +114,10 @@ const SitemapPanelApp = ({client, t}) => {
 
             if (!isValidHostname) {
                 // Unable to parse URL, show a snackbar error, then exit
-                setSnackbarInfo({message: t('labels.snackbar.errorActivation', {hostname: values.sitemapIndexURL}), error: true});
+                setSnackbarInfo({
+                    message: t('labels.snackbar.errorActivation', {hostname: values.sitemapIndexURL}),
+                    error: true
+                });
                 setSnackbarIsOpen(true);
                 return;
             }
@@ -149,82 +155,90 @@ const SitemapPanelApp = ({client, t}) => {
     }
 
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <main className={classnames(styles.main, 'flexCol')}>
-                <SitemapPanelHeaderComponent
-                    formik={formik}
-                    isSitemapMixinEnabled={sitemapMixinEnabled}
-                    siteKey={currentState.site}
-                    openSnackBar={setSnackbarIsOpen}
-                    snackBarInfo={setSnackbarInfo}
-                />
-                <div className={classnames(styles.content, 'flexCol')}>
-                    <div className={styles.section}>
-                        <section>
-                            <div className={styles.subsection}>
-                                <Typography className={styles.sitemapIndexURLTitle} component="h3">
-                                    {t('labels.settingSection.sitemapIndexURLSection.title')}
-                                    <Chip color="accent" className={styles.sitemapIndexURLChip} label={t('labels.settingSection.sitemapIndexURLSection.chipLabel')}/>
-                                </Typography>
-                                <Typography className={styles.sitemapIndexURLDescription} component="p">{t('labels.settingSection.sitemapIndexURLSection.description')}</Typography>
-                                <Input
-                                    required
-                                    id="sitemapIndexURL"
-                                    data-sel-role="sitemapIndexURL"
-                                    name="sitemapIndexURL"
-                                    placeholder="http://your-site-root"
-                                    value={formik.values.sitemapIndexURL}
-                                    className={styles.sitemapIndexURLInput}
-                                    onChange={formik.handleChange}
-                                />
-                            </div>
-                            <div className={styles.subsection}>
-                                <SitemapIndexLink
-                                    inputUrl={formik.values.sitemapIndexURL}
-                                    siteKey={currentState.site}
-                                    t={t}/>
-                            </div>
-                            <div className={styles.subsection}>
-                                <Typography className={styles.updateIntervalTitle} component="h3">
-                                    {t('labels.settingSection.updateIntervalSection.title')}
-                                </Typography>
-                                <Typography className={styles.updateIntervalDescription} component="p">
-                                    {t('labels.settingSection.updateIntervalSection.description')}
-                                </Typography>
+        <MuiThemeProvider theme={theme}>
+            <form onSubmit={formik.handleSubmit}>
+                <main className={classnames(styles.main, 'flexCol')}>
+                    <SitemapPanelHeaderComponent
+                        formik={formik}
+                        isSitemapMixinEnabled={sitemapMixinEnabled}
+                        siteKey={currentState.site}
+                        openSnackBar={setSnackbarIsOpen}
+                        snackBarInfo={setSnackbarInfo}
+                    />
+                    <div className={classnames(styles.content, 'flexCol')}>
+                        <div className={styles.section}>
+                            <section>
+                                <div className={styles.subsection}>
+                                    <Typography className={styles.sitemapIndexURLTitle} component="h3">
+                                        {t('labels.settingSection.sitemapIndexURLSection.title')}
+                                        <Chip color="accent"
+                                              className={styles.sitemapIndexURLChip}
+                                              label={t('labels.settingSection.sitemapIndexURLSection.chipLabel')}/>
+                                    </Typography>
+                                    <Typography className={styles.sitemapIndexURLDescription}
+                                                component="p"
+                                    >{t('labels.settingSection.sitemapIndexURLSection.description')}
+                                    </Typography>
+                                    <Input
+                                        required
+                                        id="sitemapIndexURL"
+                                        data-sel-role="sitemapIndexURL"
+                                        name="sitemapIndexURL"
+                                        placeholder="http://your-site-root"
+                                        value={formik.values.sitemapIndexURL}
+                                        className={styles.sitemapIndexURLInput}
+                                        onChange={formik.handleChange}
+                                    />
+                                </div>
+                                <div className={styles.subsection}>
+                                    <SitemapIndexLink
+                                        inputUrl={formik.values.sitemapIndexURL}
+                                        siteKey={currentState.site}
+                                        t={t}/>
+                                </div>
+                                <div className={styles.subsection}>
+                                    <Typography className={styles.updateIntervalTitle} component="h3">
+                                        {t('labels.settingSection.updateIntervalSection.title')}
+                                    </Typography>
+                                    <Typography className={styles.updateIntervalDescription} component="p">
+                                        {t('labels.settingSection.updateIntervalSection.description')}
+                                    </Typography>
 
-                                <Dropdown
-                                    id="intervalDuration"
-                                    data-sel-role="sitemapIntervalDuration"
-                                    name="intervalDuration"
-                                    isDisabled={false}
-                                    variant="outlined"
-                                    label={convertCacheDurationToLabel(formik.values.sitemapCacheDuration)}
-                                    value={formik.values.sitemapCacheDuration}
-                                    data={dropdownData}
-                                    onChange={(e, item) => {
-                                        formik.setFieldValue('sitemapCacheDuration', item.value);
-                                    }}
-                                />
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <SnackbarComponent
-                    varia
-                    isOpen={snackbarIsOpen}
-                    autoHideDuration={2000}
-                    message={
-                        <div className={styles.snackbarMessageDiv}>
-                            {snackbarInfo && snackbarInfo.error ? <Close className={styles.snackbarErrorCheckIcon}/> : <Check className={styles.snackbarMessageCheckIcon}/>}
-                            <Typography className={styles.snackbarMessageTypography} component="p">
-                                {snackbarInfo && snackbarInfo.message}
-                            </Typography>
+                                    <Dropdown
+                                        id="intervalDuration"
+                                        data-sel-role="sitemapIntervalDuration"
+                                        name="intervalDuration"
+                                        isDisabled={false}
+                                        variant="outlined"
+                                        label={convertCacheDurationToLabel(formik.values.sitemapCacheDuration)}
+                                        value={formik.values.sitemapCacheDuration}
+                                        data={dropdownData}
+                                        onChange={(e, item) => {
+                                            formik.setFieldValue('sitemapCacheDuration', item.value);
+                                        }}
+                                    />
+                                </div>
+                            </section>
                         </div>
-                    }
-                    handleClose={handleSnackBarClose}
-                />
-            </main>
-        </form>
+                    </div>
+                    <SnackbarComponent
+                        isOpen={snackbarIsOpen}
+                        autoHideDuration={10000}
+                        message={
+                            <div className={styles.snackbarMessageDiv}>
+                                {snackbarInfo && snackbarInfo.error ?
+                                    <Close className={styles.snackbarErrorCheckIcon}/> :
+                                    <Check className={styles.snackbarMessageCheckIcon}/>}
+                                <Typography className={styles.snackbarMessageTypography} component="p">
+                                    {snackbarInfo && snackbarInfo.message}
+                                </Typography>
+                            </div>
+                        }
+                        handleClose={handleSnackBarClose}
+                    />
+                </main>
+            </form>
+        </MuiThemeProvider>
     );
 };
 

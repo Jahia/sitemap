@@ -183,6 +183,12 @@ public class SitemapCreationJob extends BackgroundJob {
                 return null;
             });
         } finally {
+            // Clear job marker
+            JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
+                JahiaSitesService.getInstance().getSiteByKey(jobExecutionContext.getJobDetail().getName(), session).getProperty("isSitemapJobTriggered").remove();
+                session.save();
+                return null;
+            });
             // No need to close sessions as it's automatically done at the end of the job
             Thread.currentThread().setContextClassLoader(initialClassLoader);
         }

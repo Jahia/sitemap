@@ -5,7 +5,7 @@
     "header": {
       "title": "Sitemap - {{siteName}}",
       "academy": "Academy",
-      "flushCacheButtonLabel": "Generate sitemap",
+      "triggerSitemapJobButtonLabel": "Generate sitemap",
       "submitToGoogleButtonLabel": "Submit to search engines",
       "save": "SAVE",
       "activate": "ACTIVATE"
@@ -29,10 +29,10 @@
     },
     "dialog": {
         "buttonCancel": "cancel",
-        "flushCache": {
+        "triggerSitemapJob": {
           "title": "Generate sitemap",
           "description": "If you recently published a lot of changes on your site, you may want to manually generate a new sitemap file.",
-          "buttonFlushCacheText": "Generate sitemap"
+          "buttonTriggerSitemapJobText": "Generate sitemap"
         },
         "submitToGoogle": {
           "title": "Submit to search engines",
@@ -44,7 +44,7 @@
       "errorActivation": "Sitemap not saved as {{hostname}} is not a valid url",
       "successActivation": "Sitemap activated",
       "successSubmitToGoogle": "Sitemap-index submitted",
-      "successFlushCache": "Sitemap generation started."
+      "triggerSitemapJob": "Sitemap generation has been triggered."
     }
   }
 }

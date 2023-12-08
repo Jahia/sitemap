@@ -45,7 +45,7 @@ public class GqlSitemapMutation {
     @GraphQLDescription("Sending sitemap(s) based on either sitemap index XML or sitemap XML URL to search engine URL(s) specified in CFG")
     public Boolean sendSitemapToSearchEngine(
             @GraphQLName("sitemapURL") @GraphQLDescription("Sitemap index XML or sitemap XML URL") @GraphQLNonNull String sitemapURL
-            ){
+    ) {
         try {
             return sitemapService.sendSitemapXMLUrlPathToSearchEngines(sitemapURL);
         } catch (SitemapException e) {
@@ -54,11 +54,11 @@ public class GqlSitemapMutation {
     }
 
     @GraphQLField
-    @GraphQLDescription("Delete existing sitemap cache if exists before expiration time difference")
-    public Boolean deleteSitemapCache(
+    @GraphQLDescription("Trigger the sitemap job execution for the given sitekey")
+    public Boolean triggerSitemapJob(
             @GraphQLName("siteKey") @GraphQLDescription("Site key") String siteKey,
             DataFetchingEnvironment environment
-    ){
+    ) {
         sitemapService.generateSitemap(siteKey);
         return true;
     }

@@ -33,11 +33,15 @@ import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.utils.LanguageCodeConverters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import java.util.Locale;
 
 public class GqlSitemapQueries {
+
+    private static final Logger logger = LoggerFactory.getLogger(GqlSitemapQueries.class);
 
     @GraphQLField
     @GraphQLDescription("Get site URL with only server domain appended from sitemap URL")
