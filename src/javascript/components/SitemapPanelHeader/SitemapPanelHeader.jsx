@@ -28,9 +28,8 @@ export const SitemapPanelHeaderComponent = ({
         fetchPolicy: 'no-cache'
     });
     useEffect(() => {
-        const jobStatus = jobsStatusResult?.data?.admin?.jahia?.scheduler.jobs.find(job => job.group === 'SitemapCreationJob' && job.name === siteKey)?.jobStatus;
-        setTriggered(jobStatus === 'EXECUTING' || jobsStatusResult?.data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
-    }, [jobsStatusResult, siteKey]);
+        setTriggered(jobsStatusResult?.data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
+    }, [jobsStatusResult]);
 
     const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
         variables: {

@@ -11,19 +11,6 @@ const getJobsStatus = gql`
                 ...NodeCacheRequiredFields
             }
         }
-        admin {
-            jahia {
-                scheduler {
-                    jobs {
-                        name
-                        group
-                        jobState
-                        jobStatus
-                        duration
-                    }
-                }
-            }
-        }
     }
     ${PredefinedFragments.nodeCacheRequiredFields.gql}
 `;
