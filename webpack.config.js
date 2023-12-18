@@ -106,14 +106,7 @@ module.exports = (env, argv) => {
             ]
         },
         plugins: [
-            new ModuleFederationPlugin(getModuleFederationConfig(packageJson, {
-                exposes: {
-                    './init': './src/javascript/init'
-                },
-                remotes: {
-                    '@jahia/app-shell': 'appShellRemote',
-                },
-            }, Object.keys(packageJson.dependencies))),
+            new ModuleFederationPlugin(getModuleFederationConfig(packageJson, {}, ['formik'])),
             new CleanWebpackPlugin(path.resolve(__dirname, 'src/main/resources/javascript/apps/'), {verbose: false}),
             new CopyWebpackPlugin({
                 patterns: [{from: './package.json', to: ''}]

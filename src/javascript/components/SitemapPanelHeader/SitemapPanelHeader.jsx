@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {Book, Button, Sitemap, Header, Save, Upload} from '@jahia/moonstone';
+import {Book, Button, Header, Save, Upload} from '@jahia/moonstone';
 import styles from './SitemapPanelHeader.scss';
 import {DialogComponent} from '../Dialog/Dialog';
 import {useTranslation} from 'react-i18next';
@@ -8,6 +8,7 @@ import {useMutation, useQuery} from '@apollo/react-hooks';
 
 import * as gqlMutations from './gqlMutations';
 import {getJobsStatus} from './gqlQueries';
+import Sitemap from '../Icons/Sitemap';
 
 export const SitemapPanelHeaderComponent = ({
     formik,
@@ -20,7 +21,7 @@ export const SitemapPanelHeaderComponent = ({
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const [isTriggered, setTriggered] = useState(false);
     const [dialogInfo, setDialogInfo] = useState(null);
-    const jobsStatusResult = useQuery(getJobsStatus, {
+    const {data, refetch, startPolling, stopPolling} = useQuery(getJobsStatus, {
         variables: {
             path: '/sites/' + siteKey
         },
@@ -28,8 +29,8 @@ export const SitemapPanelHeaderComponent = ({
         fetchPolicy: 'no-cache'
     });
     useEffect(() => {
-        setTriggered(jobsStatusResult?.data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
-    }, [jobsStatusResult]);
+        setTriggered(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
+    }, [data]);
 
     const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
         variables: {
@@ -54,6 +55,9 @@ export const SitemapPanelHeaderComponent = ({
         // eslint-disable-next-line no-unused-vars
         onCompleted: data => {
             setTriggered(true);
+            stopPolling();
+            refetch().then(data => setTriggered(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered));
+            startPolling(1000);
             snackBarInfo({message: t('labels.snackbar.triggerSitemapJob')});
             openSnackBar(true);
             handleDialogClose();
