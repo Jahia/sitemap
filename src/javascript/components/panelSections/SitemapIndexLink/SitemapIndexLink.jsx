@@ -3,11 +3,8 @@ import PropTypes from 'prop-types';
 import {Card} from '@material-ui/core';
 import {Button, File, OpenInNew, Typography} from '@jahia/moonstone';
 import styles from './SitemapIndexLink.scss';
-import {useGetSitemapUrl} from '~/hooks/graphql';
 
-const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
-    const [siteUrl] = useGetSitemapUrl(siteKey);
-    console.log('link field values siteurl', siteUrl, 'input url', inputUrl);
+const SitemapIndexLink = ({inputUrl, t}) => {
     const indexUrl = `${inputUrl}/sitemap.xml`;
 
     return (
@@ -48,7 +45,6 @@ const SitemapIndexLink = ({inputUrl, siteKey, t}) => {
 
 SitemapIndexLink.propTypes = {
     inputUrl: PropTypes.string.isRequired,
-    siteKey: PropTypes.string.isRequired,
     t: PropTypes.func
 };
 
