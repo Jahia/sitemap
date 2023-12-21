@@ -191,8 +191,12 @@ public class SitemapCreationJob extends BackgroundJob {
         } finally {
             // Clear job marker
             JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
-                JahiaSitesService.getInstance().getSiteByKey(jobExecutionContext.getJobDetail().getName(), session).getProperty("isSitemapJobTriggered").remove();
-                session.save();
+                JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(jobExecutionContext.getJobDetail().getName(), session);
+                // This can happen if the sitemap module is uninstalled from a site as the job is running.
+                if (siteNode.hasProperty("isSitemapJobTriggered")) {
+                    siteNode.getProperty("isSitemapJobTriggered").remove();
+                    session.save();
+                }
                 return null;
             });
             // No need to close sessions as it's automatically done at the end of the job
