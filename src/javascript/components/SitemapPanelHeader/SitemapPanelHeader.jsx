@@ -21,7 +21,7 @@ export const SitemapPanelHeaderComponent = ({
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const [isTriggered, setTriggered] = useState(false);
     const [dialogInfo, setDialogInfo] = useState(null);
-    const {data, refetch, startPolling, stopPolling} = useQuery(getJobsStatus, {
+    const {data, startPolling, stopPolling} = useQuery(getJobsStatus, {
         variables: {
             path: '/sites/' + siteKey
         },
@@ -29,7 +29,8 @@ export const SitemapPanelHeaderComponent = ({
         fetchPolicy: 'no-cache'
     });
     useEffect(() => {
-        setTriggered(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
+        const remoteTriggerState = Boolean(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
+        setTriggered(remoteTriggerState);
     }, [data]);
 
     const [submitToGoogleMutation] = useMutation(gqlMutations.sendSitemapToSearchEngine, {
@@ -56,7 +57,6 @@ export const SitemapPanelHeaderComponent = ({
         onCompleted: data => {
             setTriggered(true);
             stopPolling();
-            refetch().then(data => setTriggered(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered));
             startPolling(1000);
             snackBarInfo({message: t('labels.snackbar.triggerSitemapJob')});
             openSnackBar(true);
