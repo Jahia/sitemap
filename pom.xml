@@ -19,7 +19,7 @@
     </scm>
     <properties>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
-        <jahia-module-signature>MC0CFFSzB5xTNAxdKg6/Fgu9v7FOcQXEAhUAkNSgVs0kXoncVBYk7r17hHbWOks=</jahia-module-signature>
+        <jahia-module-signature>MCwCFBnYMNfbBje0poIFo1UUDU5jdqmMAhQTVX9IoEwj5F8p7NDDDSCvYF91aw==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
