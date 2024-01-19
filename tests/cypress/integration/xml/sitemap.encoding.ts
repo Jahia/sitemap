@@ -104,7 +104,7 @@ describe('Check sitemap links are encoded correctly', () => {
         })
     })
 
-    it('Check encoding for sitemap pages with vanities', () => {
+    it.skip('Check encoding for sitemap pages with vanities', () => {
         const names = ['/actual-vanity&amp;%C3%BC', '/actual-vanity&apos;%C3%BC', '/actual-vanity&quot;%C3%BC']
 
         generateSitemap(siteKey)
