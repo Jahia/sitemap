@@ -135,10 +135,10 @@ public class SitemapCreationJob extends BackgroundJob {
                                 Document doc = docBuilder.newDocument();
                                 doc.setXmlStandalone(true);
                                 Element rootSitemap = doc.createElement("urlset");
-                                rootSitemap.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-                                rootSitemap.setAttribute("xsi:schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.w3.org/1999/xhtml http://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd");
-                                rootSitemap.setAttribute("xmlns", "http://www.w3.org/2001/XMLSchema-instance");
-                                rootSitemap.setAttribute("xmlns:xhtml", "http://www.w3.org/1999/xhtml");
+                                rootSitemap.setAttribute("xmlns:xsi", "https://www.w3.org/2001/XMLSchema-instance");
+                                rootSitemap.setAttribute("xsi:schemaLocation", "https://www.sitemaps.org/schemas/sitemap/0.9 https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://www.w3.org/1999/xhtml https://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd");
+                                rootSitemap.setAttribute("xmlns", "https://www.w3.org/2001/XMLSchema-instance");
+                                rootSitemap.setAttribute("xmlns:xhtml", "https://www.w3.org/1999/xhtml");
                                 doc.appendChild(rootSitemap);
                                 for (SitemapEntry entry : entries) {
                                     if (isDebug) {
