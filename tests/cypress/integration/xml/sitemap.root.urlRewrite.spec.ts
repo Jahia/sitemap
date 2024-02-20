@@ -19,7 +19,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             },
             mutationFile: 'graphql/jcrAddProperty.graphql',
         })
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {

@@ -106,7 +106,7 @@ const SitemapPanelApp = ({client, t}) => {
             let isValidHostname;
             try {
                 sitemapHostname = new URL(values.sitemapIndexURL).origin + contextJsParameters.contextPath;
-                console.info(sitemapHostname + 'will be set as base URL for sitemap');
+                console.info(sitemapHostname + ' will be set as base URL for sitemap');
                 isValidHostname = sitemapHostname && sitemapHostname !== 'null';
             } catch (_) {
                 isValidHostname = false;
@@ -135,8 +135,7 @@ const SitemapPanelApp = ({client, t}) => {
             gqlMutate(client, gqlMutations.setSitemapProperties, {
                 sitePath: '/sites/' + currentState.site,
                 sitemapIndexURL: formik.values.sitemapIndexURL,
-                sitemapCacheDuration: formik.values.sitemapCacheDuration,
-                sitemapHostname: sitemapHostname
+                sitemapCacheDuration: formik.values.sitemapCacheDuration
             });
             refetch();
         }

@@ -21,4 +21,9 @@
         <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
         <function-signature>java.lang.String encodeSitemapLink(java.lang.String)</function-signature>
     </function>
+    <function>
+        <name>getHostName</name>
+        <function-class>org.jahia.modules.sitemap.utils.Utils</function-class>
+        <function-signature>java.lang.String getHostName(org.jahia.services.content.decorator.JCRSiteNode)</function-signature>
+    </function>
 </taglib>

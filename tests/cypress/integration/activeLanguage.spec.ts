@@ -13,7 +13,7 @@ const filterPath = `/${filterLang}${sitePath}/`
 describe('Testing sitemap only contains language', () => {
     let filteredUrlsforLang = 0
     before('Configure sitemap', () => {
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
 
         cy.log(`Verify sitemap is configured properly for site: ${sitePath}`)
         cy.apollo({

@@ -60,10 +60,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,20 +91,23 @@ public final class Utils {
     public static String encodeSitemapLink(String URIPath) {
         try {
             final JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(StringUtils.substringBetween(URIPath, "/sites/", "/"), JCRSessionFactory.getInstance().getCurrentSystemSession(Constants.LIVE_WORKSPACE, Locale.ENGLISH, Locale.ENGLISH));
-            String hostName = siteNode.getProperty("sitemapHostname").getString();
-            URL serverUrl = new URL(hostName);
-            hostName = org.apache.commons.lang.StringUtils.substringBeforeLast(hostName, serverUrl.getPath());
-            final HttpServletRequestMock request = new HttpServletRequestMock(new HashMap<>(), serverUrl.getHost(), serverUrl.getPath());
-            final HttpServletResponseMock response = new HttpServletResponseMock(new StringWriter());
-            request.setAttribute("jahiaHostname", hostName);
-            RenderContext customRenderContext = new RenderContext(request, response, JCRSessionFactory.getInstance().getCurrentUser());
-            customRenderContext.setSite(siteNode);
-            return encodeSitemapLink(URIPath, false, customRenderContext, true);
+            return encodeSitemapLink(URIPath, false, getCustomRenderContext(siteNode), true);
         } catch (Exception e) {
             logger.error("Something wrong happen while encoding the following Path {}", URIPath);
             logger.debug("Detailed message", e);
         }
         return URIPath;
+    }
+
+    private static RenderContext getCustomRenderContext(JCRSiteNode siteNode) throws MalformedURLException {
+        String hostName = getHostName(siteNode);
+        URL serverUrl = new URL(hostName);
+        final HttpServletRequestMock request = new HttpServletRequestMock(new HashMap<>(), serverUrl.getHost(), serverUrl.getPath());
+        final HttpServletResponseMock response = new HttpServletResponseMock(new StringWriter());
+        request.setAttribute("jahiaHostname", hostName);
+        RenderContext customRenderContext = new RenderContext(request, response, JCRSessionFactory.getInstance().getCurrentUser());
+        customRenderContext.setSite(siteNode);
+        return customRenderContext;
     }
 
     public static String encodeSitemapLink(String URIPath, boolean shouldBeDecodedFirst,RenderContext renderContext,  boolean removeContextPath) throws IOException, ServletException, InvocationTargetException, URISyntaxException {
@@ -152,6 +152,20 @@ public final class Utils {
             return null;
         });
         return results;
+    }
+
+    public static String getHostName(JCRSiteNode siteNode) {
+        String hostName;
+        try {
+            String sitemapIndexURL = siteNode.getPropertyAsString("sitemapIndexURL");
+            URL serverUrl = new URL(sitemapIndexURL);
+            hostName = StringUtils.substringBeforeLast(sitemapIndexURL, serverUrl.getPath());
+            return hostName;
+        } catch (MalformedURLException e) {
+            logger.error("Something wrong happen while retrieving the hostname for the site {}, Sitemap generation won't happen", siteNode.getPath());
+            logger.debug("Detailed message", e);
+        }
+        return "";
     }
 
     /**

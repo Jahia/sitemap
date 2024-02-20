@@ -74,7 +74,7 @@ describe('Check sitemap links are encoded correctly', () => {
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
 
-        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath, Cypress.config().baseUrl)
+        configureSitemap(sitePath, Cypress.config().baseUrl + sitePath)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {

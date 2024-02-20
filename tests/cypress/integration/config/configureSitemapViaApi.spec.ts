@@ -18,13 +18,13 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
     it(`Apply sitemap configuration for site ${sitePath}`, function () {
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
 
         cy.apollo({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
-                propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration', 'sitemapHostname'],
+                propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
         }).should((response) => {

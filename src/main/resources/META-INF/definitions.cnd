@@ -6,6 +6,7 @@
 [jseomix:sitemap] mixin
  extends = jnt:virtualsite
  - sitemapIndexURL (string) = ''  indexed=no hidden autocreated
+  // Deprecated will not be used anymore
  - sitemapHostname (string) = ''  indexed=no hidden autocreated
  - sitemapCacheDuration (string) = ''  indexed=no hidden autocreated
  - isSitemapJobTriggered (boolean)  indexed=no hidden

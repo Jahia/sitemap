@@ -39,7 +39,7 @@ describe('Test behaviour when module state are changing', () => {
 
     beforeEach(() => {
         startSitemap()
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
         waitForSitemap()
     })
 
