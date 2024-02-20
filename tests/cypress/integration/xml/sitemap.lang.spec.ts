@@ -18,11 +18,12 @@ const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap-lang.xml file on digitall', () => {
     before('Configure sitemap for the test', () => {
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        console.log(Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {
-        removeSitemapConfiguration(sitePath)
+        //removeSitemapConfiguration(sitePath)
     })
 
     it('alternate url should not contains all three languages', () => {

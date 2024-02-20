@@ -12,7 +12,7 @@ const siteMapRootUrl = Cypress.config().baseUrl + sitePath
 
 describe('Check sitemap.xml root file on digitall', () => {
     beforeEach('Configure sitemap for the test', () => {
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
     })
 
     afterEach('Cleanup test data', () => {

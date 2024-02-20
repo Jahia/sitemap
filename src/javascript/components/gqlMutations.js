@@ -21,14 +21,11 @@ const RemoveMixin = gql`
 `;
 
 const setSitemapProperties = gql`
-    mutation setSitemapProperties($sitePath: String!, $sitemapIndexURL: String!, $sitemapHostname: String!, $sitemapCacheDuration: String!) {
+    mutation setSitemapProperties($sitePath: String!, $sitemapIndexURL: String!, $sitemapCacheDuration: String!) {
         jcr {
             mutateNode(pathOrId: $sitePath) {
                 sitemapIndexURL: mutateProperty(name: "sitemapIndexURL") {
                     setValue(value: $sitemapIndexURL)
-                }
-                sitemapHostname: mutateProperty(name: "sitemapHostname") {
-                    setValue(value: $sitemapHostname)
                 }
                 sitemapCacheDuration: mutateProperty(name: "sitemapCacheDuration") {
                     setValue(value: $sitemapCacheDuration)

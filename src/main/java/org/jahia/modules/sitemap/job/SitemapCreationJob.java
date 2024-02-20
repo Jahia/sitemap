@@ -81,20 +81,21 @@ public class SitemapCreationJob extends BackgroundJob {
                     sessionPerLocale.put(locale, localizedSession);
                     JCRSessionFactory.getInstance().setCurrentUser(currentUser);
                 }
-                String hostName = siteNode.getPropertyAsString("sitemapHostname");
+
                 URL serverUrl;
+                String hostName = Utils.getHostName(siteNode);
+                if (StringUtils.isEmpty(hostName)) {
+                    logger.warn("The host name can not be extracted from the property sitemapIndexURL");
+                    return null;
+                }
+
                 try {
                     serverUrl = new URL(hostName);
-                    // trim context from hostname
-                    hostName = StringUtils.substringBeforeLast(hostName, serverUrl.getPath());
                 } catch (MalformedURLException e) {
-                    logger.warn("{} is not a valid url for site {} , update your settings , Sitemap generation won't happen", hostName, siteKey);
+                    logger.warn("The property sitemapIndexURL does not match an URL pattern, Sitemap generation won't happen");
                     return null;
                 }
-                if (StringUtils.isEmpty(hostName)) {
-                    logger.warn("Unable to trigger Sitemap job without sitemap hostname set");
-                    return null;
-                }
+
                 // Mocked Objects
                 final HttpServletRequestMock request = new HttpServletRequestMock(new HashMap<>(), serverUrl.getHost(), serverUrl.getPath());
                 final HttpServletResponseMock response = new HttpServletResponseMock(new StringWriter());

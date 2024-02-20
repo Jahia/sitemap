@@ -24,7 +24,7 @@
     <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <c:if test="${renderContext.liveMode}">
         <c:set var="nodeUrl" value="${renderContext.site}"/>
-        <c:set var="urlHostServerName" value="${renderContext.site.getPropertyAsString('sitemapHostname')}"/>
+        <c:set var="urlHostServerName" value="${sitemap:getHostName(renderContext.site)}"/>
         <c:choose>
             <c:when test="${!empty urlHostServerName}">
                 <c:set var="serverUrl" value="${urlHostServerName}"/>

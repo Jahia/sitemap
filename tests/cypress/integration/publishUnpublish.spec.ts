@@ -14,7 +14,7 @@ const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
-        configureSitemap(sitePath, siteMapRootUrl, Cypress.config().baseUrl)
+        configureSitemap(sitePath, siteMapRootUrl)
 
         // Creates the test page with content in all 3 languages
         cy.apollo({

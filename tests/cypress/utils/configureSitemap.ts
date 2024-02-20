@@ -1,12 +1,12 @@
 import { waitForSitemap } from './generateSitemap'
 
-export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitemapHostname: string): void => {
+export const configureSitemap = (sitePath: string, siteMapRootUrl: string): void => {
     cy.log(`Configuring sitemap: Verifying if a configuration is present for ${sitePath}`)
     cy.apollo({
         variables: {
             pathOrId: sitePath,
             mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
-            propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration', 'sitemapHostname'],
+            propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
         },
         queryFile: 'graphql/jcrGetSitemapConfig.graphql',
     }).then((response) => {
@@ -31,14 +31,6 @@ export const configureSitemap = (sitePath: string, siteMapRootUrl: string, sitem
                 pathOrId: sitePath,
                 propertyName: 'sitemapIndexURL',
                 propertyValue: siteMapRootUrl,
-            },
-            mutationFile: 'graphql/jcrAddProperty.graphql',
-        })
-        cy.apollo({
-            variables: {
-                pathOrId: sitePath,
-                propertyName: 'sitemapHostname',
-                propertyValue: sitemapHostname,
             },
             mutationFile: 'graphql/jcrAddProperty.graphql',
         })
