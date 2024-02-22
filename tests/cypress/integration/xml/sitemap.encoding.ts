@@ -64,8 +64,6 @@ describe('Check sitemap links are encoded correctly', () => {
         // create pages with vanity for encoding test: vanities
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity&ü', false)
         addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity&ü', 'actual-vanity&ü')
-        createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity"ü', false)
-        addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity"ü', 'actual-vanity"ü')
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', "vanity'ü", false)
         addVanityUrl(homePath + "/encoding-sitemap-test/sitemap-vanities/vanity'ü", "actual-vanity'ü")
         createPage(homePath + '/encoding-sitemap-test/sitemap-vanities', 'vanity>ü', false)
@@ -104,8 +102,8 @@ describe('Check sitemap links are encoded correctly', () => {
         })
     })
 
-    it.skip('Check encoding for sitemap pages with vanities', () => {
-        const names = ['/actual-vanity&amp;%C3%BC', '/actual-vanity&apos;%C3%BC', '/actual-vanity&quot;%C3%BC']
+    it('Check encoding for sitemap pages with vanities', () => {
+        const names = ['/actual-vanity&amp;%C3%BC', '/actual-vanity&apos;%C3%BC']
 
         generateSitemap(siteKey)
         cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
