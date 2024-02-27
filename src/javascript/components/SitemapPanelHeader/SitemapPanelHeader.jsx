@@ -30,7 +30,6 @@ export const SitemapPanelHeaderComponent = ({
         fetchPolicy: 'no-cache'
     });
     useEffect(() => {
-        console.debug('Current timer: ' + timer);
         const remoteTriggerState = Boolean(data?.jcr?.nodeByPath?.property?.isSitemapJobTriggered);
         setTriggered(remoteTriggerState);
     }, [data, timer]);
