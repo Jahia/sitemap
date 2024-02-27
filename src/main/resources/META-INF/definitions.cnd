@@ -7,7 +7,7 @@
  extends = jnt:virtualsite
  - sitemapIndexURL (string) = ''  indexed=no hidden autocreated
   // Deprecated will not be used anymore
- - sitemapHostname (string) = ''  indexed=no hidden autocreated
+ - sitemapHostname (string) indexed=no hidden
  - sitemapCacheDuration (string) = ''  indexed=no hidden autocreated
  - isSitemapJobTriggered (boolean)  indexed=no hidden
  + sitemap (jseont:sitemap) = jseont:sitemap
