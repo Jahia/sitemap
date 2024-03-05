@@ -1,6 +1,5 @@
 package org.jahia.modules.sitemap.filter;
 
-import com.google.common.base.Joiner;
 import net.htmlparser.jericho.*;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.render.RenderContext;
@@ -64,8 +63,8 @@ public class RobotsFilter extends AbstractFilter {
             content.add("noindex");
         }
 
-        if (content.size() != 0) {
-           return String.format(HEADER_META_TEMPLATE, Joiner.on(",").join(content));
+        if (!content.isEmpty()) {
+            return String.format(HEADER_META_TEMPLATE, String.join(",", content));
         }
 
         return null;
