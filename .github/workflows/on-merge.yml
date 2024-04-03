@@ -68,8 +68,8 @@ jobs:
         with:
           module_id: sitemap
           testrail_project: Sitemap Module
-          tests_manifest: provisioning-manifest-build.yml
-          jahia_image: jahia/jahia-ee:8
+          tests_manifest: provisioning-manifest-build-8.1.x.yml
+          jahia_image: jahia/jahia-ee:8.1
           should_use_build_artifacts: true
           github_artifact_name: sitemap-standalone-artifacts-${{ github.run_number }}
           bastion_ssh_private_key: ${{ secrets.BASTION_SSH_PRIVATE_KEY_JAHIACI }}
