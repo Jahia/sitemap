@@ -121,6 +121,13 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     private void deleteSitemapJobs() {
+        if (schedulerService.getScheduler() == null) {
+            // Such case happen when Jahia is stopped.
+            // At startup, the job is removed then recreated.
+            logger.warn("Sitemap jobs cannot be removed because the scheduler is not available anymore.");
+            logger.debug("debug info:", new Exception());
+            return;
+        }
         try {
             for (String jobName : schedulerService.getScheduler().getJobNames(JOB_GROUP_NAME)) {
                 deleteSitemapJob(jobName);
