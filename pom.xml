@@ -7,7 +7,7 @@
         <version>8.1.3.0</version>
     </parent>
     <artifactId>sitemap</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Sitemap</name>
     <description>These are the custom module (Jahia Sitemap) for running on a Jahia server.</description>
@@ -19,7 +19,7 @@
     </scm>
     <properties>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
-        <jahia-module-signature>MCwCFHCwfpG06nq5OZRcOc3Dov8eofB1AhQhmHVk9v91eQOL7VvxgiDqpVW3/w==</jahia-module-signature>
+        <jahia-module-signature>MCwCFHwbVW5CnI2U38PkmzknzrG2YpjqAhQrCki5+O7xqDeHnaO3weET5wn7yQ==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"
         </require-capability>
