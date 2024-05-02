@@ -7,7 +7,7 @@
         <version>8.1.3.0</version>
     </parent>
     <artifactId>sitemap</artifactId>
-    <version>5.3.1</version>
+    <version>5.4.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Sitemap</name>
     <description>These are the custom module (Jahia Sitemap) for running on a Jahia server.</description>
@@ -15,7 +15,7 @@
         <connection>scm:git:git@github.com:Jahia/sitemap.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/sitemap.git</developerConnection>
         <url>scm:git:git@github.com:Jahia/sitemap.git</url>
-        <tag>5_3_1</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <export-package>org.jahia.modules.sitemap.utils</export-package>
