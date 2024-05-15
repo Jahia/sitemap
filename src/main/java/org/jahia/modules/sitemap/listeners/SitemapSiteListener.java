@@ -106,7 +106,8 @@ public class SitemapSiteListener extends DefaultEventListener {
                     };
                 }
             } catch (RepositoryException e) {
-                logger.error("Error while processing JCR event");
+                logger.warn("Unable to process JCR event: {}", e.getMessage());
+                logger.debug("Stacktrace:", e);
             }
         }
 
