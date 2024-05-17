@@ -76,7 +76,7 @@ jobs:
           module_id: sitmap
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-build-8.2.yml
-          jahia_image: jahia/jahia-ee:8.2
+          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           should_use_build_artifacts: true
           should_skip_testrail: false
           github_artifact_name: sitemap-standalone-artifacts-${{ github.run_number }}
@@ -122,7 +122,7 @@ jobs:
           module_id: sitmap
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-build-8.2.yml
-          jahia_image: jahia/jahia-ee:8.2
+          jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           jahia_cluster_enabled: true
           should_use_build_artifacts: true
           should_skip_testrail: false
