@@ -25,7 +25,7 @@ jobs:
           incident_service: sitemap-cluster-JahiaSN
           timeout_minutes: 20
           testrail_project: Sitemap Module
-          tests_manifest: provisioning-manifest-snapshot-8.2.x.yml
+          tests_manifest: provisioning-manifest-snapshot-8.2.yml
           jahia_image: jahia/jahia-ee-dev:8-SNAPSHOT
           jahia_cluster_enabled: true
           should_use_build_artifacts: false
