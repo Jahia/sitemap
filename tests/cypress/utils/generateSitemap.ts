@@ -7,7 +7,7 @@ export const waitForSitemap = (): void => {
                     queryFile: 'graphql/getJobsWithStatus.graphql',
                 })
                 .then((response) => {
-                    const jobs = response?.data?.admin?.jahia?.scheduler?.jobs
+                    const jobs = response?.data?.admin?.jahia?.scheduler?.jobs?.nodes
                     const sitemapJobs = jobs.filter((job) => job.group === 'SitemapCreationJob')
                     const hasActiveJobs = sitemapJobs.some((job) => job.jobStatus === 'EXECUTING')
                     return !hasActiveJobs
