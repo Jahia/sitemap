@@ -34,15 +34,13 @@ jobs:
     needs: update-signature
     runs-on: ubuntu-latest
     container:
-      image: jahia/cimg-mvn-cache:ga_cimg_openjdk_8.0.312-node
+      image: jahia/cimg-mvn-cache:ga_cimg_openjdk_11.0.20-node
       credentials:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: jahia/jahia-modules-action/build@v2
-        with:
-          module_id: sitemap
 
   sonar-analysis:
     name: Sonar Analysis
@@ -66,10 +64,10 @@ jobs:
       - uses: jahia/jahia-modules-action/helper@v2
       - uses: KengoTODA/actions-setup-docker-compose@main
         with:
-          version: '1.29.2'
+          version: "1.29.2"
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
       - uses: actions/checkout@v4
       - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
@@ -102,7 +100,7 @@ jobs:
           name: Tests Report (Standalone)
           path: tests/artifacts/results/xml_reports/*.xml
           reporter: java-junit
-          fail-on-error: 'false'
+          fail-on-error: "false"
   integration-tests-cluster:
     name: Integration Tests (Cluster)
     needs: build
@@ -112,10 +110,10 @@ jobs:
       - uses: jahia/jahia-modules-action/helper@v2
       - uses: KengoTODA/actions-setup-docker-compose@main
         with:
-          version: '1.29.2'
+          version: "1.29.2"
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
       - uses: actions/checkout@v4
       - uses: jahia/jahia-modules-action/integration-tests@v2
         with:
@@ -149,4 +147,4 @@ jobs:
           name: Tests Report (Cluster)
           path: tests/artifacts/results/xml_reports/*.xml
           reporter: java-junit
-          fail-on-error: 'false'
+          fail-on-error: "false"
