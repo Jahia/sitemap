@@ -160,6 +160,11 @@ public class HttpServletResponseMock implements HttpServletResponse {
     }
 
     @Override
+    public void setContentLengthLong(long l) {
+
+    }
+
+    @Override
     public int getBufferSize() {
         return 0;
     }
