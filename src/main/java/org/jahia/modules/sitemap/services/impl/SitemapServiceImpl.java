@@ -84,7 +84,7 @@ public class SitemapServiceImpl implements SitemapService {
         JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
             try {
                 for (JCRSiteNode siteNode : JahiaSitesService.getInstance().getSitesNodeList(session)) {
-                    if (siteNode.getInstalledModules().contains("sitemap")) {
+                    if (siteNode.getInstalledModules().contains("sitemap") && siteNode.isNodeType(Utils.DEDICATED_SITEMAP_MIXIN)) {
                         scheduleSitemapJob(siteNode.getSiteKey(), siteNode.getPropertyAsString("sitemapCacheDuration"));
                     }
                 }

@@ -72,14 +72,14 @@ public final class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
     private static final String[] ENTITIES = new String[]{"&amp;", "&apos;", "&quot;", "&gt;", "&lt;"};
     private static final String[] ENCODED_ENTITIES = new String[]{"_-amp-_", "_-apos-_", "_-quot-_", "_-gt-_", "_-lt-_"};
 
     private static final UrlRewriteService urlRewriteService = BundleUtils.getOsgiService(UrlRewriteService.class, null);
 
-
+    public static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
+    
     private Utils() {
     }
 
