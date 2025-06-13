@@ -3,6 +3,7 @@ package org.jahia.modules.sitemap.listeners;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.services.SitemapService;
+import org.jahia.modules.sitemap.utils.Utils;
 import org.jahia.services.content.*;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -17,6 +18,8 @@ import javax.jcr.observation.EventIterator;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.jahia.modules.sitemap.constant.SitemapConstant.SITEMAP_CACHE_DURATION;
 
 @Component(service = DefaultEventListener.class, immediate = true)
 public class SitemapSiteListener extends DefaultEventListener {
@@ -56,13 +59,13 @@ public class SitemapSiteListener extends DefaultEventListener {
                 }
                 // Create job only if the "sitemapCacheDuration" property is set.
                 final JCRSessionWrapper session = ((JCREventIterator) events).getSession();
-                if (eventPath.equals("/sites/" + siteKey + "/sitemapCacheDuration") && session.nodeExists(eventPath)) {
+                if (eventPath.equals("/sites/" + siteKey + "/" + SITEMAP_CACHE_DURATION) && session.nodeExists(eventPath)) {
                     JCRPropertyWrapper prop = (JCRPropertyWrapper) session.getItem(eventPath);
-                    final String sitemapCacheDuration = prop.getParent().getPropertyAsString("sitemapCacheDuration");
                     // add a job in case the sitemap mixin is set and the job to create is new (or set as create already)
                     SitemapJobBuilder jobBuilder = jobsToBuild.get(siteKey);
                     final boolean createJob = jobBuilder == null || jobBuilder.createJob;
-                    if (prop.getParent().isNodeType("jseomix:sitemap") && createJob && StringUtils.isNotEmpty(sitemapCacheDuration)) {
+                    if (createJob && Utils.iSitemapConfigured(prop.getParent())) {
+                        final String sitemapCacheDuration = prop.getParent().getPropertyAsString(SITEMAP_CACHE_DURATION);
                         SitemapJobBuilder builder = jobBuilder == null ? new SitemapJobBuilder() : jobBuilder;
                         builder.createJob = true;
                         builder.cacheDuration = sitemapCacheDuration;

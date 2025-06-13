@@ -70,4 +70,23 @@ describe('Test behaviour when module state are changing', () => {
             },
         )
     })
+
+    it('Verify that there is no error with the job when the module is enabled but not fully configured', () => {
+        removeSitemapConfiguration(sitePath)
+        enableModule('sitemap', siteKey)
+        // force the reactivation of the module by stopping/starting it
+        stopSitemap()
+        startSitemap()
+        waitForSitemap()
+
+        // check the last job execution is successful
+        cy.apollo({
+            fetchPolicy: 'no-cache',
+            queryFile: 'graphql/getJobsWithStatus.graphql',
+        }).then((response) => {
+            const jobs = response?.data?.admin?.jahia?.scheduler?.jobs
+            const sitemapJobs = jobs.filter((job) => job.group === 'SitemapCreationJob')
+            return sitemapJobs.every((job) => job.jobState === 'FINISHED')
+        })
+    })
 })
