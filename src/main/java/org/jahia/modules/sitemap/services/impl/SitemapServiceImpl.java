@@ -25,7 +25,6 @@ package org.jahia.modules.sitemap.services.impl;
 
 import net.htmlparser.jericho.Source;
 import org.apache.commons.lang.StringUtils;
-import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.exceptions.SitemapException;
 import org.jahia.modules.sitemap.job.SitemapCreationJob;
@@ -61,6 +60,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jahia.modules.sitemap.constant.SitemapConstant.SITEMAP_CACHE_DURATION;
 import static org.quartz.SimpleTrigger.REPEAT_INDEFINITELY;
 
 @Component(immediate = true, service = SitemapService.class)
@@ -84,8 +84,8 @@ public class SitemapServiceImpl implements SitemapService {
         JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
             try {
                 for (JCRSiteNode siteNode : JahiaSitesService.getInstance().getSitesNodeList(session)) {
-                    if (siteNode.getInstalledModules().contains("sitemap")) {
-                        scheduleSitemapJob(siteNode.getSiteKey(), siteNode.getPropertyAsString("sitemapCacheDuration"));
+                    if (Utils.isSitemapEnabledAndConfigured(siteNode)) {
+                        scheduleSitemapJob(siteNode.getSiteKey(), siteNode.getPropertyAsString(SITEMAP_CACHE_DURATION));
                     }
                 }
             } catch (Exception e) {
