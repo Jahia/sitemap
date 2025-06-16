@@ -29,6 +29,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
 import org.jahia.modules.sitemap.config.SitemapConfigService;
+import org.jahia.modules.sitemap.constant.SitemapConstant;
 import org.jahia.modules.sitemap.job.HttpServletRequestMock;
 import org.jahia.modules.sitemap.job.HttpServletResponseMock;
 import org.jahia.osgi.BundleUtils;
@@ -307,4 +308,19 @@ public final class Utils {
         return org.apache.commons.lang.StringUtils.replaceEach(xml, ENCODED_ENTITIES, ENTITIES);
     }
 
+    public static boolean isSitemapEnabledAndConfigured(JCRSiteNode siteNode) {
+        return siteNode.getInstalledModules().contains("sitemap")
+                && iSitemapConfigured(siteNode);
+    }
+
+    public static boolean iSitemapConfigured(JCRNodeWrapper siteNodeWrapper) {
+        try {
+            return siteNodeWrapper.isNodeType("jseomix:sitemap")
+                    && siteNodeWrapper.hasProperty("sitemapIndexURL")
+                    && siteNodeWrapper.hasProperty(SitemapConstant.SITEMAP_CACHE_DURATION);
+        } catch (RepositoryException e) {
+            logger.debug("Unable to check if sitemap is configured for site {}", siteNodeWrapper.getPath());
+            return false;
+        }
+    }
 }
