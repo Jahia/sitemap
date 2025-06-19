@@ -7,10 +7,7 @@ import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.modules.sitemap.utils.Utils;
 import org.jahia.osgi.BundleUtils;
 import org.jahia.registries.ServicesRegistry;
-import org.jahia.services.content.JCRContentUtils;
-import org.jahia.services.content.JCRSessionFactory;
-import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.content.*;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.scheduler.BackgroundJob;
@@ -189,8 +186,9 @@ public class SitemapCreationJob extends BackgroundJob {
             JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
                 JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(jobExecutionContext.getJobDetail().getName(), session);
                 // This can happen if the sitemap module is uninstalled from a site as the job is running.
-                if (siteNode.hasProperty("isSitemapJobTriggered")) {
-                    siteNode.getProperty("isSitemapJobTriggered").remove();
+                JCRNodeWrapper settingsNode = Utils.getSitemapSettings(siteNode);
+                if (settingsNode.hasProperty("isSitemapJobTriggered")) {
+                    settingsNode.getProperty("isSitemapJobTriggered").remove();
                     session.save();
                 }
                 return null;

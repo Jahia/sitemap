@@ -332,7 +332,9 @@ public final class Utils {
      */
     public static void markSitemapGenerationAsRunning(String siteKey) throws RepositoryException {
         JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
-            JahiaSitesService.getInstance().getSiteByKey(siteKey, session).setProperty("isSitemapJobTriggered", true);
+            JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(siteKey, session);
+            JCRNodeWrapper sitemapSettings = Utils.getSitemapSettings(siteNode);
+            sitemapSettings.setProperty("isSitemapJobTriggered", true);
             session.save();
             return null;
         });
@@ -354,6 +356,17 @@ public final class Utils {
         });
     }
 
-
+    /**
+     * Retrieves or creates the sitemap settings node for a given site.
+     * This method returns the "sitemapSettings" child node of the site. If the node doesn't exist,
+     * it will be created with the type "jnt:sitemapSettings".
+     *
+     * @param siteNode the JCR site node for which to get or create the sitemap settings
+     * @return the sitemap settings node for the site
+     * @throws RepositoryException if there is an error accessing or creating nodes in the JCR repository
+     */
+    public static JCRNodeWrapper getSitemapSettings(JCRSiteNode siteNode) throws RepositoryException {
+        return JCRContentUtils.getOrAddPath(siteNode.getSession(), siteNode, "sitemapSettings", "jnt:sitemapSettings");
+    }
 
 }

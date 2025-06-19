@@ -214,8 +214,8 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public void addSitemap(String siteKey, String key, Path sitemap) throws RepositoryException {
         JCRTemplate.getInstance().doExecuteWithSystemSession( session -> {
-            JCRNodeWrapper settingsNode = JCRContentUtils.getOrAddPath(session, session.getNode("/sites/" + siteKey), "sitemapSettings", "jnt:sitemapSettings");
-            JCRNodeWrapper cacheRoot = JCRContentUtils.getOrAddPath(session, settingsNode, "sitemapCache", "jnt:sitemapRootCacheEntries");
+            JCRNodeWrapper settingsNode = Utils.getSitemapSettings((JCRSiteNode) session.getNode("/sites/" + siteKey));
+            JCRNodeWrapper cacheRoot = JCRContentUtils.getOrAddPath(session, settingsNode, SITEMAP_CACHE_NAME, "jnt:sitemapRootCacheEntries");
             JCRNodeWrapper cacheNode = JCRContentUtils.getOrAddPath(session, cacheRoot, key, "jnt:sitemapEntry");
             try(FileInputStream stream = new FileInputStream(sitemap.toFile())) {
                 cacheNode.setProperty("sitemapFile", session.getValueFactory().createBinary(stream));
