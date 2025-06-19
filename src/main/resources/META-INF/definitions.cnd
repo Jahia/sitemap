@@ -9,6 +9,7 @@
   // Deprecated will not be used anymore
  - sitemapHostname (string) indexed=no hidden
  - sitemapCacheDuration (string) = ''  indexed=no hidden autocreated
+   // Deprecated will not be used anymore, moved to jnt:sitemapSettings
  - isSitemapJobTriggered (boolean)  indexed=no hidden
  + sitemap (jseont:sitemap) = jseont:sitemap
 
@@ -26,17 +27,8 @@
  extends = jnt:page, jmix:mainResource
  itemtype = seo
 
-
-// Legacy definition kept for backward compatibility
-
-[jmix:sitemap] mixin
- - changefreq (string,choicelist[resourceBundle]) = 'monthly' autocreated nofulltext < 'always','hourly','daily','monthly','yearly','never'
- - priority (string,choicelist) = '0.5' autocreated nofulltext < '0.0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'
-
-[jnt:sitemap] > jnt:content, jmix:siteComponent, jmix:hiddenType
- - base (weakreference)
-
 [jnt:sitemapSettings] > nt:base, jmix:noImportExport
+ - isSitemapJobTriggered (boolean)  indexed=no hidden
  + sitemapCache (jnt:sitemapRootCacheEntries)
 
 [jnt:sitemapRootCacheEntries] > nt:base, jmix:noImportExport
@@ -45,6 +37,14 @@
 [jnt:sitemapEntry] > nt:base, jmix:noImportExport
  - siteKey (string) indexed=no hidden
  - sitemapFile (binary) indexed=no hidden
+
+// Legacy definitions kept for backward compatibility
+[jmix:sitemap] mixin
+ - changefreq (string,choicelist[resourceBundle]) = 'monthly' autocreated nofulltext < 'always','hourly','daily','monthly','yearly','never'
+ - priority (string,choicelist) = '0.5' autocreated nofulltext < '0.0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'
+
+[jnt:sitemap] > jnt:content, jmix:siteComponent, jmix:hiddenType
+ - base (weakreference)
 
 // Deprecated use mixin instead
 [jseont:sitemap] > nt:base

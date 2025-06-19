@@ -24,7 +24,7 @@ export const SitemapPanelHeaderComponent = ({
     const [dialogInfo, setDialogInfo] = useState(null);
     const {data} = useQuery(getJobsStatus, {
         variables: {
-            path: '/sites/' + siteKey
+            path: '/sites/' + siteKey + '/sitemapSettings'
         },
         pollInterval: 1000,
         fetchPolicy: 'no-cache'
