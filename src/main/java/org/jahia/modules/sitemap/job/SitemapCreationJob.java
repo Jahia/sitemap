@@ -51,12 +51,6 @@ public class SitemapCreationJob extends BackgroundJob {
     public void executeJahiaJob(JobExecutionContext jobExecutionContext) throws Exception {
         final ClassLoader initialClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            // Set the job as running (in case of a scheduled job)
-            JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
-                JahiaSitesService.getInstance().getSiteByKey(jobExecutionContext.getJobDetail().getName(), session).setProperty("isSitemapJobTriggered", true);
-                session.save();
-                return null;
-            });
             // Switch class loader to Jahia (for url rewrite service)
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
             SitemapService sitemapService = BundleUtils.getOsgiService(SitemapService.class, null);
@@ -65,6 +59,9 @@ public class SitemapCreationJob extends BackgroundJob {
                 return;
             }
             String siteKey = jobExecutionContext.getJobDetail().getName();
+
+            // Set the job as running (in case of a scheduled job)
+            Utils.markSitemapGenerationAsRunning(siteKey);
             boolean isDebug = jobExecutionContext.getJobDetail().getJobDataMap().getBoolean("debug");
             // Set user to be use later by the system sessions.
             JCRSessionFactory.getInstance().setCurrentUser(JahiaUserManagerService.getInstance().lookupRootUser().getJahiaUser());

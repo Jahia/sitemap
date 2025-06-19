@@ -60,6 +60,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jahia.modules.sitemap.utils.Utils.markSitemapGenerationAsRunning;
 import static org.jahia.modules.sitemap.constant.SitemapConstant.SITEMAP_CACHE_DURATION;
 import static org.quartz.SimpleTrigger.REPEAT_INDEFINITELY;
 
@@ -166,11 +167,7 @@ public class SitemapServiceImpl implements SitemapService {
     @Override
     public void generateSitemap(String siteKey) {
         try {
-            JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
-                JahiaSitesService.getInstance().getSiteByKey(siteKey, session).setProperty("isSitemapJobTriggered", true);
-                session.save();
-                return null;
-            });
+            markSitemapGenerationAsRunning(siteKey);
             schedulerService.getScheduler().triggerJob(siteKey, JOB_GROUP_NAME);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -197,11 +194,17 @@ public class SitemapServiceImpl implements SitemapService {
             try {
                 JobDetail jobDetail = schedulerService.getScheduler().getJobDetail(siteKey, JOB_GROUP_NAME);
                 if (jobDetail != null) {
-                    logger.warn("Sitemap generation in progress - No entry found for site {} and key {}", siteKey, key, e);
+                    logger.info("No entry found for site {} and key {}", siteKey, key);
+                    // Check if the job is running, in case not, trigger a run
+                    if (!Utils.isSitemapGenerationAsRunning(siteKey)) {
+                        // trigger the job
+                        generateSitemap(siteKey);
+                    }
+                    logger.info("Sitemap generation in progress");
                 } else {
                     logger.error("Sitemap generation job is not running, the sitemap will not be available", e);
                 }
-            } catch (SchedulerException ex) {
+            } catch (SchedulerException | RepositoryException ex) {
                 logger.error("Error while getting jobDetail for job name {} and group {}", siteKey, JOB_GROUP_NAME, ex);
             }
             return null;

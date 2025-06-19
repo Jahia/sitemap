@@ -323,4 +323,37 @@ public final class Utils {
             return false;
         }
     }
+    /**
+     * Marks the sitemap generation job as running for the specified site.
+     * This sets the "isSitemapJobTriggered" property to true on the site node.
+     *
+     * @param siteKey the key identifier of the site for which to mark the sitemap generation as running
+     * @throws RepositoryException if there is an error accessing or updating the JCR repository
+     */
+    public static void markSitemapGenerationAsRunning(String siteKey) throws RepositoryException {
+        JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
+            JahiaSitesService.getInstance().getSiteByKey(siteKey, session).setProperty("isSitemapJobTriggered", true);
+            session.save();
+            return null;
+        });
+    }
+
+
+    /**
+     * Checks if the sitemap generation job is currently marked as running for the specified site.
+     * This checks the value of the "isSitemapJobTriggered" property on the site node.
+     *
+     * @param siteKey the key identifier of the site to check
+     * @return true if the sitemap generation job is running for the site, false otherwise
+     * @throws RepositoryException if there is an error accessing the JCR repository
+     */
+    public static boolean isSitemapGenerationAsRunning(String siteKey) throws RepositoryException {
+        return JCRTemplate.getInstance().doExecuteWithSystemSession(session ->  {
+            JCRSiteNode siteNode = JahiaSitesService.getInstance().getSiteByKey(siteKey, session);
+            return siteNode.hasProperty("isSitemapJobTriggered") && siteNode.getProperty("isSitemapJobTriggered").getBoolean();
+        });
+    }
+
+
+
 }
