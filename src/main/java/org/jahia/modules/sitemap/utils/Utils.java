@@ -77,6 +77,7 @@ public final class Utils {
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
     private static final String[] ENTITIES = new String[]{"&amp;", "&apos;", "&quot;", "&gt;", "&lt;"};
     private static final String[] ENCODED_ENTITIES = new String[]{"_-amp-_", "_-apos-_", "_-quot-_", "_-gt-_", "_-lt-_"};
+    private static final Locale DEFAULT_LOCALE = new Locale("x-default", "");
 
     private static final UrlRewriteService urlRewriteService = BundleUtils.getOsgiService(UrlRewriteService.class, null);
 
@@ -237,6 +238,12 @@ public final class Utils {
                 }
                 final SitemapEntry sitemapEntry = new SitemapEntry(nodeInOtherLocale.getPath(), link, new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), locale, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier());
                 sitemapEntries.add(sitemapEntry);
+                // handle x-default locale
+                if (locale.equals(new Locale(node.getResolveSite().getDefaultLanguage()))) {
+                    final SitemapEntry defaultSitemapEntry = new SitemapEntry(nodeInOtherLocale.getPath(), link, new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), DEFAULT_LOCALE, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier());
+                    sitemapEntries.add(defaultSitemapEntry);
+
+                }
                 final Set<SitemapEntry> entries = entriesByLocale.getOrDefault(locale, new HashSet<>());
                 entries.add(sitemapEntry);
                 entriesByLocale.put(locale, entries);
@@ -370,3 +377,4 @@ public final class Utils {
     }
 
 }
+
