@@ -57,6 +57,55 @@ describe('Check sitemap.xml root file on digitall', () => {
             })
             // we expect that 3 new entries are well related to our dedicated sitemap page
             expect(nodeItems).to.be.equal(3)
+
+            // Check generated sitemaps
+            urls.forEach((url) => {
+                if (url.indexOf(searchResultsPagePath) > 0) {
+                    // Use waitUntil to ensure the dedicated sitemap is fully generated and available
+                    cy.waitUntil(
+                        () =>
+                            cy
+                                .request({
+                                    url: url,
+                                    failOnStatusCode: false,
+                                })
+                                .then((response) => {
+                                    return (
+                                        response.status === 200 &&
+                                        response.headers['content-type'].includes('text/xml') &&
+                                        response.body.includes(
+                                            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+                                        ) &&
+                                        response.body.includes('<url>')
+                                    )
+                                }),
+                        {
+                            timeout: 10000, // Wait up to 10 seconds
+                            interval: 500, // Check every 500ms
+                            errorMsg: `Sitemap at ${url} was not properly generated within the timeout period`,
+                        },
+                    ).then(() => {
+                        cy.log(`✓ Sitemap at ${url} is properly generated`)
+
+                        // Now validate the structure and content of the sitemap
+                        validateSitemapStructure(url)
+                    })
+                }
+            })
         })
     })
+
+    const validateSitemapStructure = (url) => {
+        cy.log(`get ${url}`)
+        // Use requestFindNodeInnerHTMLByName to get URL elements
+        cy.requestFindXMLElementByTagName(url, 'xhtml:link').then((links) => {
+            expect(links.length).to.be.greaterThan(0, 'URL should have alternate language links')
+
+            Array.from(links).forEach((link) => {
+                expect(link.getAttribute('rel')).to.equal('alternate')
+                expect(link.getAttribute('hreflang')).to.be.oneOf(['en', 'fr', 'de'])
+                expect(link.getAttribute('href')).to.include('http')
+            })
+        })
+    }
 })

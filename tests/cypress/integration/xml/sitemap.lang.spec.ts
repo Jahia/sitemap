@@ -23,7 +23,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     })
 
     after('Remove sitemap configuration via GraphQL', () => {
-        //removeSitemapConfiguration(sitePath)
+        removeSitemapConfiguration(sitePath)
     })
 
     it('alternate url should not contains all three languages', () => {
