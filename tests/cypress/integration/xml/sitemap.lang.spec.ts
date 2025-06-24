@@ -36,7 +36,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         })
     })
 
-    it.only('alternate url should not contains invalid language', () => {
+    it('alternate url should not contains invalid language', () => {
         // update history page to invalid 'de' language
         cy.apollo({
             variables: {
