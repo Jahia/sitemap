@@ -103,7 +103,7 @@ describe('Check sitemap.xml root file on digitall', () => {
 
             Array.from(links).forEach((link) => {
                 expect(link.getAttribute('rel')).to.equal('alternate')
-                expect(link.getAttribute('hreflang')).to.be.oneOf(['en', 'fr', 'de'])
+                expect(link.getAttribute('hreflang')).to.be.oneOf(['en', 'fr', 'de', 'x-default'])
                 expect(link.getAttribute('href')).to.include('http')
             })
         })
