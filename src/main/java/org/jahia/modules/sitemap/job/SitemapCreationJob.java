@@ -36,6 +36,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SitemapCreationJob extends BackgroundJob {
 
@@ -134,38 +135,13 @@ public class SitemapCreationJob extends BackgroundJob {
                                 rootSitemap.setAttribute("xmlns:xhtml", "http://www.w3.org/1999/xhtml");
                                 doc.appendChild(rootSitemap);
                                 for (SitemapEntry entry : entries) {
-                                    if (isDebug) {
-                                        Comment comment = doc.createComment(" nodePath: " + entry.getPath().replaceAll("-", "%2D"));
-                                        rootSitemap.appendChild(comment);
-                                        comment = doc.createComment(" nodeUrl: " + entry.getLink().replaceAll("-", "%2D"));
-                                        rootSitemap.appendChild(comment);
-                                        comment = doc.createComment(" type: " + entry.getPrimaryNodetype());
-                                        rootSitemap.appendChild(comment);
-                                        comment = doc.createComment(" uuid: " + entry.getIdentifier());
-                                        rootSitemap.appendChild(comment);
-                                    }
-                                    Element url = doc.createElement("url");
-                                    rootSitemap.appendChild(url);
-                                    Element lastmod = doc.createElement("lastmod");
-                                    lastmod.appendChild(doc.createTextNode(entry.getLastMod()));
-                                    url.appendChild(lastmod);
-                                    Element loc = doc.createElement("loc");
-                                    final Text locText = doc.createTextNode(entry.getLink());
-                                    loc.appendChild(locText);
-                                    url.appendChild(loc);
-
-                                    for (SitemapEntry langEntry : entriesByPath.get(entry.getPath())) {
-                                        Element langLink = doc.createElement("xhtml:link");
-                                        langLink.setAttribute("rel", "alternate");
-                                        langLink.setAttribute("hreflang", langEntry.getLocale().toString().replace("_", "-"));
-                                        langLink.setAttribute("href", langEntry.getLink());
-                                        url.appendChild(langLink);
-                                    }
+                                    addUrlEntryToSitemap(doc, rootSitemap, entry, entriesByPath, isDebug);
                                 }
 
                                 TransformerFactory tf = TransformerFactory.newInstance();
                                 Transformer t = tf.newTransformer();
                                 t.setOutputProperty(OutputKeys.INDENT, "yes");
+                                t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                                 t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                                 t.transform(new DOMSource(doc), new StreamResult(output));
                                 sitemapService.addSitemap(siteKey, JCRContentUtils.escapeLocalNodeName(sitemapRoot) + "#" + currentLocale, tmpFile);
@@ -198,5 +174,37 @@ public class SitemapCreationJob extends BackgroundJob {
         }
     }
 
+    private void addUrlEntryToSitemap(Document doc, Element rootSitemap, SitemapEntry entry, Map<String, Set<SitemapEntry>> entriesByPath, boolean isDebug) {
+        if (isDebug) {
+            Comment comment = doc.createComment(" nodePath: " + entry.getPath().replaceAll("-", "%2D"));
+            rootSitemap.appendChild(comment);
+            comment = doc.createComment(" nodeUrl: " + entry.getLink().replaceAll("-", "%2D"));
+            rootSitemap.appendChild(comment);
+            comment = doc.createComment(" type: " + entry.getPrimaryNodetype());
+            rootSitemap.appendChild(comment);
+            comment = doc.createComment(" uuid: " + entry.getIdentifier());
+            rootSitemap.appendChild(comment);
+        }
+        Element url = doc.createElement("url");
+        rootSitemap.appendChild(url);
+        Element lastmod = doc.createElement("lastmod");
+        lastmod.appendChild(doc.createTextNode(entry.getLastMod()));
+        url.appendChild(lastmod);
+        Element loc = doc.createElement("loc");
+        final Text locText = doc.createTextNode(entry.getLink());
+        loc.appendChild(locText);
+        url.appendChild(loc);
+        // Display other languages only if they exist
+        // Only add alternate language links if there are actually multiple languages for this content
+        // We filter out "x-default" when counting because default language has two entries: one as the actual locale and one as "x-default"
+        if (entriesByPath.get(entry.getPath()).stream().filter(sitemapEntry -> !"x-default".equals(sitemapEntry.getLocale().toString())).collect(Collectors.toSet()).size() > 1) {
+            for (SitemapEntry langEntry : entriesByPath.get(entry.getPath())) {
+                Element langLink = doc.createElement("xhtml:link");
+                langLink.setAttribute("rel", "alternate");
+                langLink.setAttribute("hreflang", langEntry.getLocale().toString().replace("_", "-"));
+                langLink.setAttribute("href", langEntry.getLink());
+                url.appendChild(langLink);
+            }
+        }
+    }
 }
-

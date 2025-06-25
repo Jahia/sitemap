@@ -1,7 +1,7 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { publishAndWaitJobEnding } from '../../utils/publishAndWaitJobEnding'
 import { generateSitemap } from '../../utils/generateSitemap'
+import { publishAndWaitJobEnding, setNodeProperty } from '@jahia/cypress'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -17,6 +17,9 @@ const createPage = (parent, name, dedicatedSiteMap = undefined) => {
         },
         mutationFile: 'graphql/jcrAddPage.graphql',
     })
+    // Set title of home in French
+    setNodeProperty(parent + '/' + name, 'jcr:title', 'home FR', 'fr')
+
     if (dedicatedSiteMap) {
         cy.apollo({
             variables: {
@@ -70,7 +73,7 @@ describe('Check sitemap links are encoded correctly', () => {
         addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity ü', 'actual-vanity ü')
         addVanityUrl(homePath + '/encoding-sitemap-test/sitemap-vanities/vanity ü', 'actual-vanity ä')
 
-        publishAndWaitJobEnding(homePath + '/encoding-sitemap-test')
+        publishAndWaitJobEnding(homePath + '/encoding-sitemap-test', ['en', 'fr'])
 
         configureSitemap(sitePath, Cypress.config().baseUrl + sitePath)
     })
@@ -82,7 +85,7 @@ describe('Check sitemap links are encoded correctly', () => {
             },
             mutationFile: 'graphql/jcrDeleteNode.graphql',
         })
-        publishAndWaitJobEnding(homePath)
+        publishAndWaitJobEnding(homePath, ['en', 'fr'])
         removeSitemapConfiguration(sitePath)
     })
 
