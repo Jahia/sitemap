@@ -174,7 +174,7 @@ public final class Utils {
      * generate sitemap entries that are publicly accessible, store them in entriesByLocale and entriesByPath parameters
      */
     public static void generateSitemapEntries(Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, String rootPath, Set<String> sitemapRoots, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
-         SitemapConfigService config = BundleUtils.getOsgiService(SitemapConfigService.class, null);
+        SitemapConfigService config = BundleUtils.getOsgiService(SitemapConfigService.class, null);
         if (config == null) {
             logger.error("Configuration service SitemapConfigService not revolved, check OSGi services status");
             return;
@@ -382,4 +382,3 @@ public final class Utils {
     }
 
 }
-
