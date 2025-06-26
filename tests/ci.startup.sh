@@ -16,7 +16,14 @@ if [[ -z ${JAHIA_LICENSE} ]]; then
     echo "$(date +'%d %B %Y - %k:%M') [LICENSE] == Jahia license does not exist, checking if there is a license file in /tmp/license.xml =="
     if [[ -f /tmp/license.xml ]]; then
         echo "$(date +'%d %B %Y - %k:%M') [LICENSE] ==  License found in /tmp/license.xml, base64ing it"
-        export JAHIA_LICENSE=$(base64 /tmp/license.xml)
+        # Detect OS and use appropriate base64 flag
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            export JAHIA_LICENSE=$(base64 -i /tmp/license.xml)
+        else
+            # Linux and other systems
+            export JAHIA_LICENSE=$(base64 /tmp/license.xml)
+        fi
     else
         echo "$(date +'%d %B %Y - %k:%M') [LICENSE]  == STARTUP FAILURE, unable to find license =="
         exit 1

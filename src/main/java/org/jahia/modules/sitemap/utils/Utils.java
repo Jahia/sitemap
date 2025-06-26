@@ -77,6 +77,7 @@ public final class Utils {
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
     private static final String[] ENTITIES = new String[]{"&amp;", "&apos;", "&quot;", "&gt;", "&lt;"};
     private static final String[] ENCODED_ENTITIES = new String[]{"_-amp-_", "_-apos-_", "_-quot-_", "_-gt-_", "_-lt-_"};
+    private static final Locale DEFAULT_LOCALE = new Locale("x-default", "");
 
     private static final UrlRewriteService urlRewriteService = BundleUtils.getOsgiService(UrlRewriteService.class, null);
 
@@ -220,7 +221,8 @@ public final class Utils {
 
         // look for other languages
         Set<SitemapEntry> sitemapEntries = new HashSet<>();
-        for (Locale locale : node.getResolveSite().getActiveLiveLanguagesAsLocales()) {
+        JCRSiteNode siteNode = node.getResolveSite();
+        for (Locale locale : siteNode.getActiveLiveLanguagesAsLocales()) {
             // The "main" node existing, we use doExecuteWithSystemSessionAsUser to retrieve the I18n nodes to prevent map explosion (cf https://jira.jahia.org/browse/QA-14850 )
             // The "main" node being restrieved by a guest session, we have no security issue when retrieving i18ns nodes with system session
             JCRSessionWrapper localizedSession = sessionPerLocale.get(locale);
@@ -235,14 +237,24 @@ public final class Utils {
                 } catch (Throwable e) {
                     logger.warn("Unable to rewrite link for url {}", nodeInOtherLocale.getUrl());
                 }
-                final SitemapEntry sitemapEntry = new SitemapEntry(nodeInOtherLocale.getPath(), link, new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), locale, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier());
+                final SitemapEntry sitemapEntry = createSitemapEntry(nodeInOtherLocale, link, node, locale);
                 sitemapEntries.add(sitemapEntry);
+                // handle x-default locale
+                String defaultLanguage = siteNode.getDefaultLanguage();
+                if (siteNode.getActiveLiveLanguages().size() > 1 && locale.equals(new Locale(defaultLanguage))) {
+                    final SitemapEntry defaultSitemapEntry = createSitemapEntry(nodeInOtherLocale, link, node, DEFAULT_LOCALE);
+                    sitemapEntries.add(defaultSitemapEntry);
+                }
                 final Set<SitemapEntry> entries = entriesByLocale.getOrDefault(locale, new HashSet<>());
                 entries.add(sitemapEntry);
                 entriesByLocale.put(locale, entries);
             }
         }
         entriesByPath.put(node.getPath(), sitemapEntries);
+    }
+
+    private static SitemapEntry createSitemapEntry(JCRNodeWrapper nodeInOtherLocale, String link, JCRNodeWrapper node, Locale defaultLocale) throws RepositoryException {
+        return new SitemapEntry(nodeInOtherLocale.getPath(), link, new SimpleDateFormat("yyyy-MM-dd").format(node.getLastModifiedAsDate()), defaultLocale, nodeInOtherLocale.getPrimaryNodeTypeName(), nodeInOtherLocale.getIdentifier());
     }
 
     private static boolean isValidEntry(JCRNodeWrapper node, RenderContext renderContext) throws RepositoryException {
@@ -370,3 +382,4 @@ public final class Utils {
     }
 
 }
+

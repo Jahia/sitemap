@@ -67,7 +67,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                     const nodeItems = $list.getElementsByTagName('xhtml:link')
                     if (nodeItems.length > 0) {
                         for (const c of nodeItems) {
-                            if (c.getAttribute('hreflang')) {
+                            if (c.getAttribute('hreflang') && c.getAttribute('hreflang') !== 'x-default') {
                                 cy.wrap(c.getAttribute('hreflang')).should('not.contain', langDe)
                             }
                         }
@@ -93,6 +93,33 @@ describe('Check sitemap-lang.xml file on digitall', () => {
                 includeSubTree: false,
             },
             mutationFile: 'graphql/jcrPublishNode.graphql',
+        })
+    })
+
+    it('Check x-default is matching all default (en) locale links', () => {
+        cy.requestFindXMLElementByTagName(langEn + sitemapLangFilePath, 'url').then((urls) => {
+            Cypress.$(urls).each((idx, url) => {
+                // Find all xhtml:link elements in the current URL
+                const linkElements = url.getElementsByTagName('xhtml:link')
+
+                // Find the href values for English and x-default
+                let englishHref = ''
+                let xDefaultHref = ''
+                // Extract href values for both locales
+                Cypress.$(linkElements).each((idx, link) => {
+                    const hreflang = link.getAttribute('hreflang')
+                    const href = link.getAttribute('href')
+                    if (hreflang === 'en') {
+                        englishHref = href
+                    } else if (hreflang === 'x-default') {
+                        xDefaultHref = href
+                    }
+                })
+                // Verify both href values exist and match
+                expect(englishHref).to.not.be.empty
+                expect(xDefaultHref).to.not.be.empty
+                expect(xDefaultHref).to.equal(englishHref, 'x-default link should match the English link')
+            })
         })
     })
 
