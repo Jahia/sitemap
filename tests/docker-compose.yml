@@ -19,6 +19,11 @@ services:
       MYSQL_DATABASE: jahia
       MYSQL_USER: jahia
       MYSQL_PASSWORD: jahia
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot1234"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   # Cypress container
   cypress:
@@ -46,7 +51,8 @@ services:
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     networks:
       jahia-net:
         ipv4_address: 172.24.24.50
