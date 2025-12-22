@@ -3,9 +3,6 @@ version: '3.9'
 networks:
   jahia-net:
     name: jahia-net
-    ipam:
-      config:
-        - subnet: 172.24.24.0/24
 
 services:
   mariadb:
@@ -54,8 +51,7 @@ services:
       mariadb:
         condition: service_healthy
     networks:
-      jahia-net:
-        ipv4_address: 172.24.24.50
+      - jahia-net
     ports:
       - 8080:8080
       - 8101:8101
@@ -82,8 +78,7 @@ services:
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
     networks:
-      jahia-net:
-        ipv4_address: 172.24.24.51
+      - jahia-net
     depends_on:
       - jahia
     extra_hosts:
@@ -109,8 +104,7 @@ services:
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
     networks:
-      jahia-net:
-        ipv4_address: 172.24.24.52
+      - jahia-net
     depends_on:
       - jahia
     extra_hosts:
