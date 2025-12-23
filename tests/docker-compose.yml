@@ -86,8 +86,6 @@ services:
         ipv4_address: 172.24.24.51
     depends_on:
       - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -113,8 +111,6 @@ services:
         ipv4_address: 172.24.24.52
     depends_on:
       - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
