@@ -13,7 +13,7 @@ services:
     container_name: mariadb
     networks:
       - jahia-net
-    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10
+    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10 --general-log=1 --general-log-file=/var/lib/mysql/general.log
     environment:
       MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: jahia
@@ -32,7 +32,7 @@ services:
     ipc: host
     container_name: cypress
     depends_on:
-        - jahia
+        - haproxy
     environment:
         - MANIFEST=${MANIFEST}
         - JAHIA_USERNAME=${JAHIA_USERNAME}
