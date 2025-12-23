@@ -30,6 +30,14 @@ if [[ -z ${JAHIA_LICENSE} ]]; then
     fi
 fi
 
+echo "List of all Docker images"
+docker images -a
+echo "List of all Docker volumes"
+docker volume ls
+
+echo " == Cleaning up previous environment =="
+docker-compose down -v --remove-orphans
+
 docker-compose up -d mariadb haproxy jahia
 
 if [[ "${JAHIA_CLUSTER_ENABLED}" == "true" ]]; then

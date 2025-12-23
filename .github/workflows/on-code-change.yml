@@ -130,7 +130,7 @@ jobs:
           module_id: sitmap
           testrail_project: Sitemap Module
           tests_manifest: provisioning-manifest-build-8.2.yml
-          jahia_image: ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT
+          jahia_image: ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator
           jahia_cluster_enabled: true
           should_use_build_artifacts: true
           should_skip_testrail: false
