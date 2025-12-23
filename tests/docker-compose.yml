@@ -131,10 +131,13 @@ services:
     image: haproxytech/haproxy-alpine:2.4
     hostname: haproxy.dev.sandbox.jahia.com
     container_name: haproxy
+    networks:
+        -  jahia-net
+    depends_on:
+      - jahia-browsing-a
+      - jahia-browsing-b
     ports:
         - "18080:8080"
         - "18404:8404"
     volumes:
         - './:/usr/local/etc/haproxy:ro'
-    networks:
-        -  jahia-net
