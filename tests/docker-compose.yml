@@ -47,7 +47,7 @@ services:
         - jahia-net
 
   jahia:
-    image: '${JAHIA_IMAGE}'
+    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia
     depends_on:
@@ -78,7 +78,7 @@ services:
       JPDA: ${JPDA}
 
   jahia-browsing-a:
-    image: '${JAHIA_IMAGE}'
+    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
     networks:
@@ -103,7 +103,7 @@ services:
       JPDA: ${JPDA}
 
   jahia-browsing-b:
-    image: '${JAHIA_IMAGE}'
+    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
     networks:
