@@ -38,18 +38,18 @@ services:
         - JAHIA_USERNAME=${JAHIA_USERNAME}
         - JAHIA_PASSWORD=${JAHIA_PASSWORD}
         - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
-        - JAHIA_URL=${JAHIA_URL}
-        - JAHIA_HOST=${JAHIA_HOST}
-        - JAHIA_PORT=${JAHIA_PORT}
+        - JAHIA_URL=http://haproxy:8080
+#        - JAHIA_HOST=${JAHIA_HOST}
+#        - JAHIA_PORT=${JAHIA_PORT}
         - NEXUS_USERNAME=${NEXUS_USERNAME}
         - NEXUS_PASSWORD=${NEXUS_PASSWORD}
     networks:
         - jahia-net
 
-  jahia:
-    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
+  jahia-processing:
+    image: '${JAHIA_IMAGE}'
     # hostname: 'jahia.dev.sandbox.jahia.com'
-    container_name: jahia
+    container_name: jahia-processing
     depends_on:
       mariadb:
         condition: service_healthy
@@ -78,14 +78,14 @@ services:
       JPDA: ${JPDA}
 
   jahia-browsing-a:
-    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
+    image: '${JAHIA_IMAGE}'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
     networks:
       jahia-net:
         ipv4_address: 172.24.24.51
     depends_on:
-      - jahia
+      - jahia-processing
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -99,18 +99,18 @@ services:
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   jahia-browsing-b:
-    image: 'ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT-custom-configurator'
+    image: '${JAHIA_IMAGE}'
     # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
     networks:
       jahia-net:
         ipv4_address: 172.24.24.52
     depends_on:
-      - jahia
+      - jahia-processing
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -124,7 +124,7 @@ services:
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   haproxy:
@@ -140,4 +140,4 @@ services:
         - "18080:8080"
         - "18404:8404"
     volumes:
-        - './:/usr/local/etc/haproxy:ro'
+        - './haproxy/:/usr/local/etc/haproxy:ro'
