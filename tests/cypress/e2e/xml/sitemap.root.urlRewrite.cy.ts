@@ -11,7 +11,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     before('Configure sitemap for the test', () => {
         // Set current server name as digitall j:serverName
         const host = new URL(Cypress.config().baseUrl).host
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 propertyName: 'j:serverName',
@@ -25,7 +25,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
     after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
         // Set back localhost as Digitall j:serverName
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 propertyName: 'j:serverName',
@@ -37,7 +37,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
     afterEach('Be sure to remove any invalidated languages', () => {
         // Remove edit only language
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 properties: [{ name: 'j:inactiveLiveLanguages', values: [], language: langEn }],
@@ -54,7 +54,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             .should('include', Cypress.config().baseUrl + '/fr/sitemap-lang.xml')
             .should('include', Cypress.config().baseUrl + '/de/sitemap-lang.xml')
         // Add edit only language to the site
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 properties: [{ name: 'j:inactiveLiveLanguages', values: [langDe], language: langEn }],

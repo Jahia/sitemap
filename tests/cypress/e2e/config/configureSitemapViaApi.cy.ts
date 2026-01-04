@@ -1,6 +1,10 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 import { waitForSitemap } from '../../utils/generateSitemap'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
+import { enableModule } from '@jahia/cypress'
+import { jahiaProcessingConfig } from '../../utils/serversConfig'
+import { waitUntilSyncIsComplete } from '../../utils/sync'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -16,18 +20,18 @@ describe('Testing sitemap configuration via GraphQL API', () => {
         waitForSitemap()
     })
 
-    // Before running the other tests, verify Sitemap is configured properly for digitall
-    it(`Apply sitemap configuration for site ${sitePath}`, function () {
+    before('Verify Sitemap is configured properly for digitall', () => {
+        enableModule('sitemap', siteKey, jahiaProcessingConfig)
+        waitUntilSyncIsComplete()
         configureSitemap(sitePath, siteMapRootUrl)
-
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response) => {
+        }).then((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null
@@ -46,21 +50,22 @@ describe('Testing sitemap configuration via GraphQL API', () => {
 
     it('Should display debug info in XML when debug enabled', function () {
         ;['true', 'false'].forEach((debug) => {
+            switchToProcessingApolloClient()
+            cy.log(`Verifying debug info in XML when debug is ${debug}`)
             cy.apollo({
                 variables: {
                     debug,
                 },
                 mutationFile: 'graphql/enabledDebug.graphql',
             })
-            // wait for sync of config
-            // eslint-disable-next-line cypress/no-unnecessary-waiting
-            cy.wait(1000)
+            waitUntilSyncIsComplete()
             waitForSitemap()
+            switchToBrowsingApolloClient()
             cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                 if (debug === 'true') {
-                    expect(response.body).to.contains('<!-- nodePath:')
+                    expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
                 } else {
-                    expect(response.body).not.to.contains('<!-- nodePath:')
+                    expect(response.body, 'Should not contain comment tags in debug').not.to.contains('<!-- nodePath:')
                 }
             })
         })

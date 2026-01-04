@@ -8,6 +8,9 @@ import {
 } from '@jahia/cypress'
 import { configureSitemap } from '../../utils/configureSitemap'
 import { generateSitemap } from '../../utils/generateSitemap'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
+import { jahiaProcessingConfig } from '../../utils/serversConfig'
+import { waitUntilSyncIsComplete } from '../../utils/sync'
 
 const siteKey = 'singleLanguageSite'
 const path = `/sites/${siteKey}`
@@ -15,24 +18,35 @@ const path = `/sites/${siteKey}`
 describe('Test site with one language', () => {
     beforeEach(() => {
         // Set up a site with a single language
+        switchToProcessingApolloClient()
         deleteSite(siteKey)
-        createSite(siteKey, {
-            languages: 'en, fr',
-            templateSet: 'dx-demo-templates',
-            serverName: 'localhost',
-            locale: 'en',
-        })
+        createSite(
+            siteKey,
+            {
+                languages: 'en, fr',
+                templateSet: 'dx-demo-templates',
+                serverName: 'localhost',
+                locale: 'en',
+            },
+            jahiaProcessingConfig,
+        )
         // Set title of home in French
         setNodeProperty(path + '/home', 'jcr:title', 'home FR', 'fr')
         // Enable sitemap module and configure it
-        enableModule('sitemap', siteKey)
+        enableModule('sitemap', siteKey, jahiaProcessingConfig)
         configureSitemap(path, Cypress.config().baseUrl + path)
         // Publish the site
+        switchToProcessingApolloClient()
         publishAndWaitJobEnding(path, ['en', 'fr'])
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
     })
 
     afterEach(() => {
+        switchToProcessingApolloClient()
         deleteSite(siteKey)
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
     })
 
     it('Should generate a simplified sitemap for single language site', () => {
@@ -76,7 +90,10 @@ describe('Test site with one language', () => {
         )
 
         // Unpublish french
+        switchToProcessingApolloClient()
         unpublishNode(path + '/home', 'fr')
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
 
         // Generate sitemap
         generateSitemap(siteKey)

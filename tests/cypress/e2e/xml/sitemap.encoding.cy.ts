@@ -2,6 +2,8 @@ import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
 import { generateSitemap } from '../../utils/generateSitemap'
 import { publishAndWaitJobEnding, setNodeProperty } from '@jahia/cypress'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
+import { waitUntilSyncIsComplete } from '../../utils/sync'
 
 const siteKey = 'digitall'
 const sitePath = '/sites/' + siteKey
@@ -50,6 +52,7 @@ const addVanityUrl = (path, vanity) => {
 
 describe('Check sitemap links are encoded correctly', () => {
     before('Configure sitemap for the tests', () => {
+        switchToProcessingApolloClient()
         // create pages
         createPage(homePath, 'encoding-sitemap-test')
         createPage(homePath + '/encoding-sitemap-test', 'sitemap-roots')
@@ -75,10 +78,14 @@ describe('Check sitemap links are encoded correctly', () => {
 
         publishAndWaitJobEnding(homePath + '/encoding-sitemap-test', ['en', 'fr'])
 
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
+
         configureSitemap(sitePath, Cypress.config().baseUrl + sitePath)
     })
 
     after('Remove sitemap configuration via GraphQL', () => {
+        switchToProcessingApolloClient()
         cy.apollo({
             variables: {
                 pathOrId: homePath + '/encoding-sitemap-test',
@@ -86,7 +93,9 @@ describe('Check sitemap links are encoded correctly', () => {
             mutationFile: 'graphql/jcrDeleteNode.graphql',
         })
         publishAndWaitJobEnding(homePath, ['en', 'fr'])
+        waitUntilSyncIsComplete()
         removeSitemapConfiguration(sitePath)
+        switchToBrowsingApolloClient()
     })
 
     it('Check encoding for sitemap pages', () => {

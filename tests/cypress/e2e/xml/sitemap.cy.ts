@@ -8,7 +8,7 @@ const searchResultsPageName = 'search-results'
 const searchResultsPagePath = homePagePath + '/' + searchResultsPageName
 const sitemapRootPath = sitePath + '/sitemap.xml'
 const dedicatedSitemapMixin = 'jseomix:sitemapResource'
-const siteMapRootUrl = Cypress.config().baseUrl + sitePath
+const siteMapRootUrl = Cypress.env('JAHIA_PROCESSING_URL') + sitePath
 
 describe('Check sitemap.xml root file on digitall', () => {
     beforeEach('Configure sitemap for the test', () => {
@@ -19,7 +19,7 @@ describe('Check sitemap.xml root file on digitall', () => {
         removeSitemapConfiguration(sitePath)
 
         // remove the previous sitemapResource mixin added during the test to the digital page search-results
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToRemove: dedicatedSitemapMixin,
@@ -36,7 +36,7 @@ describe('Check sitemap.xml root file on digitall', () => {
         })
 
         // add sitemapResource mixin to the digital page search-results to add dedicated sitemap
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToAdd: dedicatedSitemapMixin,
