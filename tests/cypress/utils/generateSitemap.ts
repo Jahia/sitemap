@@ -1,4 +1,9 @@
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from './apollo'
+import { waitUntilSyncIsComplete } from './sync'
+
 export const waitForSitemap = (): void => {
+    cy.log('Wait for sitemap generation')
+    switchToProcessingApolloClient()
     cy.waitUntil(
         () =>
             cy
@@ -19,14 +24,17 @@ export const waitForSitemap = (): void => {
             interval: 500,
         },
     )
+    waitUntilSyncIsComplete()
+    switchToBrowsingApolloClient()
     // Wait 2 second for server sync after publication
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000)
+    cy.log('Sitemap generation completed')
 }
 
 export const generateSitemap = (siteKey: string): void => {
     cy.log(`Delete sitemap cache for siteKey: ${siteKey}`)
-    cy.apollo({
+    cy.apolloProcessing({
         variables: {
             siteKey: siteKey,
         },

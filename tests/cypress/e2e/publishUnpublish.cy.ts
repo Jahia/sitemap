@@ -17,7 +17,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
         configureSitemap(sitePath, siteMapRootUrl)
 
         // Creates the test page with content in all 3 languages
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 parentPathOrId: homePagePath,
                 name: testPageName,
@@ -30,7 +30,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
     after('Cleanup test data', () => {
         // Remove the page that was created for the test
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: testPagePath,
             },
@@ -38,7 +38,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
         })
 
         // Publish home to remove the pages from the sitemap
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: homePagePath,
                 languages: languages,
@@ -51,14 +51,14 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
     // Before running the other tests, verify Sitemap is configured properly for digitall
     it('Verify sitemap is configured properly for site', function () {
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response) => {
+        }).then((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null
@@ -88,7 +88,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
             // Publish the page in all languages with subnodes
             cy.log(`Publish the page in all languages with subnodes`)
-            cy.apollo({
+            cy.apolloProcessing({
                 variables: {
                     pathOrId: testPagePath,
                     languages: languages,
@@ -131,7 +131,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
                 // Unpublish the page in that particular language
                 cy.log(`Unpublish content in ${lang}`)
-                cy.apollo({
+                cy.apolloProcessing({
                     variables: {
                         pathOrId: testPagePath,
                         languages: [lang],
@@ -181,7 +181,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                 cy.task('parseSitemap', { url: sitemapUrl }).then((originalSitemapUrls: Array<string>) => {
                     // Publish all pages in all languages to restore the page that was just unpublished
                     cy.log(`Publish the page in all languages with subnodes`)
-                    cy.apollo({
+                    cy.apolloProcessing({
                         variables: {
                             pathOrId: testPagePath,
                             languages: languages,
@@ -210,7 +210,7 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
             // Unpublish the page in that particular language
             cy.log(`Unpublish content in all languages (${JSON.stringify(languages)}) `)
-            cy.apollo({
+            cy.apolloProcessing({
                 variables: {
                     pathOrId: testPagePath,
                     languages: languages,

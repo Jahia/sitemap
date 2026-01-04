@@ -2,6 +2,8 @@ import { SitemapPage } from '../../page-object/sitemap.page'
 
 import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
+import { waitUntilSyncIsComplete } from '../../utils/sync'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -14,22 +16,24 @@ describe('Testing sitemap configuration via Jahia Admin UI', () => {
         removeSitemapConfiguration(sitePath)
     })
 
-    // Before running the other tests, verify Sitemap is configured properly for digitall
-    it(`Apply sitemap configuration for site ${sitePath}`, function () {
+    before('Verify Sitemap is configured properly for digitall', () => {
         // Save the root sitemap URL and Flush sitemap cache
+        switchToProcessingApolloClient()
         const siteMapPage = SitemapPage.visit(siteKey, langEn)
         siteMapPage.inputSitemapRootURL(siteMapRootUrl)
         siteMapPage.clickOnSave()
         siteMapPage.clickTriggerSitemapJob()
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
 
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response) => {
+        }).then((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null

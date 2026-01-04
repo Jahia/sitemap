@@ -1,0 +1,79 @@
+networks:
+  jahia-net:
+    name: jahia-net
+    ipam:
+      config:
+        - subnet: 172.24.24.0/24
+
+services:
+  mariadb:
+    image: library/mariadb:10-focal
+    container_name: mariadb
+    networks:
+      - jahia-net
+    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: jahia
+      MYSQL_USER: jahia
+      MYSQL_PASSWORD: jahia
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot1234"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # Cypress container
+  cypress:
+    image: '${TESTS_IMAGE}'
+    # https://github.com/cypress-io/cypress/issues/350
+    ipc: host
+    container_name: cypress
+    depends_on:
+      jahia-standalone:
+        condition: service_healthy
+    environment:
+        - MANIFEST=${MANIFEST}
+        - JAHIA_USERNAME=${JAHIA_USERNAME}
+        - JAHIA_PASSWORD=${JAHIA_PASSWORD}
+        - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
+        - JAHIA_URL=http://jahia-standalone:8080
+        - JAHIA_PROCESSING_URL=http://jahia-standalone:8080
+        - NEXUS_USERNAME=${NEXUS_USERNAME}
+        - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+    networks:
+        - jahia-net
+
+  jahia-standalone:
+    image: '${JAHIA_IMAGE}'
+    # hostname: 'jahia.dev.sandbox.jahia.com'
+    container_name: jahia-standalone
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      jahia-net:
+        ipv4_address: 172.24.24.50
+    ports:
+      - 8080:8080
+      - 8101:8101
+      - 8000:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/cms/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    environment:
+      jahia_cfg_karaf_remoteShellHost: 0.0.0.0
+      DB_VENDOR: mariadb
+      DB_HOST: mariadb
+      DB_NAME: jahia
+      DB_USER: jahia
+      DB_PASS: jahia
+      MAX_RAM_PERCENTAGE: 95
+      RESTORE_MODULE_STATES: 'false'
+      JAHIA_LICENSE: ${JAHIA_LICENSE}
+      SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
+      PROCESSING_SERVER: 'true'
+      JPDA: ${JPDA}

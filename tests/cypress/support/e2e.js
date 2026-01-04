@@ -18,8 +18,11 @@
 import 'cypress-wait-until'
 import './commands'
 import '@cypress/code-coverage/support'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../utils/apollo'
+import { waitUntilSyncIsComplete } from '../utils/sync'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('cypress-terminal-report/src/installLogsCollector')()
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('@jahia/cypress/dist/support/registerSupport').registerSupport()
 
 const optionsCollector = {
@@ -33,7 +36,12 @@ const optionsCollector = {
 require('cypress-terminal-report/src/installLogsCollector')(optionsCollector)
 
 before(() => {
-    cy.executeGroovy('logger.groovy', { MESSAGE: `############# ${Cypress.spec.name} ############# ` })
+    cy.log('Waiting for cluster journal sync before tests start...')
+    switchToProcessingApolloClient()
+    waitUntilSyncIsComplete()
+    switchToBrowsingApolloClient()
+    cy.log('Cluster journal sync completed')
+    cy.executeGroovy('logger.groovy', {MESSAGE: `############# ${Cypress.spec.name} ############# `})
 })
 
 beforeEach(() => {
