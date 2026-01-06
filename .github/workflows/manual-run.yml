@@ -12,7 +12,7 @@ on:
       manifest:
         description: 'Provisioning manifest. Can be a local repository file in the tests folder or a publicly accessible link'
         required: true
-        default: 'provisioning-manifest-snapshot.yml'
+        default: 'provisioning-manifest-snapshot-8.2.yml'
 
 jobs:
   integration-tests:
@@ -24,5 +24,6 @@ jobs:
       module_id: sitemap
       testrail_project: Sitemap Module
       pagerduty_skip_notification: true
+      docker_compose_file: docker-compose-standalone.yml
       provisioning_manifest: ${{ github.event.inputs.manifest }}
       artifact_prefix: sitemap-standalone

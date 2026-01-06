@@ -16,6 +16,7 @@ jobs:
       module_id: sitemap
       testrail_project: Sitemap Module
       pagerduty_incident_service: sitemap-cluster-JahiaSN
+      docker_compose_file: docker-compose-cluster.yml
       provisioning_manifest: provisioning-manifest-snapshot-8.2.yml
       artifact_prefix: sitemap-cluster-sn
       module_branch: ${{ github.ref }}
