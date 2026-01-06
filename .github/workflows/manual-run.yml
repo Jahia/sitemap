@@ -27,3 +27,4 @@ jobs:
       docker_compose_file: docker-compose-standalone.yml
       provisioning_manifest: ${{ github.event.inputs.manifest }}
       artifact_prefix: sitemap-standalone
+      module_branch: ${{ github.ref }}
