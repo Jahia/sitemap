@@ -16,7 +16,8 @@ on:
 
 jobs:
   integration-tests:
-    uses:  Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
+#    uses:  Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
+    uses:  Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file-BACKUP-with-temp-change
     secrets: inherit
     with:
       jahia_image: ${{ github.event.inputs.jahia_image }}

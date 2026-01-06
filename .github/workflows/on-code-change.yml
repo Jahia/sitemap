@@ -56,7 +56,7 @@ jobs:
 
   integration-tests-standalone:
     #    uses:  Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
-    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file # TODO temp for testing
+    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file-BACKUP-with-temp-change # TODO temp for testing
     needs: build
     secrets: inherit
     with:
@@ -71,7 +71,7 @@ jobs:
 
   integration-tests-cluster:
 #    uses:  Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
-    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file # TODO temp for testing
+    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file-BACKUP-with-temp-change # TODO temp for testing
     needs: build
     secrets: inherit
     with:
