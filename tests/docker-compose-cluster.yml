@@ -40,7 +40,6 @@ services:
 
   jahia-processing:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-processing
     depends_on:
       - mariadb
@@ -74,7 +73,6 @@ services:
 
   jahia-browsing-a:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
     networks:
       jahia-net:
@@ -106,7 +104,6 @@ services:
 
   jahia-browsing-b:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
     networks:
       jahia-net:
