@@ -8,12 +8,15 @@ export class SitemapPage {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     static visit(siteKey = 'mySite', lang = 'en') {
-        cy.visit(`/jahia/jcontent/${siteKey}/${lang}/apps/siteSettingsSeo/sitemap`, {
-            auth: {
-                username: 'root',
-                password: Cypress.env('SUPER_USER_PASSWORD'),
+        cy.visit(
+            `${Cypress.env('JAHIA_PROCESSING_URL')}/jahia/jcontent/${siteKey}/${lang}/apps/siteSettingsSeo/sitemap`,
+            {
+                auth: {
+                    username: 'root',
+                    password: Cypress.env('SUPER_USER_PASSWORD'),
+                },
             },
-        })
+        )
         return new SitemapPage()
     }
 
