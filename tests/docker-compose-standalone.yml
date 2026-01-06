@@ -46,7 +46,6 @@ services:
 
   jahia-standalone:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-standalone
     depends_on:
       mariadb:
