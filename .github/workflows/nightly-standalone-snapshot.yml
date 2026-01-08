@@ -8,8 +8,7 @@ on:
 jobs:
   integration-tests-standalone:
     name: Integration Tests (Standalone - Snapshot)
-#    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
-    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@support-custom-docker-compose-file-BACKUP-with-temp-change
+    uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
     secrets: inherit
     with:
       jahia_image: ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT
