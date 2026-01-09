@@ -13,7 +13,7 @@ services:
     container_name: mariadb
     networks:
       - jahia-net
-    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10
+    command: --max_allowed_packet=134217728 --transaction-isolation=READ-UNCOMMITTED --innodb-lock-wait-timeout=10 --general-log=1 --general-log-file=/var/lib/mysql/general.log
     environment:
       MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: jahia
@@ -32,24 +32,24 @@ services:
     ipc: host
     container_name: cypress
     depends_on:
-        - jahia
+        - haproxy
     environment:
         - MANIFEST=${MANIFEST}
         - JAHIA_USERNAME=${JAHIA_USERNAME}
         - JAHIA_PASSWORD=${JAHIA_PASSWORD}
         - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
-        - JAHIA_URL=${JAHIA_URL}
-        - JAHIA_HOST=${JAHIA_HOST}
-        - JAHIA_PORT=${JAHIA_PORT}
+        - JAHIA_URL=http://haproxy:8080
+#        - JAHIA_HOST=${JAHIA_HOST}
+#        - JAHIA_PORT=${JAHIA_PORT}
         - NEXUS_USERNAME=${NEXUS_USERNAME}
         - NEXUS_PASSWORD=${NEXUS_PASSWORD}
     networks:
         - jahia-net
 
-  jahia:
+  jahia-processing:
     image: '${JAHIA_IMAGE}'
     # hostname: 'jahia.dev.sandbox.jahia.com'
-    container_name: jahia
+    container_name: jahia-processing
     depends_on:
       mariadb:
         condition: service_healthy
@@ -85,9 +85,7 @@ services:
       jahia-net:
         ipv4_address: 172.24.24.51
     depends_on:
-      - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
+      - jahia-processing
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -101,7 +99,7 @@ services:
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   jahia-browsing-b:
@@ -112,9 +110,7 @@ services:
       jahia-net:
         ipv4_address: 172.24.24.52
     depends_on:
-      - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
+      - jahia-processing
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -128,17 +124,20 @@ services:
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
       CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   haproxy:
     image: haproxytech/haproxy-alpine:2.4
     hostname: haproxy.dev.sandbox.jahia.com
     container_name: haproxy
+    networks:
+        -  jahia-net
+    depends_on:
+      - jahia-browsing-a
+      - jahia-browsing-b
     ports:
         - "18080:8080"
         - "18404:8404"
     volumes:
-        - './:/usr/local/etc/haproxy:ro'
-    networks:
-        -  jahia-net
+        - './haproxy/:/usr/local/etc/haproxy:ro'
