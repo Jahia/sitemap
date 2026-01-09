@@ -65,7 +65,9 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 if (debug === 'true') {
                     expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
                 } else {
-                    expect(response.body, 'Should not contain comment tags in debug').not.to.contains('<!-- nodePath:')
+                    expect(response.body, 'Should not contain comment tags in non debug').not.to.contains(
+                        '<!-- nodePath:',
+                    )
                 }
             })
         })
