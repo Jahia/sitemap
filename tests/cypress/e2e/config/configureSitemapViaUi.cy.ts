@@ -19,18 +19,13 @@ describe('Testing sitemap configuration via Jahia Admin UI', () => {
     })
 
     before('Verify Sitemap is configured properly for digitall', () => {
-        cy.log('AAA')
         enableModule('sitemap', siteKey, jahiaProcessingConfig)
-        cy.log('AAA1')
         // Save the root sitemap URL and Flush sitemap cache
         switchToProcessingApolloClient()
-        cy.log('AAA2')
         const siteMapPage = SitemapPage.visit(siteKey, langEn)
-        cy.log('AAA3')
         siteMapPage.inputSitemapRootURL(siteMapRootUrl)
         siteMapPage.clickOnSave()
         siteMapPage.clickTriggerSitemapJob()
-        cy.log('AAA4')
 
         cy.apollo({
             variables: {
