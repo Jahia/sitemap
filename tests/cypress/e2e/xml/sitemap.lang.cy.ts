@@ -38,7 +38,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
     it('alternate url should not contains invalid language', () => {
         // update history page to invalid 'de' language
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: historyPagePath,
                 properties: [{ name: 'j:invalidLanguages', values: [langDe], language: langEn }],
@@ -47,7 +47,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         })
 
         // publish history page in all wanted languages
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: historyPagePath,
                 languages: languages,
@@ -76,7 +76,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             })
         })
 
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: historyPagePath,
                 properties: [{ name: 'j:invalidLanguages', values: [], language: langEn }],
@@ -85,7 +85,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         })
 
         // publish history page in all wanted languages
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: historyPagePath,
                 languages: languages,
@@ -125,7 +125,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
 
     it('Exclude page from sitemap', function () {
         // Clean up any mixin
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToRemove: noIndexSitemapMixin,
@@ -149,7 +149,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
         })
 
         // add noIndex mixin to the page search-results to exclude from sitemap
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToAdd: noIndexSitemapMixin,
@@ -173,7 +173,7 @@ describe('Check sitemap-lang.xml file on digitall', () => {
             expect(isTestPassed).to.be.equal(true)
         })
 
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: searchResultsPagePath,
                 mixinsToRemove: noIndexSitemapMixin,

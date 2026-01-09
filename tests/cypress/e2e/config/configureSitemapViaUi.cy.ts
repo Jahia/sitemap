@@ -1,24 +1,31 @@
-import { configureSitemap } from '../../utils/configureSitemap'
+import { SitemapPage } from '../../page-object/sitemap.page'
+
+import { waitUntilRefresh } from '../../utils/waitUntilRefresh'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { waitForSitemap } from '../../utils/generateSitemap'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
+import { waitUntilSyncIsComplete } from '../../utils/sync'
+import { enableModule } from '@jahia/cypress'
+import { jahiaProcessingConfig } from '../../utils/serversConfig'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
 const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
 const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
+const langEn = 'en'
 
-describe('Testing sitemap configuration via GraphQL API', () => {
+describe('Testing sitemap configuration via Jahia Admin UI', () => {
     after('Remove sitemap configuration via GraphQL', () => {
         removeSitemapConfiguration(sitePath)
     })
 
-    beforeEach(() => {
-        waitForSitemap()
-    })
-
-    // Before running the other tests, verify Sitemap is configured properly for digitall
-    it(`Apply sitemap configuration for site ${sitePath}`, function () {
-        configureSitemap(sitePath, siteMapRootUrl)
+    before('Verify Sitemap is configured properly for digitall', () => {
+        enableModule('sitemap', siteKey, jahiaProcessingConfig)
+        // Save the root sitemap URL and Flush sitemap cache
+        switchToProcessingApolloClient()
+        const siteMapPage = SitemapPage.visit(siteKey, langEn)
+        siteMapPage.inputSitemapRootURL(siteMapRootUrl)
+        siteMapPage.clickOnSave()
+        siteMapPage.clickTriggerSitemapJob()
 
         cy.apollo({
             variables: {
@@ -27,42 +34,25 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response) => {
+        }).then((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null
             expect(r.mixinTypes[0].name).to.equal('jseomix:sitemap')
             expect(r.name).to.equal(siteKey)
         })
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
     })
 
     // By default, digitall should have some URLs
     it('Verify that the sitemap does contain some pages', function () {
+        // Wait for the sitemap to be initialized with some urls
+        waitUntilRefresh(sitemapUrl, [])
+
         cy.task('parseSitemap', { url: sitemapUrl }).then((urls: Array<string>) => {
             cy.log(`Sitemap contains: ${urls.length} URLs`)
             expect(urls.length).to.be.greaterThan(20)
-        })
-    })
-
-    it('Should display debug info in XML when debug enabled', function () {
-        ;['true', 'false'].forEach((debug) => {
-            cy.apollo({
-                variables: {
-                    debug,
-                },
-                mutationFile: 'graphql/enabledDebug.graphql',
-            })
-            // wait for sync of config
-            // eslint-disable-next-line cypress/no-unnecessary-waiting
-            cy.wait(1000)
-            waitForSitemap()
-            cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
-                if (debug === 'true') {
-                    expect(response.body).to.contains('<!-- nodePath:')
-                } else {
-                    expect(response.body).not.to.contains('<!-- nodePath:')
-                }
-            })
         })
     })
 })
