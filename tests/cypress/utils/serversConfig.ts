@@ -6,5 +6,5 @@ export const jahiaProcessingConfig = {
 export const jahiaBrowsingConfig = {
     url: Cypress.env('JAHIA_URL'),
     username: 'root',
-    password: Cypress.env('ADMIN_PASSWORD'),
+    password: Cypress.env('SUPER_USER_PASSWORD'),
 }

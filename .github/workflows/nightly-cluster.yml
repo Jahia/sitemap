@@ -7,7 +7,7 @@ on:
 
 jobs:
   integration-tests-cluster:
-    name: Integration Tests (Standalone - Release)
+    name: Integration Tests (Cluster)
     uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
     secrets: inherit
     with:
