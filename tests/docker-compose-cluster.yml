@@ -1,5 +1,3 @@
-version: '3.9'
-
 networks:
   jahia-net:
     name: jahia-net
@@ -19,11 +17,6 @@ services:
       MYSQL_DATABASE: jahia
       MYSQL_USER: jahia
       MYSQL_PASSWORD: jahia
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot1234"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
 
   # Cypress container
   cypress:
@@ -32,27 +25,24 @@ services:
     ipc: host
     container_name: cypress
     depends_on:
-        - jahia
+        - haproxy
     environment:
         - MANIFEST=${MANIFEST}
         - JAHIA_USERNAME=${JAHIA_USERNAME}
         - JAHIA_PASSWORD=${JAHIA_PASSWORD}
         - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
-        - JAHIA_URL=${JAHIA_URL}
-        - JAHIA_HOST=${JAHIA_HOST}
-        - JAHIA_PORT=${JAHIA_PORT}
+        - JAHIA_URL=http://haproxy:8080
+        - JAHIA_PROCESSING_URL=http://jahia-processing:8080
         - NEXUS_USERNAME=${NEXUS_USERNAME}
         - NEXUS_PASSWORD=${NEXUS_PASSWORD}
     networks:
         - jahia-net
 
-  jahia:
+  jahia-processing:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
-    container_name: jahia
+    container_name: jahia-processing
     depends_on:
-      mariadb:
-        condition: service_healthy
+      - mariadb
     networks:
       jahia-net:
         ipv4_address: 172.24.24.50
@@ -60,8 +50,12 @@ services:
       - 8080:8080
       - 8101:8101
       - 8000:8000
-    extra_hosts:
-      - jahia:127.0.0.1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/cms/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -73,21 +67,25 @@ services:
       RESTORE_MODULE_STATES: 'false'
       JAHIA_LICENSE: ${JAHIA_LICENSE}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
-      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      CLUSTER_ENABLED: 'true'
       PROCESSING_SERVER: 'true'
       JPDA: ${JPDA}
 
   jahia-browsing-a:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-a
     networks:
       jahia-net:
         ipv4_address: 172.24.24.51
     depends_on:
-      - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
+      jahia-processing:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/cms/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -99,22 +97,26 @@ services:
       RESTORE_MODULE_STATES: 'false'
       JAHIA_LICENSE: ${JAHIA_LICENSE}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
-      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      CLUSTER_ENABLED: 'true'
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   jahia-browsing-b:
     image: '${JAHIA_IMAGE}'
-    # hostname: 'jahia.dev.sandbox.jahia.com'
     container_name: jahia-browsing-b
     networks:
       jahia-net:
         ipv4_address: 172.24.24.52
     depends_on:
-      - jahia
-    extra_hosts:
-      - jahia:127.0.0.1
+      jahia-processing:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/cms/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
     environment:
       jahia_cfg_karaf_remoteShellHost: 0.0.0.0
       DB_VENDOR: mariadb
@@ -126,19 +128,24 @@ services:
       RESTORE_MODULE_STATES: 'false'
       JAHIA_LICENSE: ${JAHIA_LICENSE}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
-      CLUSTER_ENABLED: ${JAHIA_CLUSTER_ENABLED}
+      CLUSTER_ENABLED: 'true'
       PROCESSING_SERVER: 'false'
-      PROCESSING_HOST: jahia
+      PROCESSING_HOST: jahia-processing
       JPDA: ${JPDA}
 
   haproxy:
     image: haproxytech/haproxy-alpine:2.4
     hostname: haproxy.dev.sandbox.jahia.com
     container_name: haproxy
+    networks:
+        -  jahia-net
+    depends_on:
+      jahia-browsing-a:
+        condition: service_healthy
+      jahia-browsing-b:
+        condition: service_healthy
     ports:
         - "18080:8080"
         - "18404:8404"
     volumes:
-        - './:/usr/local/etc/haproxy:ro'
-    networks:
-        -  jahia-net
+        - './haproxy/:/usr/local/etc/haproxy:ro'

@@ -16,14 +16,14 @@ describe('Testing sitemap only contains language', () => {
         configureSitemap(sitePath, siteMapRootUrl)
 
         cy.log(`Verify sitemap is configured properly for site: ${sitePath}`)
-        cy.apollo({
+        cy.apolloProcessing({
             variables: {
                 pathOrId: sitePath,
                 mixinsFilter: { filters: [{ fieldName: 'name', value: 'jseomix:sitemap' }] },
                 propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
             },
             queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-        }).should((response) => {
+        }).then((response) => {
             const r = response?.data?.jcr?.nodeByPath
             cy.log(JSON.stringify(r))
             expect(r.id).not.to.be.null
@@ -65,7 +65,7 @@ describe('Testing sitemap only contains language', () => {
             expect(originalSitemapUrls.length).to.be.greaterThan(0)
 
             // Disable language filterLang
-            cy.apollo({
+            cy.apolloProcessing({
                 variables: {
                     pathOrId: sitePath,
                     propertyName: 'j:inactiveLiveLanguages',
@@ -97,7 +97,7 @@ describe('Testing sitemap only contains language', () => {
             expect(originalSitemapUrls.length).to.be.greaterThan(0)
 
             cy.log(`Restore all languages for site: ${sitePath}`)
-            cy.apollo({
+            cy.apolloProcessing({
                 variables: {
                     pathOrId: sitePath,
                     propertyName: 'j:inactiveLiveLanguages',

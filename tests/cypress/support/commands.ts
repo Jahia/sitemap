@@ -1,30 +1,26 @@
 // Load type definitions that come with Cypress module
 /// <reference types="cypress" />
 
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../utils/apollo'
+import { ApolloOptions } from '@jahia/cypress/src/support/apollo/apollo'
+import { waitUntilSyncIsComplete } from '../utils/sync'
+import { ApolloQueryResult, FetchResult } from '@apollo/client/core'
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Cypress {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface Chainable {
-        /**
-         * Custom command to navigate to url with default authentication
-         * @example cy.goTo('/start')
-         */
-        goTo(value: string): Chainable<Element>
-
+    interface Chainable<Subject> {
         clickAttached(): Chainable<Element>
-        requestFindNodeInnerHTMLByName(url: string, nodeName: string): Chainable
-        requestFindXMLElementByTagName(url: string, tagName: string): Chainable
+        requestFindNodeInnerHTMLByName(url: string, nodeName: string): Chainable<never>
+        requestFindXMLElementByTagName(url: string, tagName: string): Chainable<never>
+
+        /**
+         * Execute an Apollo mutation/query on the processing server and wait for sync
+         * @example cy.apolloProcessing({ variables: {...}, mutationFile: '...' })
+         */
+        apolloProcessing(options: ApolloOptions): Chainable<ApolloQueryResult<never> | FetchResult>
     }
 }
-
-Cypress.Commands.add('goTo', function (url: string) {
-    cy.visit(url, {
-        auth: {
-            username: 'root',
-            password: Cypress.env('SUPER_USER_PASSWORD'),
-        },
-    })
-})
 
 Cypress.Commands.add('clickAttached', { prevSubject: 'element' }, (subject) => {
     cy.wrap(subject).should(($el) => {
@@ -52,5 +48,14 @@ Cypress.Commands.add('requestFindXMLElementByTagName', function (url: string, ta
         // Get the node group by tagName
         const nodeGroup = xml.getElementsByTagName(tagName)
         return nodeGroup
+    })
+})
+
+Cypress.Commands.add('apolloProcessing', function (options) {
+    switchToProcessingApolloClient()
+    cy.apollo(options).then((result) => {
+        waitUntilSyncIsComplete()
+        switchToBrowsingApolloClient()
+        cy.wrap(result)
     })
 })

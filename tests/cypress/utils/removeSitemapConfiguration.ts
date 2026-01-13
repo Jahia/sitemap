@@ -1,4 +1,8 @@
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from './apollo'
+import { waitUntilSyncIsComplete } from './sync'
+
 export const removeSitemapConfiguration = (sitePath: string): void => {
+    switchToProcessingApolloClient()
     cy.log(`Removing sitemap configuration: Verifying if a configuration is present for ${sitePath}`)
     cy.apollo({
         variables: {
@@ -67,11 +71,13 @@ export const removeSitemapConfiguration = (sitePath: string): void => {
             propertyNames: ['sitemapIndexURL', 'sitemapCacheDuration'],
         },
         queryFile: 'graphql/jcrGetSitemapConfig.graphql',
-    }).should((response) => {
+    }).then((response) => {
         const r = response?.data?.jcr?.nodeByPath
         cy.log(JSON.stringify(r))
         expect(r.mixinTypes.filter((m) => m.name === 'jseomix:sitemap')).to.be.empty
         expect(r.properties.filter((p) => p.name === 'sitemapIndexURL')).to.be.empty
         expect(r.properties.filter((p) => p.name === 'sitemapCacheDuration')).to.be.empty
     })
+    waitUntilSyncIsComplete()
+    switchToBrowsingApolloClient()
 }
