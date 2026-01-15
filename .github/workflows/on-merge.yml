@@ -58,6 +58,7 @@ jobs:
       jahia_image: jahia/jahia-ee:8.1
       module_id: sitemap
       testrail_project: Sitemap Module
+      docker_compose_file: docker-compose-standalone.yml
       provisioning_manifest: provisioning-manifest-build-8.1.x.yml
       should_use_build_artifacts: true
       artifact_prefix: sitemap-standalone
