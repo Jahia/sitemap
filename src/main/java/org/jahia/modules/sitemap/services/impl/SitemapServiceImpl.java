@@ -105,7 +105,6 @@ public class SitemapServiceImpl implements SitemapService {
     public void scheduleSitemapJob(String siteKey, String repeatInterval) throws SchedulerException {
         deleteSitemapJob(siteKey);
         final JobDetail sitemapJob = BackgroundJob.createJahiaJob("sitemap", SitemapCreationJob.class);
-        sitemapJob.getJobDataMap().put("debug", configService.isDebug());
         sitemapJob.setName(siteKey);
         Trigger trigger = new SimpleTrigger(siteKey, "     sitemapTrigger", REPEAT_INDEFINITELY, getSitemapCacheExpirationInSeconds(repeatInterval) * 1000);
         schedulerService.getScheduler().scheduleJob(sitemapJob, trigger);
