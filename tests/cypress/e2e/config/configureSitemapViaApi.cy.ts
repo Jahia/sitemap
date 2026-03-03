@@ -1,6 +1,6 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import {generateSitemap, waitForSitemap } from '../../utils/generateSitemap'
+import { generateSitemap, waitForSitemap } from '../../utils/generateSitemap'
 import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
 import { enableModule } from '@jahia/cypress'
 import { jahiaProcessingConfig } from '../../utils/serversConfig'
