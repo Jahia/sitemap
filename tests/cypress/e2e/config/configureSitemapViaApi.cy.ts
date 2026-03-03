@@ -1,6 +1,6 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { waitForSitemap } from '../../utils/generateSitemap'
+import {generateSitemap, waitForSitemap } from '../../utils/generateSitemap'
 import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
 import { enableModule } from '@jahia/cypress'
 import { jahiaProcessingConfig } from '../../utils/serversConfig'
@@ -59,53 +59,18 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 mutationFile: 'graphql/enabledDebug.graphql',
             })
             waitUntilSyncIsComplete()
+            generateSitemap(siteKey)
             waitForSitemap()
             switchToBrowsingApolloClient()
-
-            // Retry mechanism to ensure OSGI service has taken the configuration into account and fix flakiness of the test
-            const maxRetries = 4
-            const waitTime = 5000 // 5 seconds
-            let retryCount = 0
-
-            const attemptRequest = (): Cypress.Chainable => {
-                return cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
-                    const debugExpected = debug === 'true'
-                    const bodyContent = response.body
-
-                    // Debug logging to understand response handling
-                    cy.log(`Response status: ${response.status}`)
-                    cy.log(`Response type: ${typeof bodyContent}`)
-                    cy.log(`Response length: ${bodyContent.length}`)
-                    cy.log(`First 500 chars: ${bodyContent.substring(0, 500)}`)
-
-                    const hasDebugInfo = bodyContent.includes('<!-- nodePath:')
-                    cy.log(`Has debug info: ${hasDebugInfo}, Expected: ${debugExpected}`)
-
-                    const isValid = debugExpected === hasDebugInfo
-
-                    if (!isValid && retryCount < maxRetries - 1) {
-                        retryCount++
-                        cy.log(
-                            `Attempt ${retryCount}: Debug config mismatch detected. Expected debug=${debugExpected}, ` +
-                                `hasDebugInfo=${hasDebugInfo}. Retrying in ${waitTime}ms...`,
-                        )
-                        // In a retry strategy, wait is mandatory...
-                        // eslint-disable-next-line cypress/no-unnecessary-waiting
-                        return cy.wait(waitTime).then(() => attemptRequest())
-                    }
-
-                    // Final validation
-                    if (debugExpected) {
-                        expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
-                    } else {
-                        expect(response.body, 'Should not contain comment tags in non debug').not.to.contains(
-                            '<!-- nodePath:',
-                        )
-                    }
-                })
-            }
-
-            attemptRequest()
+            cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
+                if (debug === 'true') {
+                    expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
+                } else {
+                    expect(response.body, 'Should not contain comment tags in non debug').not.to.contains(
+                        '<!-- nodePath:',
+                    )
+                }
+            })
         })
     })
 })
