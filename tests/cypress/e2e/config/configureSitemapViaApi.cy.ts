@@ -70,7 +70,17 @@ describe('Testing sitemap configuration via GraphQL API', () => {
             const attemptRequest = (): Cypress.Chainable => {
                 return cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                     const debugExpected = debug === 'true'
-                    const hasDebugInfo = response.body.includes('<!-- nodePath:')
+                    const bodyContent = response.body
+
+                    // Debug logging to understand response handling
+                    cy.log(`Response status: ${response.status}`)
+                    cy.log(`Response type: ${typeof bodyContent}`)
+                    cy.log(`Response length: ${bodyContent.length}`)
+                    cy.log(`First 500 chars: ${bodyContent.substring(0, 500)}`)
+
+                    const hasDebugInfo = bodyContent.includes('<!-- nodePath:')
+                    cy.log(`Has debug info: ${hasDebugInfo}, Expected: ${debugExpected}`)
+
                     const isValid = debugExpected === hasDebugInfo
 
                     if (!isValid && retryCount < maxRetries - 1) {
