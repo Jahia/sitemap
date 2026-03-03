@@ -61,15 +61,37 @@ describe('Testing sitemap configuration via GraphQL API', () => {
             waitUntilSyncIsComplete()
             waitForSitemap()
             switchToBrowsingApolloClient()
-            cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
-                if (debug === 'true') {
-                    expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
-                } else {
-                    expect(response.body, 'Should not contain comment tags in non debug').not.to.contains(
-                        '<!-- nodePath:',
-                    )
-                }
-            })
+
+            // Retry mechanism to ensure OSGI service has taken the configuration into account and fix flakiness of the test
+            const maxRetries = 4
+            const waitTime = 5000 // 5 seconds
+            let retryCount = 0
+
+            const attemptRequest = (): Cypress.Chainable => {
+                return cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
+                    const debugExpected = debug === 'true'
+                    const hasDebugInfo = response.body.includes('<!-- nodePath:')
+                    const isValid = debugExpected === hasDebugInfo
+
+                    if (!isValid && retryCount < maxRetries - 1) {
+                        retryCount++
+                        cy.log(
+                            `Attempt ${retryCount}: Debug config mismatch detected. Expected debug=${debugExpected}, ` +
+                                `hasDebugInfo=${hasDebugInfo}. Retrying in ${waitTime}ms...`,
+                        )
+                        return cy.wait(waitTime).then(() => attemptRequest())
+                    }
+
+                    // Final validation
+                    if (debugExpected) {
+                        expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
+                    } else {
+                        expect(response.body, 'Should not contain comment tags in non debug').not.to.contains('<!-- nodePath:')
+                    }
+                })
+            }
+
+            attemptRequest()
         })
     })
 })
