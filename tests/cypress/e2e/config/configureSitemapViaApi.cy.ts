@@ -79,6 +79,8 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                             `Attempt ${retryCount}: Debug config mismatch detected. Expected debug=${debugExpected}, ` +
                                 `hasDebugInfo=${hasDebugInfo}. Retrying in ${waitTime}ms...`,
                         )
+                        // In a retry strategy, wait is mandatory...
+                        // eslint-disable-next-line cypress/no-unnecessary-waiting
                         return cy.wait(waitTime).then(() => attemptRequest())
                     }
 
@@ -86,7 +88,9 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                     if (debugExpected) {
                         expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
                     } else {
-                        expect(response.body, 'Should not contain comment tags in non debug').not.to.contains('<!-- nodePath:')
+                        expect(response.body, 'Should not contain comment tags in non debug').not.to.contains(
+                            '<!-- nodePath:',
+                        )
                     }
                 })
             }
