@@ -1,6 +1,6 @@
 import { configureSitemap } from '../../utils/configureSitemap'
 import { removeSitemapConfiguration } from '../../utils/removeSitemapConfiguration'
-import { waitForSitemap } from '../../utils/generateSitemap'
+import { generateSitemap, waitForSitemap } from '../../utils/generateSitemap'
 import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../../utils/apollo'
 import { enableModule } from '@jahia/cypress'
 import { jahiaProcessingConfig } from '../../utils/serversConfig'
@@ -59,8 +59,8 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 mutationFile: 'graphql/enabledDebug.graphql',
             })
             waitUntilSyncIsComplete()
-            waitForSitemap()
             switchToBrowsingApolloClient()
+            generateSitemap(siteKey)
             cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                 if (debug === 'true') {
                     expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')

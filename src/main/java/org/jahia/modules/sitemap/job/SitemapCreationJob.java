@@ -3,6 +3,7 @@ package org.jahia.modules.sitemap.job;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.api.Constants;
 import org.jahia.modules.sitemap.beans.SitemapEntry;
+import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.jahia.modules.sitemap.services.SitemapService;
 import org.jahia.modules.sitemap.utils.Utils;
 import org.jahia.osgi.BundleUtils;
@@ -60,7 +61,12 @@ public class SitemapCreationJob extends BackgroundJob {
 
             // Set the job as running (in case of a scheduled job)
             Utils.markSitemapGenerationAsRunning(siteKey);
-            boolean isDebug = jobExecutionContext.getJobDetail().getJobDataMap().getBoolean("debug");
+            // Get debug configuration dynamically from OSGI service (not from cached JobDataMap)
+            SitemapConfigService configService = BundleUtils.getOsgiService(SitemapConfigService.class, null);
+            boolean isDebug = configService != null && configService.isDebug();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sitemap job execution for site {} - debug mode: {}", siteKey, isDebug);
+            }
             // Set user to be use later by the system sessions.
             JCRSessionFactory.getInstance().setCurrentUser(JahiaUserManagerService.getInstance().lookupRootUser().getJahiaUser());
             JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {

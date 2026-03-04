@@ -28,6 +28,7 @@ import org.jahia.modules.sitemap.config.SitemapConfigService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,18 @@ public class ConfigServiceImpl implements SitemapConfigService {
                 .filter(propsKey -> !props.get(propsKey).toString().isEmpty())
                 .collect(Collectors.toMap(propsKey -> propsKey, propsKey -> props.get(propsKey).toString(), (a, b) -> b));
         logger.info("Sitemap configuration activated");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sitemap configuration properties: {}", properties);
+        }
+    }
+
+    @Modified
+    public void modified(Map<String, ?> props) {
+        activate(props);
+        logger.info("Sitemap configuration updated");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sitemap configuration properties after modification: {}", properties);
+        }
     }
 
     @Deactivate
