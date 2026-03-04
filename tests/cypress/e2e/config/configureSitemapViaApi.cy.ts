@@ -59,9 +59,8 @@ describe('Testing sitemap configuration via GraphQL API', () => {
                 mutationFile: 'graphql/enabledDebug.graphql',
             })
             waitUntilSyncIsComplete()
-            generateSitemap(siteKey)
-            waitForSitemap()
             switchToBrowsingApolloClient()
+            generateSitemap(siteKey)
             cy.request('en/sites/digitall/sitemap-lang.xml').then((response) => {
                 if (debug === 'true') {
                     expect(response.body, 'Should contain comment tags in debug').to.contains('<!-- nodePath:')
