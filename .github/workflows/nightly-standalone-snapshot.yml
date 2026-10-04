@@ -11,7 +11,7 @@ jobs:
     uses: Jahia/jahia-modules-action/.github/workflows/reusable-integration-tests.yml@v2
     secrets: inherit
     with:
-      instance_type: "[self-hosted, linux, x64, small]"
+      instance_type: small
       jahia_image: ghcr.io/jahia/jahia-ee-dev:8-SNAPSHOT
       module_id: sitemap
       testrail_project: Sitemap Module
