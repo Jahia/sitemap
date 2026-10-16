@@ -1,6 +1,8 @@
 import { waitUntilRefresh } from '../utils/waitUntilRefresh'
 import { configureSitemap } from '../utils/configureSitemap'
 import { generateSitemap } from '../utils/generateSitemap'
+import { switchToBrowsingApolloClient, switchToProcessingApolloClient } from '../utils/apollo'
+import { waitUntilSyncIsComplete } from '../utils/sync'
 
 const siteKey = 'digitall'
 const sitePath = `/sites/${siteKey}`
@@ -12,9 +14,60 @@ const defaultLanguage = 'en'
 const siteMapRootUrl = `${Cypress.config().baseUrl}${sitePath}`
 const sitemapUrl = `${siteMapRootUrl}/sitemap.xml`
 
+// The debug mode logs, on the processing server, each node the sitemap job skips
+const setSitemapDebug = (debug: string): void => {
+    switchToProcessingApolloClient()
+    cy.apollo({
+        variables: { debug },
+        mutationFile: 'graphql/enabledDebug.graphql',
+    })
+    waitUntilSyncIsComplete()
+    switchToBrowsingApolloClient()
+}
+
+const logPublicationStatusByLanguage = (): void => {
+    cy.apolloProcessing({
+        variables: { path: testPagePath },
+        queryFile: 'graphql/jcrPublicationStatusByLanguage.graphql',
+    }).then((response) => {
+        cy.log(`Publication status of ${testPagePath}: ${JSON.stringify(response?.data?.jcr?.nodeByPath)}`)
+    })
+}
+
+const waitUntilTestPageUrlCount = (expectedCount: number): void => {
+    cy.waitUntil(
+        () =>
+            cy
+                .task('parseSitemap', { url: sitemapUrl })
+                .then((urls: Array<string>) => urls.filter((u) => u.includes(testPageName)).length === expectedCount),
+        {
+            errorMsg: `The sitemap ${sitemapUrl} does not contain ${expectedCount} URLs of ${testPageName} within set timeout`,
+            timeout: 20000,
+            interval: 1000,
+        },
+    )
+}
+
+// Each unpublishing test starts from the page published in all languages, so that a failed test does not fail the next ones
+const publishTestPageInAllLanguages = (): void => {
+    cy.apolloProcessing({
+        variables: {
+            pathOrId: testPagePath,
+            languages: languages,
+            publishSubNodes: true,
+            includeSubTree: true,
+        },
+        mutationFile: 'graphql/jcrPublishNode.graphql',
+    })
+    generateSitemap(siteKey)
+    logPublicationStatusByLanguage()
+    waitUntilTestPageUrlCount(3)
+}
+
 describe('Testing publishing and unpublishing of pages and languages', () => {
     before('Create test data in 3 languages', () => {
         configureSitemap(sitePath, siteMapRootUrl)
+        setSitemapDebug('true')
 
         // Creates the test page with content in all 3 languages
         cy.apolloProcessing({
@@ -29,6 +82,8 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
     })
 
     after('Cleanup test data', () => {
+        setSitemapDebug('false')
+
         // Remove the page that was created for the test
         cy.apolloProcessing({
             variables: {
@@ -122,7 +177,8 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
     // The sitemap should refresh automatically after publication
     for (const lang of languages) {
         it(`Unpublishing page content in language: ${lang} and check sitemap for absence of this link`, function () {
-            // Execute the test
+            publishTestPageInAllLanguages()
+
             cy.task('parseSitemap', { url: sitemapUrl }).then((originalSitemapUrls: Array<string>) => {
                 cy.log(`Starting with a sitemap containing ${originalSitemapUrls.length} URLs`)
 
@@ -144,6 +200,8 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
 
                 // Wait until the sitemap is modified
                 waitUntilRefresh(sitemapUrl, originalSitemapUrls)
+
+                logPublicationStatusByLanguage()
 
                 // Fetch the new sitemap again and test the result
                 cy.task('parseSitemap', { url: sitemapUrl }).then((newSitemapUrls: Array<string>) => {
@@ -176,32 +234,13 @@ describe('Testing publishing and unpublishing of pages and languages', () => {
                         expect(removedUrl.filter((u) => u.includes(`/${lang}${sitePath}`)).length).to.equal(1)
                     }
                 })
-
-                // Cleanup after the test
-                cy.task('parseSitemap', { url: sitemapUrl }).then((originalSitemapUrls: Array<string>) => {
-                    // Publish all pages in all languages to restore the page that was just unpublished
-                    cy.log(`Publish the page in all languages with subnodes`)
-                    cy.apolloProcessing({
-                        variables: {
-                            pathOrId: testPagePath,
-                            languages: languages,
-                            publishSubNodes: true,
-                            includeSubTree: true,
-                        },
-                        mutationFile: 'graphql/jcrPublishNode.graphql',
-                    })
-
-                    // Flush the cache to force a refresh
-                    generateSitemap(siteKey)
-
-                    // Wait until the sitemap is modified
-                    waitUntilRefresh(sitemapUrl, originalSitemapUrls)
-                })
             })
         })
     }
 
     it('Unpublish the page in all languages and verify its not in the sitemap', function () {
+        publishTestPageInAllLanguages()
+
         cy.task('parseSitemap', { url: sitemapUrl }).then((originalSitemapUrls: Array<string>) => {
             cy.log(`Starting with a sitemap containing ${originalSitemapUrls.length} URLs`)
 

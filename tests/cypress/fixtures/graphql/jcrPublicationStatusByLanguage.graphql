@@ -1,0 +1,15 @@
+query ($path: String!) {
+    jcr {
+        nodeByPath(path: $path) {
+            en: aggregatedPublicationInfo(language: "en") {
+                publicationStatus
+            }
+            de: aggregatedPublicationInfo(language: "de") {
+                publicationStatus
+            }
+            fr: aggregatedPublicationInfo(language: "fr") {
+                publicationStatus
+            }
+        }
+    }
+}
