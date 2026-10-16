@@ -199,8 +199,13 @@ public final class Utils {
                         public boolean scroll() throws RepositoryException {
                             for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
                                 JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
-                                if (node != null && filteredRootPath.stream().noneMatch(root -> node.getPath().startsWith(root + "/") || node.getPath().equals(root)) && isValidEntry(node, renderContext)) {
+                                if (node == null || filteredRootPath.stream().anyMatch(root -> node.getPath().startsWith(root + "/") || node.getPath().equals(root))) {
+                                    continue;
+                                }
+                                if (isValidEntry(node, renderContext)) {
                                     buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
+                                } else if (config.isDebug()) {
+                                    logger.info("Sitemap debug: node {} is not a valid sitemap entry, skipped", node.getPath());
                                 }
                             }
                             // Clean cache of all sessions
