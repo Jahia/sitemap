@@ -75,6 +75,7 @@ public final class Utils {
 
     private static final String DEDICATED_SITEMAP_MIXIN = "jseomix:sitemapResource";
     private static final String NO_INDEX_MIXIN = "jseomix:noIndex";
+    private static final String NAV_MENU_ITEM_MIXIN = "jmix:navMenuItem";
     private static final String[] ENTITIES = new String[]{"&amp;", "&apos;", "&quot;", "&gt;", "&lt;"};
     private static final String[] ENCODED_ENTITIES = new String[]{"_-amp-_", "_-apos-_", "_-quot-_", "_-gt-_", "_-lt-_"};
     private static final Locale DEFAULT_LOCALE = new Locale("x-default", "");
@@ -189,6 +190,13 @@ public final class Utils {
         // Compute other rootPath
         Set<String> filteredRootPath = sitemapRoots.stream().filter(ThrowingPredicate.unchecked(path -> !path.equals(rootPath) && !path.equals(rootNode.getResolveSite().getPath()))).collect(Collectors.toSet());
 
+        Set<String> visitedPaths = new HashSet<>();
+        // The search index can miss a page for a while after one of its languages is unpublished (seen on a cluster),
+        // so pages are also collected from the navigation tree, which reads the repository directly.
+        if (config.getIncludeContentTypes().contains(Constants.JAHIANT_PAGE)) {
+            walkNavigationTree(rootPath, session, filteredRootPath, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
+        }
+
         // look for sub nodes
         for (String nodeType : config.getIncludeContentTypes()) {
             String queryFrom = String.format("select * FROM [%s] as sel WHERE ISDESCENDANTNODE(sel, '%s')", nodeType, StringUtils.replace(rootPath, "'", "''"));
@@ -199,14 +207,10 @@ public final class Utils {
                         public boolean scroll() throws RepositoryException {
                             for (NodeIterator iter = stepResult.getNodes(); iter.hasNext(); ) {
                                 JCRNodeWrapper node = (JCRNodeWrapper) iter.nextNode();
-                                if (node == null || filteredRootPath.stream().anyMatch(root -> node.getPath().startsWith(root + "/") || node.getPath().equals(root))) {
+                                if (node == null || isUnderOtherRoot(node.getPath(), filteredRootPath)) {
                                     continue;
                                 }
-                                if (isValidEntry(node, renderContext)) {
-                                    buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
-                                } else if (config.isDebug()) {
-                                    logger.info("Sitemap debug: node {} is not a valid sitemap entry, skipped", node.getPath());
-                                }
+                                addEntry(node, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
                             }
                             // Clean cache of all sessions
                             JCRSessionFactory.getInstance().getAllOpenUserSessions().forEach(ThrowingConsumer.unchecked(s -> s.refresh(false)));
@@ -219,6 +223,48 @@ public final class Utils {
                         }
                     }
             );
+        }
+    }
+
+    /**
+     * Add the pages below rootPath, reached through pages and menu labels, without the search index.
+     */
+    private static void walkNavigationTree(String rootPath, JCRSessionWrapper session, Set<String> filteredRootPath, Set<String> visitedPaths, Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, SitemapConfigService config, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
+        // Paths, not nodes, are stacked, so that the sessions can be refreshed during the walk
+        Deque<String> pathsToVisit = new ArrayDeque<>();
+        pathsToVisit.push(rootPath);
+        int pagesAdded = 0;
+        while (!pathsToVisit.isEmpty()) {
+            for (JCRNodeWrapper child : session.getNode(pathsToVisit.pop()).getNodes()) {
+                if (!child.isNodeType(NAV_MENU_ITEM_MIXIN) || isUnderOtherRoot(child.getPath(), filteredRootPath)) {
+                    continue;
+                }
+                pathsToVisit.push(child.getPath());
+                if (child.isNodeType(Constants.JAHIANT_PAGE)) {
+                    addEntry(child, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
+                    pagesAdded++;
+                }
+            }
+            if (pagesAdded >= 500) {
+                // Clean cache of all sessions
+                JCRSessionFactory.getInstance().getAllOpenUserSessions().forEach(ThrowingConsumer.unchecked(s -> s.refresh(false)));
+                pagesAdded = 0;
+            }
+        }
+    }
+
+    private static boolean isUnderOtherRoot(String path, Set<String> filteredRootPath) {
+        return filteredRootPath.stream().anyMatch(root -> path.startsWith(root + "/") || path.equals(root));
+    }
+
+    private static void addEntry(JCRNodeWrapper node, Set<String> visitedPaths, Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, SitemapConfigService config, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
+        if (!visitedPaths.add(node.getPath())) {
+            return;
+        }
+        if (isValidEntry(node, renderContext)) {
+            buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
+        } else if (config.isDebug()) {
+            logger.info("Sitemap debug: node {} is not a valid sitemap entry, skipped", node.getPath());
         }
     }
 
