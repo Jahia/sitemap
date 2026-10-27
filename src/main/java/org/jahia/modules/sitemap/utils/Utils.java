@@ -51,6 +51,7 @@ import pl.touk.throwing.ThrowingConsumer;
 import pl.touk.throwing.ThrowingPredicate;
 
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
@@ -235,7 +236,14 @@ public final class Utils {
         pathsToVisit.push(rootPath);
         int pagesAdded = 0;
         while (!pathsToVisit.isEmpty()) {
-            for (JCRNodeWrapper child : session.getNode(pathsToVisit.pop()).getNodes()) {
+            final JCRNodeWrapper parent;
+            try {
+                parent = session.getNode(pathsToVisit.pop());
+            } catch (PathNotFoundException e) {
+                // Unpublished since it was stacked: the query scroll skips such a node too
+                continue;
+            }
+            for (JCRNodeWrapper child : parent.getNodes()) {
                 if (!child.isNodeType(NAV_MENU_ITEM_MIXIN) || isUnderOtherRoot(child.getPath(), filteredRootPath)) {
                     continue;
                 }
