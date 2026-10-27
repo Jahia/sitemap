@@ -190,11 +190,11 @@ public final class Utils {
         // Compute other rootPath
         Set<String> filteredRootPath = sitemapRoots.stream().filter(ThrowingPredicate.unchecked(path -> !path.equals(rootPath) && !path.equals(rootNode.getResolveSite().getPath()))).collect(Collectors.toSet());
 
-        Set<String> visitedPaths = new HashSet<>();
+        EntryCollector collector = new EntryCollector(sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
         // The search index can miss a page for a while after one of its languages is unpublished (seen on a cluster),
         // so pages are also collected from the navigation tree, which reads the repository directly.
         if (config.getIncludeContentTypes().contains(Constants.JAHIANT_PAGE)) {
-            walkNavigationTree(rootPath, session, filteredRootPath, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
+            walkNavigationTree(rootPath, session, filteredRootPath, collector);
         }
 
         // look for sub nodes
@@ -210,7 +210,7 @@ public final class Utils {
                                 if (node == null || isUnderOtherRoot(node.getPath(), filteredRootPath)) {
                                     continue;
                                 }
-                                addEntry(node, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
+                                collector.add(node);
                             }
                             // Clean cache of all sessions
                             JCRSessionFactory.getInstance().getAllOpenUserSessions().forEach(ThrowingConsumer.unchecked(s -> s.refresh(false)));
@@ -229,7 +229,7 @@ public final class Utils {
     /**
      * Add the pages below rootPath, reached through pages and menu labels, without the search index.
      */
-    private static void walkNavigationTree(String rootPath, JCRSessionWrapper session, Set<String> filteredRootPath, Set<String> visitedPaths, Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, SitemapConfigService config, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
+    private static void walkNavigationTree(String rootPath, JCRSessionWrapper session, Set<String> filteredRootPath, EntryCollector collector) throws RepositoryException {
         // Paths, not nodes, are stacked, so that the sessions can be refreshed during the walk
         Deque<String> pathsToVisit = new ArrayDeque<>();
         pathsToVisit.push(rootPath);
@@ -241,7 +241,7 @@ public final class Utils {
                 }
                 pathsToVisit.push(child.getPath());
                 if (child.isNodeType(Constants.JAHIANT_PAGE)) {
-                    addEntry(child, visitedPaths, sessionPerLocale, renderContext, config, entriesByLocale, entriesByPath);
+                    collector.add(child);
                     pagesAdded++;
                 }
             }
@@ -257,14 +257,34 @@ public final class Utils {
         return filteredRootPath.stream().anyMatch(root -> path.startsWith(root + "/") || path.equals(root));
     }
 
-    private static void addEntry(JCRNodeWrapper node, Set<String> visitedPaths, Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, SitemapConfigService config, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) throws RepositoryException {
-        if (!visitedPaths.add(node.getPath())) {
-            return;
+    /**
+     * Adds each node once to the sitemap entries, whether the navigation walk or an index query found it.
+     */
+    private static final class EntryCollector {
+        private final Set<String> visitedPaths = new HashSet<>();
+        private final Map<Locale, JCRSessionWrapper> sessionPerLocale;
+        private final RenderContext renderContext;
+        private final SitemapConfigService config;
+        private final Map<Locale, Set<SitemapEntry>> entriesByLocale;
+        private final Map<String, Set<SitemapEntry>> entriesByPath;
+
+        private EntryCollector(Map<Locale, JCRSessionWrapper> sessionPerLocale, RenderContext renderContext, SitemapConfigService config, Map<Locale, Set<SitemapEntry>> entriesByLocale, Map<String, Set<SitemapEntry>> entriesByPath) {
+            this.sessionPerLocale = sessionPerLocale;
+            this.renderContext = renderContext;
+            this.config = config;
+            this.entriesByLocale = entriesByLocale;
+            this.entriesByPath = entriesByPath;
         }
-        if (isValidEntry(node, renderContext)) {
-            buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
-        } else if (config.isDebug()) {
-            logger.info("Sitemap debug: node {} is not a valid sitemap entry, skipped", node.getPath());
+
+        private void add(JCRNodeWrapper node) throws RepositoryException {
+            if (!visitedPaths.add(node.getPath())) {
+                return;
+            }
+            if (isValidEntry(node, renderContext)) {
+                buildSiteMapEntriesForNode(node, sessionPerLocale, renderContext, entriesByLocale, entriesByPath);
+            } else if (config.isDebug()) {
+                logger.info("Sitemap debug: node {} is not a valid sitemap entry, skipped", node.getPath());
+            }
         }
     }
 
