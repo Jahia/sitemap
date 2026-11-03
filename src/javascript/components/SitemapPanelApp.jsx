@@ -81,19 +81,6 @@ const SitemapPanelApp = ({client, t}) => {
         value: '48'
     }];
 
-    const convertCacheDurationToLabel = durationValue => {
-        switch (durationValue) {
-            case dropdownData[1].value:
-                return dropdownData[1].label;
-            case dropdownData[2].value:
-                return dropdownData[2].label;
-            case dropdownData[3].value:
-                return dropdownData[3].label;
-            default:
-                return dropdownData[0].label;
-        }
-    };
-
     const formik = useFormik({
         initialValues: {
             sitemapIndexURL: ((sitemapIndexURL) ? sitemapIndexURL : ''),
@@ -210,7 +197,6 @@ const SitemapPanelApp = ({client, t}) => {
                                         name="intervalDuration"
                                         isDisabled={false}
                                         variant="outlined"
-                                        label={convertCacheDurationToLabel(formik.values.sitemapCacheDuration)}
                                         value={formik.values.sitemapCacheDuration}
                                         data={dropdownData}
                                         onChange={(e, item) => {
