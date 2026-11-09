@@ -5,11 +5,9 @@ import {Button, File, OpenInNew, Typography} from '@jahia/moonstone';
 import styles from './SitemapIndexLink.scss';
 
 const isWebUrl = url => {
-    try {
-        return ['http:', 'https:'].includes(new URL(url).protocol);
-    } catch (_) {
-        return false;
-    }
+    const link = document.createElement('a');
+    link.href = url;
+    return ['http:', 'https:'].includes(link.protocol);
 };
 
 const openIndexUrl = indexUrl => {
