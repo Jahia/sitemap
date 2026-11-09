@@ -4,6 +4,20 @@ import {Card} from '@material-ui/core';
 import {Button, File, OpenInNew, Typography} from '@jahia/moonstone';
 import styles from './SitemapIndexLink.scss';
 
+const isWebUrl = url => {
+    try {
+        return ['http:', 'https:'].includes(new URL(url).protocol);
+    } catch (_) {
+        return false;
+    }
+};
+
+const openIndexUrl = indexUrl => {
+    if (isWebUrl(indexUrl)) {
+        window.open(indexUrl, '_blank', 'noopener,noreferrer');
+    }
+};
+
 const SitemapIndexLink = ({inputUrl, t}) => {
     const indexUrl = `${inputUrl}/sitemap.xml`;
 
@@ -29,7 +43,7 @@ const SitemapIndexLink = ({inputUrl, t}) => {
                                         data-sel-role="sitemapIndexLinkButton"
                                         className={styles.sitemapIndexFileButton}
                                         icon={<OpenInNew size="big"/>}
-                                        onClick={() => window.open(indexUrl, '_blank')}/>
+                                        onClick={() => openIndexUrl(indexUrl)}/>
                             </>
                         ) : (
                             <Typography className={`${styles.sitemapIndexFileName} ${styles.disabled}`} component="p">
