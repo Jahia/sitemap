@@ -41,6 +41,7 @@ const SitemapIndexLink = ({inputUrl, t}) => {
                                         data-sel-role="sitemapIndexLinkButton"
                                         className={styles.sitemapIndexFileButton}
                                         icon={<OpenInNew size="big"/>}
+                                        aria-label={t('labels.settingSection.sitemapIndexFileSection.openLabel')}
                                         onClick={() => openIndexUrl(indexUrl)}/>
                             </>
                         ) : (

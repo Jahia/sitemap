@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Snackbar} from '@material-ui/core';
 import {Button, Close} from '@jahia/moonstone';
+import {useTranslation} from 'react-i18next';
 
 import styles from './Snackbar.scss';
 
@@ -11,6 +12,7 @@ export const SnackbarComponent = ({
     autoHideDuration,
     handleClose
 }) => {
+    const {t} = useTranslation('sitemap');
     return (
         <>
             <div className={styles.snackbarContainer}>
@@ -23,7 +25,7 @@ export const SnackbarComponent = ({
                     message={message}
                     action={
                         <React.Fragment>
-                            <Button className={styles.snackbarMessageButton} variant="ghost" icon={<Close size="big"/>} onClick={handleClose}/>
+                            <Button className={styles.snackbarMessageButton} variant="ghost" icon={<Close size="big"/>} aria-label={t('labels.snackbar.close')} onClick={handleClose}/>
                         </React.Fragment>
                     }
                     onClose={handleClose}

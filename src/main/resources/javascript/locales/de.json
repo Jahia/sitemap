@@ -14,7 +14,8 @@
       "sitemapIndexFileSection": {
         "title": "Haupt-Sitemap",
         "description": "Die Haupt-Sitemap referenziert alle weiteren Sitemaps: Sprach-Sitemaps und gesonderte Sitemaps",
-        "missing": "Es wurde noch keine Sitemap generiert"
+        "missing": "Es wurde noch keine Sitemap generiert",
+        "openLabel": "In neuem Tab öffnen"
       },
       "sitemapIndexURLSection": {
         "title": "Sitemap Basis-URL",
@@ -44,7 +45,8 @@
       "errorActivation": "Sitemap nicht gespeichert, da {{hostname}} keine gültige URL ist",
       "successActivation": "Sitemap aktiviert",
       "successSubmitToGoogle": "Sitemap-Index übermittelt",
-      "triggerSitemapJob": "Die Erstellung der Sitemap wurde ausgelöst."
+      "triggerSitemapJob": "Die Erstellung der Sitemap wurde ausgelöst.",
+      "close": "Schließen"
     }
   }
 }
